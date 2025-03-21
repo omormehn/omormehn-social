@@ -1,4 +1,5 @@
 import { bg } from '@/constants/bg';
+import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -10,27 +11,30 @@ import Logo from 'react-native-vector-icons/FontAwesome';
 const Register = () => {
     let eyeIcon;
     const [eyeOpen, setEyeClose] = useState(false);
-    const [ email, setEmail ] = useState('');
-    const [ password, setPassword ] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    
+
 
     eyeOpen ? eyeIcon = 'eye' : eyeIcon = 'eye-off'
 
+    const { register, error } = useAuth();
+
     const handleEyeSwitch = () => setEyeClose(!eyeOpen);
 
-    const handleSubmit = () => {
-        try {
-            
-        } catch (error) {
-            
-        }
+    const handleSubmit = async () => {
+        
+            await register(email, password, confirmPassword);
+            console.log('click')
+       
     }
+
+
 
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : -332}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : -40}
         >
             <View className='relative h-full '>
                 {/* Top Background Image Section*/}
@@ -44,7 +48,7 @@ const Register = () => {
                 {/* Form Section */}
                 <View className='absolute bg-white w-full h-[40rem] rounded-t-[45px] bottom-0 '>
                     {/* Form Main */}
-                    <View style={{gap:8}} className='pt-14 px-8 '>
+                    <View style={{ gap: 8 }} className='pt-14 px-8 '>
                         {/* Email Input */}
                         <View className="justify-center bg-gray-100 px-4 py-2 rounded-full mb-4">
                             <TextInput
@@ -82,17 +86,19 @@ const Register = () => {
                             <Icon name={eyeIcon} onPress={handleEyeSwitch} size={17} className='text-end absolute right-5 top-6 ' />
                         </View>
                     </View>
+                    <Text className='text-red-500 text-sm absolute top-80 left-32 -translate-x-1/2'>{error ? error : ''}</Text>
 
-                    <View style={{paddingVertical:30, gap:15}} className='justify-center items-center pt-10'>
+
+                    <View style={{ paddingVertical: 30, gap: 15 }} className='justify-center items-center pt-10'>
                         {/* Sign in Button */}
-                        <TouchableOpacity activeOpacity={0.8} className=''>
+                        <TouchableOpacity onPress={handleSubmit} activeOpacity={0.8} className=''>
                             <LinearGradient
                                 colors={['#5151C6', '#888BF4']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={{ paddingVertical: 14, paddingHorizontal: 130, borderRadius: 25 }}
                             >
-                                <Text onPress={handleSubmit} style={{ letterSpacing: 1 }} className='text-center font-bold text-white text-lg'>
+                                <Text style={{ letterSpacing: 1 }} className='text-center font-bold text-white text-lg'>
                                     SIGN UP
                                 </Text>
                             </LinearGradient>

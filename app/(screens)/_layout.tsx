@@ -3,10 +3,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 
 export default function AppLayout() {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
   console.log('Session in AppLayout:', session);
+  console.log('user in AppLayout:', user);
   
   useEffect(() => {
     setIsLoading(false); 
