@@ -3,17 +3,8 @@ import { Redirect } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { ID } from "react-native-appwrite";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-interface AuthContextType {
-    user: any | null;
-    login: (email: string, password: string) => void;
-    register: (email: string, password: string, confirmPassword: string) => void;
-    logout: () => void;
-    session: any | null;
-    error: any | null;
-    loading: boolean;
-}
+
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -37,14 +28,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const responseSession = await account.getSession("current");
             setSession(responseSession);
-
             const responseUser = await account.get();
-            console.log('user', responseUser)
             setUser(responseUser);
         } catch (error) {
             console.log(error)
+            setSession(null)
+            setUser(null)
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     const login = async (email: string, password: string) => {
@@ -53,7 +45,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const responseSession = await account.createEmailPasswordSession(email, password);
             setSession(responseSession);
             const responseUser = account.get();
-            console.log('user', responseUser)
             setUser(responseUser);
             Redirect({ href: '/(screens)' })
 
@@ -73,10 +64,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (password !== confirmPassword) {
                 setError('Password do not match')
             }
-            console.log('pass match, unto next...')
             const response = await account.create(ID.unique(), email, password)
             setUser(response);
-
         } catch (error) {
             console.log("error in reg", error)
         } finally {
@@ -96,9 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <AuthContext.Provider value={{ user, session, login, logout, error, register, loading }}>
-
             {children}
-
         </AuthContext.Provider>
     )
 }

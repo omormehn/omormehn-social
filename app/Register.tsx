@@ -1,17 +1,20 @@
+import AuthButton from '@/components/AuthButton';
 import AuthFormWrapper from '@/components/AuthFormWrapper';
-import PasswordContainer from '@/components/InputContainer';
+import PasswordContainer, { EmailContainer } from '@/components/InputContainer';
 import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView';
 import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
-import { LinearGradient } from 'expo-linear-gradient';
+import { cleanErrorMessage } from '@/utils/error';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Logo from 'react-native-vector-icons/FontAwesome';
 
 
 const Register = () => {
+    const { register, error, loading } = useAuth();
+
+
     const [eyeOpen, setEyeClose] = useState(false);
     const [confirmPasswordEyeOpen, setConfirmPasswordEyeOpen] = useState(false);
     const [email, setEmail] = useState('');
@@ -19,11 +22,10 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
 
 
-    const eyeIcon = eyeOpen  ? 'eye-off' : 'eye';
+    const eyeIcon = eyeOpen ? 'eye-off' : 'eye';
     const confirmPasswordEyeIcon = confirmPasswordEyeOpen ? 'eye-off' : 'eye';
 
-    const { register, error } = useAuth();
-
+   
     const handleEyeSwitch = () => setEyeClose(!eyeOpen);
     const handleConfirmPasswordEyeSwitch = () => setConfirmPasswordEyeOpen(!confirmPasswordEyeOpen);
 
@@ -48,59 +50,39 @@ const Register = () => {
                 {/* Form Section */}
                 <AuthFormWrapper>
                     {/* Email Input */}
-                    <View className="justify-center bg-gray-100 px-4 py-2 rounded-full mb-4">
-                        <TextInput
-                            placeholder="Email"
-                            placeholderTextColor="gray"
-                            className="text-lg"
-                            value={email}
-                            onChangeText={(text) => setEmail(text)}
-                        />
-                    </View>
+                    <EmailContainer
+                        email={email}
+                        onchangetext={(text) => setEmail(text)}
+                    />
 
                     {/* Password Input */}
-                    <PasswordContainer>
-                        <TextInput
-                            placeholder="Password"
-                            placeholderTextColor="gray"
-                            className="text-lg w-[90%]"
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                            secureTextEntry={eyeOpen ? false : true}
-                        />
-                        <Icon name={eyeIcon} onPress={handleEyeSwitch} size={17} className='text-end absolute right-5 top-6 ' />
-                    </PasswordContainer>
+                    <PasswordContainer
+                        placeholder="Password"
+                        password={password}
+                        onchangetext={(text) => setPassword(text)}
+                        secureTextEntry={eyeOpen ? false : true}
+                        iconName={eyeIcon}
+                        onpress={handleEyeSwitch}
+                    />
 
                     {/* Confirm Password Input */}
-                    <PasswordContainer>
-                        <TextInput
-                            placeholder="Confirm Password"
-                            placeholderTextColor="gray"
-                            className="text-lg w-[90%] "
-                            value={confirmPassword}
-                            onChangeText={(text) => setConfirmPassword(text)}
-                            secureTextEntry={confirmPasswordEyeOpen ? false : true}
-                        />
-                        <Icon name={confirmPasswordEyeIcon} onPress={handleConfirmPasswordEyeSwitch} size={17} className='text-end absolute right-5 top-6 ' />
-                    </PasswordContainer>
+                    <PasswordContainer
+                        placeholder="Confirm Password"
+                        password={password}
+                        onchangetext={(text) => setConfirmPassword(text)}
+                        secureTextEntry={confirmPasswordEyeOpen ? false : true}
+                        iconName={confirmPasswordEyeIcon}
+                        onpress={handleConfirmPasswordEyeSwitch}
+                    />
 
-                    <Text className='text-red-500 text-sm absolute top-80 left-32 -translate-x-1/2'>{error ? error : ''}</Text>
+                    {error ? (
+                        <Text style={{ color: 'red', textAlign: 'center' }}> {cleanErrorMessage(error)}</Text>
+                    ) : ''}
 
-
-                    <View style={{ paddingVertical: 30, gap: 15 }} className='justify-center items-center pt-4'>
+                    <View style={{ paddingVertical: 30, gap: 15 }} className='pt-4'>
                         {/* Sign in Button */}
-                        <TouchableOpacity onPress={handleSubmit} activeOpacity={0.8} className=''>
-                            <LinearGradient
-                                colors={['#5151C6', '#888BF4']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={{ paddingVertical: 18, paddingHorizontal: 130, borderRadius: 25 }}
-                            >
-                                <Text style={{ letterSpacing: 1 }} className='text-center font-bold text-white text-base'>
-                                    SIGN UP
-                                </Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
+                        <AuthButton onpress={handleSubmit} title='SIGN UP' loading={loading} />
+
 
                         <Text style={{ letterSpacing: 1 }} className='text-center text-lg pt-4 '>
                             OR SIGN IN WITH

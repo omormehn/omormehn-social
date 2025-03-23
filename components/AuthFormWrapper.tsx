@@ -4,9 +4,9 @@ import { StyleSheet, View } from 'react-native';
 const AuthFormWrapper = ({ children }: { children: React.ReactNode }) => {
     return (
         // Form section
-        <View className=' bg-white relative -top-10 w-full h-full rounded-t-[45px] bottom-0 '>
+        <View style={{top:-40}} className='bg-white w-full h-full rounded-t-[45px] bottom-0 '>
             {/* Form main */}
-            <View style={{ gap: 10 }} className='pt-14 px-8'>
+            <View style={{ gap: 10 }} className='pt-14 px-4'>
                 {children}
             </View>
         </View>

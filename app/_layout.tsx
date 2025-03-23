@@ -1,13 +1,18 @@
 import { Stack } from 'expo-router';
 import '../global.css';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 export default function RootLayout() {
+  
   return (
     <AuthProvider>
       <Stack>
         <Stack.Screen
           name="(screens)"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Onboarding"
           options={{ headerShown: false }}
         />
         <Stack.Screen
