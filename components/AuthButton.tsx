@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
+import { AuthButtonProps } from '@/types/types'
 
 const AuthButton = ({ title, onpress, loading }: AuthButtonProps) => {
     return (

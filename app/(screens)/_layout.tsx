@@ -1,14 +1,21 @@
 import { Redirect, Slot } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
+import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
+import React, { useContext } from 'react';
+import SplashScreen from '@/components/SplashScreen';
 
 export default function AppLayout() {
-  const { session } = useAuth();
+  const { user, loading } = useAuth();
 
- 
-  if (!session) {
-    console.log('Redirecting to /Login'); 
+  if (loading) {
+    return <SplashScreen />
+  }
+
+
+  if (!user) {
+    console.log('Redirecting to /Login');
     return <Redirect href="/Login" />;
   }
 
-  return <Slot />;
+  return <Slot />
+
 }

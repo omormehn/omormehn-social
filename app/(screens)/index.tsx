@@ -1,15 +1,26 @@
+import AuthContainer from '@/components/AuthContainer';
 import SplashScreen from '@/components/SplashScreen';
-import { useAuth } from '@/context/AuthContext';
-import { Redirect } from 'expo-router';
-import React, { useEffect } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import AuthContext, { useAuth } from '@/context/AuthContext';
+import { auth } from '@/services/firebaseConfig';
+import { signOut } from "firebase/auth";
+import { Redirect, useNavigation } from 'expo-router';
+import React, { useContext, useEffect } from 'react';
+import { BackHandler, Button, StyleSheet, Text, View } from 'react-native';
 
 
 
 const HomeScreen = () => {
-    const { logout, user, loading } = useAuth();
+    const { user, loading } = useAuth();
 
-    console.log(user)
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, [])
 
     if(loading) {
         return <SplashScreen/>
@@ -19,8 +30,8 @@ const HomeScreen = () => {
 
     return (
         <View>
-            <Text>You are logged in {user.name}</Text>
-            <Button onPress={logout} title='logout' />
+            <Text>You are logged in {user?.email} </Text>
+            <Button onPress={() => signOut(auth)} title='logout' />
         </View>
     );
 }

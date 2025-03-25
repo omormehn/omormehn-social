@@ -1,6 +1,9 @@
 import { Stack } from 'expo-router';
 import '../global.css';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { AuthProvider } from '@/context/AuthContext';
+import React from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
 
 export default function RootLayout() {
   
@@ -16,11 +19,7 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register"
+          name="(auth)"
           options={{ headerShown: false }}
         />
       </Stack>

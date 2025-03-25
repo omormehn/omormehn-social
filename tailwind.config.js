@@ -12,7 +12,8 @@ module.exports = {
         textColor: "#5252C7",
         primary: '#888BF4',
         secondary: "#5151C6",
-        logoBg: "#E3E4FC"
+        logoBg: "#E3E4FC",
+        primaryBg: "#F1F1FE",
       },
     },
   },

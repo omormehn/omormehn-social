@@ -1,6 +1,7 @@
 import { View, Text, TextInput } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/Feather';
+import { EmailProps, PasswordProps } from '@/types/types';
 
 export default function PasswordContainer(
     { password, 
@@ -26,7 +27,7 @@ export default function PasswordContainer(
 }
 export function EmailContainer({ email, onchangetext }: EmailProps) {
     return (
-        <View className="justify-center bg-gray-100 px-4 py-2 rounded-full mb-4">
+        <View className="justify-center  bg-gray-100 px-4 py-2 rounded-full mb-4">
             <TextInput
                 placeholder="Email"
                 placeholderTextColor="gray"
@@ -34,7 +35,6 @@ export function EmailContainer({ email, onchangetext }: EmailProps) {
                 value={email}
                 onChangeText={onchangetext}
             />
-
         </View>
     )
 }
