@@ -2,9 +2,15 @@ import { View, Text, ImageBackground, Image, TouchableOpacity } from 'react-nati
 import React from 'react';
 import { bg } from '@/constants/bg';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FirstScreen = () => {
   const router = useRouter();
+
+  const completeOnboarding = async () => {
+    await AsyncStorage.setItem("hasSeenOnboarding","true");
+    router.replace('/Register');
+  }
 
   return (
     <ImageBackground
@@ -25,7 +31,7 @@ const FirstScreen = () => {
         </View>
 
         <TouchableOpacity
-          onPress={() => router.push('/Login')} 
+          onPress={completeOnboarding} 
           className='bg-[#4F4F4Fc0] px-8 py-4 rounded-full'
         >
           <Text className='text-white font-semibold'>GET STARTED</Text>

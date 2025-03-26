@@ -14,6 +14,7 @@ module.exports = {
         secondary: "#5151C6",
         logoBg: "#E3E4FC",
         primaryBg: "#F1F1FE",
+        searchBg: "#F3F5F7"
       },
     },
   },

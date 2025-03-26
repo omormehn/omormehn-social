@@ -4,6 +4,10 @@ import AuthContainer from '@/components/AuthContainer'
 import AuthVerificationContainer from '@/components/AuthVerificationContainer'
 import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView'
 import { EmailContainer } from '@/components/InputContainer'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '@/services/firebaseConfig'
+import { router } from 'expo-router'
+import { useAuth } from '@/context/AuthContext'
 
 const ForgotPassword = () => {
 
@@ -11,7 +15,19 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState('');
 
 
-  const handleSubmit = () => { }
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await sendPasswordResetEmail(auth, email);
+      alert("Email reset link sent");
+      router.push('/Login');
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <KeyboardAvoidWrapper>
@@ -26,8 +42,6 @@ const ForgotPassword = () => {
           <View className=''>
             <EmailContainer email={email} onchangetext={(text) => setEmail(text)} />
           </View>
-
-         
         </AuthVerificationContainer>
       </AuthContainer>
     </KeyboardAvoidWrapper>

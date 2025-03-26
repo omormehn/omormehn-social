@@ -32,7 +32,7 @@ const Login = () => {
   const handleSubmit = async () => {
     try {
       await login(email, password);
-      router.push('/(screens)')
+      router.replace('/(screens)/SelectCategory')
     } catch (error) {
       console.log("error in login", error)
     }

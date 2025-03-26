@@ -7,7 +7,7 @@ import { View, Image } from 'react-native';
 
 const SplashScreen = () => {
   return (
-    <View className='flex-1 justify-center items-center bg-white'>
+    <View className='flex-1 w-full justify-center items-center bg-white'>
       <Image source={bg.splash}  className='w-full h-full' resizeMode='contain' />
     </View>
   );

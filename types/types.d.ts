@@ -1,3 +1,4 @@
+import { HomeFilter } from '@/components/HomeFilter';
 import { User } from 'firebase/auth'
 interface EmailProps {
     email: string
@@ -14,8 +15,8 @@ interface PasswordProps {
 
 interface AuthButtonProps {
     title: string;
-    onpress: () => void;
-    loading: boolean;
+    onpress?: () => void;
+    loading?: boolean;
 }
 
 interface AuthContextType {
@@ -34,4 +35,16 @@ type AuthVerificationProps = {
     onpress: () => void;
     loading: boolean;
     name: string;
+}
+
+type HomeFilterProps = {
+    title: string, 
+    focus?: boolean,
+    onpress: () => void;
+}
+
+interface TabBarProps {
+    iconPath: any
+    iconPath1: any
+    focused: any
 }

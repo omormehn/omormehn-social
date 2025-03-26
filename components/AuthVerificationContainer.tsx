@@ -10,14 +10,14 @@ const AuthVerificationContainer = ({ title, description, children, onpress, load
 
 
     return (
-        <View className='justify-center items-center gap-8 pt-4'>
+        <View className='justify-center  items-center gap-8 pt-4'>
             <Text style={{}}
-                className='font-bold text-lg text-secondary'>
+                className='font-bold text-lg text-secondary '>
                 {title}
             </Text>
 
             {/* Description */}
-            <View className='bg-primaryBg px-20 py-4 rounded-2xl'>
+            <View className='bg-primaryBg w-[90%] px-10 py-4 rounded-2xl'>
                 <Text className='text-center text-lg font-medium '>{description}</Text>
             </View>
 

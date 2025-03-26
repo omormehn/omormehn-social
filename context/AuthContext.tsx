@@ -13,17 +13,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
     const segments = useSegments();
 
-
-
-
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<any | null>(null);
     const [message, setMessage] = useState("");
 
     const onAuthStateChanged = (user: User | null) => {
-        console.log("Auth state changed", user);
+        if(user) {
         setUser(user);
+
+        }
         if (loading) setLoading(false);
     }
 
@@ -36,14 +35,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (loading) return;
 
-        const inAuthGroup = segments[0] === '(screens)'
+        const inAuthGroup = segments[0] === '(tabs)'
 
-        if (user && !inAuthGroup) {
-            router.replace('/(screens)')
+        if (user && !inAuthGroup && user?.emailVerified) {
+            router.replace('/(tabs)')
         } else if (!user && inAuthGroup) {
             router.replace('/Login')
+        } else if(user && !user.emailVerified) {
+            router.replace('/EmailVerification')
         }
-    }, [user, loading]);
+    }, [user, loading]); 
 
 
 
@@ -52,9 +53,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password)
             setUser(userCredentials.user);
-            console.log(userCredentials.user)
+            
         } catch (error) {
             setError(error);
+            alert(error)
             console.log(error);
         } finally {
             setLoading(false)
@@ -68,10 +70,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setError('Password do not match')
             }
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
-            setUser(userCredentials.user);
-            await sendEmailVerification(userCredentials.user);
+            const user = userCredentials.user
+            setUser(user);
+            await sendEmailVerification(user);
             alert("Verification email sent. Please check your inbox.");
             setMessage("Verification email sent. Please check your inbox.");
+            router.push('/(auth)/EmailVerification')
         } catch (error) {
             console.log("error in reg", error)
         } finally {
@@ -83,6 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             await auth.signOut();
             setUser(null);
+            router.replace('/Login')
         } catch (error) {
             console.log('Logout error:', error);
         }

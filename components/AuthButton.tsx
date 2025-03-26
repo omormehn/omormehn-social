@@ -5,7 +5,7 @@ import { AuthButtonProps } from '@/types/types'
 
 const AuthButton = ({ title, onpress, loading }: AuthButtonProps) => {
     return (
-        <TouchableOpacity onPress={onpress} activeOpacity={0.8}>
+        <TouchableOpacity onPress={onpress} activeOpacity={0.8} disabled={loading ? true : false}>
             <LinearGradient
                 colors={['#5151C6', '#888BF4']}
                 start={{ x: 0, y: 0 }}
