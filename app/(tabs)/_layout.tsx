@@ -16,7 +16,7 @@ const _layout = () => {
           title: 'Home',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} iconPath={bg.homeIcon1} iconPath1={bg.homeIcon} />
+            <TabIcon focused={focused} iconPath={bg.homeIcon} iconPath1={bg.homeIcon1} />
           )
         }} />
       <Tabs.Screen name='DiscoverScreen'
@@ -37,7 +37,7 @@ const _layout = () => {
         }} />
       <Tabs.Screen name='ProfileScreen'
         options={{
-          title: 'Home',
+          title: 'Profile',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} iconPath={bg.profileIcon} iconPath1={bg.profileIcon1} />
