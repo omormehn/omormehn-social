@@ -50,3 +50,12 @@ interface TabBarProps {
     focused: any
 }
 
+interface HomeCardProps {
+    username: string
+    profileImg?: any
+    createdAt: any
+    postImage: any
+    commentNo: number
+    likesNo: number
+}
+
