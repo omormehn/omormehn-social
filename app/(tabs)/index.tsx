@@ -55,7 +55,7 @@ const HomeScreen = () => {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.2,
                         shadowRadius: 4,
-                        elevation: 4, // For Android
+                        elevation: 4, 
                     }}
                     className='mt-10   bg-white w-full rounded-lg'>
                     {/* Part 1 */}
@@ -86,7 +86,7 @@ const HomeScreen = () => {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.2,
                         shadowRadius: 4,
-                        elevation: 4, 
+                        elevation: 4,
                     }}
                     className='mt-10   bg-white w-full rounded-lg'>
                     {/* Part 1 */}
