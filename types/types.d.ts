@@ -41,6 +41,7 @@ type HomeFilterProps = {
     title: string, 
     focus?: boolean,
     onpress: () => void;
+    w?: any
 }
 
 interface TabBarProps {
@@ -48,3 +49,4 @@ interface TabBarProps {
     iconPath1: any
     focused: any
 }
+

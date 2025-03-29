@@ -3,7 +3,7 @@ import React from 'react'
 
 const NotificationScreen = () => {
   return (
-    <View>
+    <View className='flex-1 bg-white'>
       <Text>NotificationScreen</Text>
     </View>
   )

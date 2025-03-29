@@ -8,14 +8,11 @@ import category1 from "@/assets/category1.png";
 import category2 from "@/assets/category2.png";
 import category3 from "@/assets/category3.png";
 import category4 from "@/assets/category4.png";
-import homeIcon from "@/assets/homeIcon.png";
-import homeIcon1 from "@/assets/HomeIcon!.png";
-import categoryIcon from "@/assets/categoryIcon.png";
-import categoryIcon1 from "@/assets/categoryIcon!.png";
-// import notificationIcon from "@/assets/notificationIcon.png";
-import notificationIcon1 from "@/assets/notificationIcon!.png";
-import profileIcon from "@/assets/profileIcon.png";
-import profileIcon1 from "@/assets/profileIcon!.png";
+import profile from '@/assets/profile.png';
+import profileExtraImg from '@/assets/profileExtraImg.png'
+import homeContent1 from '@/assets/mock/homeContent1.png'
+import homeContent2 from '@/assets/mock/homeContent2.png'
+
 
 export const bg = {
     homeBg,
@@ -28,12 +25,8 @@ export const bg = {
     category2,
     category3,
     category4,
-    homeIcon,
-    homeIcon1,
-    categoryIcon,
-    categoryIcon1,
-    // notificationIcon,
-    notificationIcon1,
-    profileIcon,
-    profileIcon1
+    profile,
+    profileExtraImg,
+    homeContent1,
+    homeContent2,
 }

@@ -3,7 +3,7 @@ import React from 'react'
 
 const DiscoverScreen = () => {
   return (
-    <View>
+    <View className='flex-1 bg-white'>
       <Text>DiscoverScreen</Text>
     </View>
   )
