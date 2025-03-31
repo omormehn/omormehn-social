@@ -1,9 +1,12 @@
 import { auth } from "@/services/firebaseConfig";
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut, User } from 'firebase/auth'
+import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut, updateCurrentUser, updateProfile, User } from 'firebase/auth'
 import { router, useRouter, useSegments } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { AuthContextType } from "@/types/types";
+import { generateRandomUsername } from "@/utils/generateRandomUsername";
+import { Alert, AppState } from "react-native";
+
 
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,11 +22,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [message, setMessage] = useState("");
 
     const onAuthStateChanged = (user: User | null) => {
-        if(user) {
-        setUser(user);
-
+        if (user) {
+            setUser(user);
+        } else {
+            setUser(null)
         }
-        if (loading) setLoading(false);
+        setLoading(false);
     }
 
 
@@ -32,19 +36,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return () => subscriber();
     }, []);
 
+
+    useEffect(() => {
+        const checkEmailVerificationStatus = async () => {
+            if (auth.currentUser) {
+                await auth.currentUser.reload();
+                if (auth.currentUser.emailVerified) {
+                    setUser(auth.currentUser);
+                    router.replace('/(tabs)')
+                }
+            }
+        }
+
+        const handleAppStateChange = (nextAppState: string) => {
+            if (nextAppState === 'active') {
+                checkEmailVerificationStatus();
+            }
+        }
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange)
+
+        return () => subscription.remove();
+    }, [])
+
     useEffect(() => {
         if (loading) return;
 
-        const inAuthGroup = segments[0] === '(tabs)'
+        const inAuthGroup = segments?.[0] === '(tabs)'
 
-        if (user && !inAuthGroup && user?.emailVerified) {
-            router.replace('/(tabs)')
+        if (user) {
+            if (!user?.emailVerified) {
+                router.replace('/EmailVerification')
+            } else if (!inAuthGroup) {
+                router.replace('/(tabs)')
+            }
         } else if (!user && inAuthGroup) {
-            router.replace('/Login')
-        } else if(user && !user.emailVerified) {
-            router.replace('/EmailVerification')
+            router.replace('/Login');
         }
-    }, [user, loading]); 
+    }, [user, loading]);
 
 
 
@@ -53,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password)
             setUser(userCredentials.user);
-            
+
         } catch (error) {
             setError(error);
             alert(error)
@@ -71,11 +100,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
             const user = userCredentials.user
-            setUser(user);
+
+            const randomUsername = generateRandomUsername();
+            if (auth.currentUser) {
+                updateProfile(user, {
+                    displayName: randomUsername
+                })
+            }
+
             await sendEmailVerification(user);
-            alert("Verification email sent. Please check your inbox.");
+
+            setUser(user);
+            Alert.alert('Success', "Verification email sent. Please check your inbox.");
             setMessage("Verification email sent. Please check your inbox.");
-            router.push('/(auth)/EmailVerification')
+
+
+            router.replace('/(auth)/EmailVerification')
         } catch (error) {
             console.log("error in reg", error)
         } finally {

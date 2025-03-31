@@ -1,9 +1,10 @@
-import { Redirect, Slot, useRouter } from 'expo-router';
+import { Redirect, Slot, Stack, useRouter } from 'expo-router';
 import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
 import React, { useContext, useEffect, useState } from 'react';
 import SplashScreen from '@/components/SplashScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import '../../global.css'
+import { Settings } from 'react-native';
 
 
 export default function AppLayout() {
@@ -17,8 +18,8 @@ export default function AppLayout() {
     const checkFirstTime = async () => {
       const onboarding = await AsyncStorage.getItem("hasSeenOnboarding");
       const category = await AsyncStorage.getItem("hasSelectedCategory");
-      
-      setHasSeenOnboarding(!!onboarding); 
+
+      setHasSeenOnboarding(!!onboarding);
       setHasSelectedCategory(!!category);
       setIsLoading(false);
     };
@@ -26,10 +27,12 @@ export default function AppLayout() {
     checkFirstTime();
   }, []);
 
-  if(loading) return <SplashScreen/>
+  if (loading) return <SplashScreen />
+
+  if (!user?.emailVerified) <Redirect href={'/(auth)/EmailVerification'} />
 
 
-  if(isLoading) return null;
+  if (isLoading) return null;
 
   if (!user) return <Redirect href="/Login" />;
 
@@ -37,6 +40,11 @@ export default function AppLayout() {
 
   // if (!hasSelectedCategory) return <Redirect href="/(screens)/SelectCategory" />;
 
-  return <Slot />
+  return (
+    <Stack>
+      <Stack.Screen name='[Settings]' options={{ headerTitle: 'Settings' }} />
+    </Stack>
+
+  )
 
 }

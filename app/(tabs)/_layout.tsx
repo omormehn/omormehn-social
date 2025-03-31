@@ -12,6 +12,9 @@ const _layout = () => {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
+        tabBarStyle: {
+          zIndex: 0
+        }
       }}
 
       tabBar={(props) => <CustomTabBar

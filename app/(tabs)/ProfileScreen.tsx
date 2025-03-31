@@ -4,8 +4,11 @@ import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
 import Icon from 'react-native-vector-icons/Feather';
 import HomeFilter from '@/components/HomeFilter';
+import { router } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 const ProfileScreen = () => {
+  const { user } = useAuth();
 
   const [focus, setFocus] = useState("shots");
 
@@ -20,9 +23,9 @@ const ProfileScreen = () => {
         {/* Img */}
         <Image className='w-full' source={bg.categoryImg} />
         {/* Username */}
-        <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-medium    '>@Omormehn</Text>
+        <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-medium '>@{user?.displayName}</Text>
         {/* Setting Icon */}
-        <TouchableOpacity className='absolute right-5 top-12'>
+        <TouchableOpacity onPress={() => router.push('/(screens)/[Settings]')} className='absolute right-5 top-12'>
           <Image source={icon.settingsIcon} />
         </TouchableOpacity>
       </View>
