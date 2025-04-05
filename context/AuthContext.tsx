@@ -7,11 +7,7 @@ import { AuthContextType } from "@/types/types";
 import { generateRandomUsername } from "@/utils/generateRandomUsername";
 import { Alert, AppState } from "react-native";
 
-import {
-    GoogleSignin,
-    GoogleSigninButton,
-    statusCodes,
-  } from '@react-native-google-signin/google-signin';
+
 
 
 

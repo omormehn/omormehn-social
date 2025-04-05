@@ -1,25 +1,21 @@
 {
   "cli": {
-    "version": ">= 15.0.15",
+    "version": ">= 16.1.0",
     "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
-    },
-    "production": {
-      "android": {
-        "gradleCommand": ":app:bundleRelease"
-      }
+      "distribution": "internal",
+      "channel": "development"
     },
     "preview": {
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "autoIncrement": "true",
       "channel": "preview"
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production"
     }
   },
   "submit": {
