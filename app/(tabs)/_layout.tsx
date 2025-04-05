@@ -1,11 +1,8 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router'
 import CustomTabBar from '@/components/CustomTabBar'
-import { Icon } from 'react-native-vector-icons/Icon'
-import { Image } from 'react-native'
-import DiscoverScreen from './DiscoverScreen'
 import { icon } from '@/constants/icon'
+
 
 const _layout = () => {
   return (
@@ -17,7 +14,7 @@ const _layout = () => {
         }
       }}
 
-      tabBar={(props) => <CustomTabBar
+      tabBar={(props: any) => <CustomTabBar
         iconPaths={{
           index: { active: icon.homeIcon, inactive: icon.homeIcon1 },
           DiscoverScreen: { active: icon.categoryIcon, inactive: icon.categoryIcon1 },

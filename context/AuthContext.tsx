@@ -84,13 +84,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password)
             setUser(userCredentials.user);
-
         } catch (error) {
             setError(error);
             alert(error)
             console.log(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 

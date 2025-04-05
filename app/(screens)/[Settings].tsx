@@ -5,9 +5,6 @@ import { useAuth } from '@/context/AuthContext'
 const SettingScreen = () => {
 
     const { logout, user } = useAuth();
-    console.log(user?.emailVerified)
-    console.log(user?.email)
-
     return (
         <View>
             <Text>{user?.displayName}</Text>

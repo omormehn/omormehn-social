@@ -1,5 +1,12 @@
 import { HomeFilter } from '@/components/HomeFilter';
 import { User } from 'firebase/auth'
+
+interface AppContextProps {
+    user: { emailVerified?: boolean } | null;
+    hasSeenOnboarding: boolean;
+    hasSelectedCategory: boolean;
+    loading: boolean;
+  }
 interface EmailProps {
     email: string
     onchangetext: (text: string) => void;

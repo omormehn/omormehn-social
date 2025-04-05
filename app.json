@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/splash.png",
         "backgroundImage": "./assets/home.png"
       },
-      "package": "com.omormehn.social"
+      "package": "com.omormehn.omor"
     },
     "plugins": [
       "expo-router",

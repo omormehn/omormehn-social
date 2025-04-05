@@ -1,11 +1,14 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import '../global.css';
-import { AuthProvider } from '@/context/AuthContext';
-import React from 'react';
+import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { AppProvider } from '@/context/AppContext';
+import SplashScreen from '@/components/SplashScreen';
+
 
 
 export default function RootLayout() {
-  
+
   return (
     <AuthProvider>
       <Stack>
@@ -26,6 +29,6 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
       </Stack>
-    </AuthProvider>
+    </AuthProvider >
   );
 }

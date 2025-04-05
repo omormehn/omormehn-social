@@ -8,35 +8,9 @@ import { Settings } from 'react-native';
 
 
 export default function AppLayout() {
-  const { user, loading } = useAuth();
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
-  const [hasSelectedCategory, setHasSelectedCategory] = useState(false);
-
-  useEffect(() => {
-    const checkFirstTime = async () => {
-      const onboarding = await AsyncStorage.getItem("hasSeenOnboarding");
-      const category = await AsyncStorage.getItem("hasSelectedCategory");
-
-      setHasSeenOnboarding(!!onboarding);
-      setHasSelectedCategory(!!category);
-      setIsLoading(false);
-    };
-
-    checkFirstTime();
-  }, []);
-
-  if (loading) return <SplashScreen />
-
-  if (!user?.emailVerified) <Redirect href={'/(auth)/EmailVerification'} />
 
 
-  if (isLoading) return null;
-
-  if (!user) return <Redirect href="/Login" />;
-
-  if (!hasSeenOnboarding) return <Redirect href="/Onboarding" />;
+ 
 
   // if (!hasSelectedCategory) return <Redirect href="/(screens)/SelectCategory" />;
 
