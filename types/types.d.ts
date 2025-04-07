@@ -31,9 +31,11 @@ interface AuthContextType {
     login: (email: string, password: string) => void;
     register: (email: string, password: string, confirmPassword: string) => void;
     logout: () => void;
+    googleLogin: () => void;
     error: any | null;
     loading: boolean;
     message: string;
+
 }
 type AuthVerificationProps = {
     title: string;

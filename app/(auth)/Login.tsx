@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator, SafeAreaView } from 'react-native'
+import React, { useEffect, useState } from 'react'
 
 import Logo from 'react-native-vector-icons/FontAwesome';
 
@@ -13,9 +13,18 @@ import AuthContainer from '@/components/AuthContainer';
 import AuthButton from '@/components/AuthButton';
 
 
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '@/services/firebaseConfig';
+
+
+const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
+
+
 const Login = () => {
 
-  const { login, error, loading } = useAuth();
+  const { login, error, loading, googleLogin } = useAuth();
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
@@ -26,6 +35,9 @@ const Login = () => {
   const handleEyeSwitch = () => setEyeClose(!eyeOpen);
 
   const router = useRouter();
+
+
+
 
 
   // Handle form
@@ -70,7 +82,7 @@ const Login = () => {
             <View style={{ paddingVertical: 30, gap: 15 }} className='pt-4'>
               {/* Forgot password */}
               <TouchableOpacity onPress={() => router.push('/(auth)/ForgotPassword')}>
-                <Text style={{ textDecorationStyle: 'dashed', letterSpacing: 3 }} 
+                <Text style={{ textDecorationStyle: 'dashed', letterSpacing: 3 }}
                   className='text-primary text-center font-medium'
                 >
                   FORGOT PASSWORD
@@ -87,10 +99,14 @@ const Login = () => {
 
               {/* Logos/ Social Platform*/}
               <View className='flex-row justify-center items-center gap-6'>
-                <TouchableOpacity activeOpacity={0.5}>
-                  <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
-                    <Logo size={25} color='#5151C6' name='google' />
-                  </View>
+                <TouchableOpacity activeOpacity={0.5} onPress={googleLogin}>
+                  {loading ? (
+                    <ActivityIndicator size={30} color={'black'} />
+                  ) : (
+                    <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
+                      <Logo size={25} color='#5151C6' name='google' />
+                    </View>
+                  )}
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.5}>
                   <View className='h-14 w-14 rounded-full justify-center items-center  bg-logoBg'>

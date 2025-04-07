@@ -1,11 +1,13 @@
 import { auth } from "@/services/firebaseConfig";
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut, updateCurrentUser, updateProfile, User } from 'firebase/auth'
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, signInWithCredential, signInWithEmailAndPassword, signOut, updateCurrentUser, updateProfile, User } from 'firebase/auth'
 import { router, useRouter, useSegments } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { AuthContextType } from "@/types/types";
 import { generateRandomUsername } from "@/utils/generateRandomUsername";
 import { Alert, AppState } from "react-native";
+import SplashScreen from "@/components/SplashScreen";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 
 
@@ -62,20 +64,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     useEffect(() => {
-        if (loading) return;
+        const checkAuth = () => {
+            if (loading) return <SplashScreen />;
 
-        const inAuthGroup = segments?.[0] === '(tabs)'
+            const inAuthGroup = segments?.[0] === '(tabs)'
 
-        if (user) {
-            if (!user?.emailVerified) {
-                router.replace('/EmailVerification')
-            } else if (!inAuthGroup) {
-                router.replace('/(tabs)')
+            if (!user && inAuthGroup) {
+                router.replace('/Login');
             }
-        } else if (!user && inAuthGroup) {
-            router.replace('/Login');
+            if (user) {
+                if (!user?.emailVerified) {
+                    router.replace('/EmailVerification')
+                } else if (!inAuthGroup) {
+                    router.replace('/(tabs)')
+                }
+            }
         }
+        checkAuth();
     }, [user, loading]);
+
+    useEffect(() => {
+        async function init() {
+            const has = await GoogleSignin.hasPlayServices();
+            if (has) {
+                GoogleSignin.configure({
+                    offlineAccess: true,
+                    webClientId: '563459081987-bgoqn34814mavmqo34tlc9r9o5g71eh7.apps.googleusercontent.com'
+                });
+            }
+        }
+        init();
+    }, []);
+
+    const googleLogin = async () => {
+        setLoading(true)
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            // Obtain the user's ID token
+            const data: any = await GoogleSignin.signIn();
+            
+
+            // create a new firebase credential with the token
+            const googleCredential = GoogleAuthProvider.credential(
+                data?.data.idToken,
+            );
+            ']'
+       
+
+            await signInWithCredential(auth, googleCredential);
+
+
+            return;
+        } catch (error) {
+            console.log('e: ', error);
+            alert('Error')
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
 
@@ -84,9 +130,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password)
             setUser(userCredentials.user);
-        } catch (error) {
+        } catch (error: any) {
             setError(error);
-            alert(error)
+            if (error.code === "auth/user-not-found") {
+                alert("User not found")
+            }
+            if (error.code === 'auth/wrong-password') {
+                alert('Incorrect password.');
+            }
             console.log(error);
         } finally {
             setLoading(false);
@@ -117,7 +168,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
             router.replace('/(auth)/EmailVerification')
-        } catch (error) {
+        } catch (error: any) {
+            if (error.code === 'auth/invalid-email') {
+                Alert.alert('Error', 'Invalid email')
+            }
+            if (error.code === 'auth/weak-password') {
+                Alert.alert('Error', 'Password must be at least 6 characters')
+            }
             console.log("error in reg", error)
         } finally {
             setLoading(false);
@@ -135,7 +192,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, error, register, loading, message }}>
+        <AuthContext.Provider value={{ user, login, logout, googleLogin, error, register, loading, message }}>
             {children}
         </AuthContext.Provider>
     )

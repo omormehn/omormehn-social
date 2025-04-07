@@ -40,9 +40,10 @@ const Register = () => {
     const handleSubmit = async () => {
         try {
             await register(email, password, confirmPassword);
-            router.push('/(screens)')
+
 
         } catch (error) {
+            if (!error) { router.push('/(screens)') }
             console.log("error in reg", error)
         }
     }
@@ -82,7 +83,7 @@ const Register = () => {
                         />
 
                         {error ? (
-                            <Text style={{ color: 'red', textAlign: 'center' }}> 
+                            <Text style={{ color: 'red', textAlign: 'center' }}>
                                 {cleanErrorMessage(error)}
                             </Text>
                         ) : ''}
