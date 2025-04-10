@@ -12,6 +12,7 @@ import profile from '@/assets/profile.png';
 import profileExtraImg from '@/assets/profileExtraImg.png'
 import homeContent1 from '@/assets/mock/homeContent1.png'
 import homeContent2 from '@/assets/mock/homeContent2.png'
+import darkBg from '@/assets/darkBg.png';
 
 
 export const bg = {
@@ -29,4 +30,5 @@ export const bg = {
     profileExtraImg,
     homeContent1,
     homeContent2,
+    darkBg,
 }

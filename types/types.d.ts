@@ -1,3 +1,4 @@
+import { SettingOption } from '@/components/SettingOption';
 import { HomeFilter } from '@/components/HomeFilter';
 import { User } from 'firebase/auth'
 
@@ -10,6 +11,8 @@ interface AppContextProps {
 interface EmailProps {
     email: string
     onchangetext: (text: string) => void;
+    value?: string
+    placeHolder?: string
 }
 interface PasswordProps {
     password: string
@@ -34,6 +37,7 @@ interface AuthContextType {
     googleLogin: () => void;
     error: any | null;
     loading: boolean;
+    isLoading: boolean;
     message: string;
 
 }
@@ -67,4 +71,6 @@ interface HomeCardProps {
     commentNo: number
     likesNo: number
 }
+
+
 

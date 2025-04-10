@@ -22,8 +22,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<any | null>(null);
     const [message, setMessage] = useState("");
+
 
     const onAuthStateChanged = (user: User | null) => {
         if (user) {
@@ -97,7 +99,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const googleLogin = async () => {
-        setLoading(true)
+        setIsLoading(true)
         try {
             await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
             // Obtain the user's ID token
@@ -107,13 +109,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             // create a new firebase credential with the token
             const googleCredential = GoogleAuthProvider.credential(
                 data?.data.idToken,
-            );
-            ']'
-       
+            );       
 
             await signInWithCredential(auth, googleCredential);
-
-
             return;
         } catch (error) {
             console.log('e: ', error);
@@ -192,7 +190,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, googleLogin, error, register, loading, message }}>
+        <AuthContext.Provider value={{ user, login, logout, googleLogin, error, register, loading, isLoading, message }}>
             {children}
         </AuthContext.Provider>
     )

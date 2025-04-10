@@ -1,4 +1,4 @@
-import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView } from 'react-native'
 import React, { useState } from 'react'
 import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import HomeFilter from '@/components/HomeFilter';
 import { router } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { StatusBar } from 'expo-status-bar';
+
 
 const ProfileScreen = () => {
   const { user } = useAuth();
@@ -17,6 +19,7 @@ const ProfileScreen = () => {
 
 
   return (
+
     <View className='flex-1 bg-white'>
       {/* Top Image */}
       <View>
@@ -25,7 +28,7 @@ const ProfileScreen = () => {
         {/* Username */}
         <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-medium '>@{user?.displayName}</Text>
         {/* Setting Icon */}
-        <TouchableOpacity onPress={() => router.push('/(screens)/[Settings]')} className='absolute right-5 top-12'>
+        <TouchableOpacity onPress={() => router.push('/(screens)/Settings')} className='absolute right-5 top-12'>
           <Image source={icon.settingsIcon} />
         </TouchableOpacity>
       </View>
@@ -42,7 +45,7 @@ const ProfileScreen = () => {
         {/* Name and location */}
         <View className='pt-6'>
           {/* Name */}
-          <Text className='text-xl  font-bold'>Useni Nathan</Text>
+          <Text className='text-xl  font-bold'>{user?.displayName}</Text>
           <Text className='text-lg text-center text-shade'>P.W, Maroko</Text>
         </View>
 
@@ -88,6 +91,7 @@ const ProfileScreen = () => {
         </View>
       </View>
     </View>
+
   )
 }
 

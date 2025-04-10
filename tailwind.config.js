@@ -17,7 +17,10 @@ module.exports = {
         searchBg: "#F3F5F7",
         shade: "#8F90A7",
         grayBg: "#F6F7F9",
-        placeHolder: "#BDBDBD"
+        placeHolder: "#BDBDBD",
+        textShade: '#C0C0C0',
+        bgShade: 'rgba(255, 255, 255, 0.2)',
+        bgShade2: 'rgba(255, 255, 255, 0.12)',
       },
     },
   },

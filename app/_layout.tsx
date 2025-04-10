@@ -9,12 +9,14 @@ import SplashScreen from '@/components/SplashScreen';
 
 export default function RootLayout() {
 
+  
+
   return (
     <AuthProvider>
-      <Stack>
+      <Stack >
         <Stack.Screen
           name="(screens)"
-          options={{ headerShown: false }}
+          options={{ headerShown: false, statusbarColor: 'auto' }}
         />
         <Stack.Screen
           name="Onboarding"
@@ -26,7 +28,7 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="(tabs)"
-          options={{ headerShown: false }}
+          options={{ headerShown: false, statusbarColor: 'auto' }}
         />
       </Stack>
     </AuthProvider >

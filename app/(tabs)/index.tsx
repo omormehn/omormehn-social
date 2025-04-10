@@ -1,22 +1,22 @@
-import HomeFilter from '@/components/HomeFilter';
-import SearchBar from '@/components/SearchBar';
-import SplashScreen from '@/components/SplashScreen';
-import { bg } from '@/constants/bg';
-import { useAuth } from '@/context/AuthContext';
-import { Redirect, router, useNavigation } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet } from 'react-native';
+
+import React, { useEffect, useState } from 'react'
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Text } from 'react-native'
+
 import Icon from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/AntDesign';
+import SearchBar from '@/components/SearchBar';
+import HomeFilter from '@/components/HomeFilter';
+import { bg } from '@/constants/bg';
+import { useAuth } from '@/context/AuthContext';
+import SplashScreen from '@/components/SplashScreen';
 
 const HomeScreen = () => {
-    const { user, loading, logout } = useAuth();
 
-    const [focus, setFocus] = useState("Popular");
+    const [focus, setFocus] = useState('Popular');
+    const { loading } = useAuth();
 
-    if (loading) {
-        return <SplashScreen />
-    }
+    // if (loading) return <SplashScreen />
+
 
     return (
         <View className='flex-1'>
@@ -37,8 +37,7 @@ const HomeScreen = () => {
                             title={title}
                             focus={focus === title}
                             onpress={() => setFocus(title)}
-                            w={120}
-                        />
+                            w={120} />
                     ))}
                 </View>
             </View>
@@ -71,7 +70,7 @@ const HomeScreen = () => {
                     {/* Part 3 */}
                     <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
 
-                        <TouchableOpacity >
+                        <TouchableOpacity>
                             <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
                         </TouchableOpacity>
 
@@ -115,7 +114,7 @@ const HomeScreen = () => {
                     {/* Part 3 */}
                     <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
 
-                        <TouchableOpacity >
+                        <TouchableOpacity>
                             <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
                         </TouchableOpacity>
 
@@ -138,7 +137,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
             </ScrollView>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -156,4 +155,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default HomeScreen;
+export default HomeScreen

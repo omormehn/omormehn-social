@@ -2,9 +2,17 @@ import React from 'react'
 import { Tabs } from 'expo-router'
 import CustomTabBar from '@/components/CustomTabBar'
 import { icon } from '@/constants/icon'
+import { useAuth } from '@/context/AuthContext'
+import SplashScreen from '@/components/SplashScreen'
 
 
 const _layout = () => {
+
+  const { loading } = useAuth();
+
+  if (loading) return <SplashScreen />;
+
+
   return (
     <Tabs
       screenOptions={{
@@ -13,6 +21,7 @@ const _layout = () => {
           zIndex: 0
         }
       }}
+
 
       tabBar={(props: any) => <CustomTabBar
         iconPaths={{
