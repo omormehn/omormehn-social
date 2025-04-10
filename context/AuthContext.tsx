@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<any | null>(null);
     const [message, setMessage] = useState("");
 
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const checkAuth = () => {
             if (loading) return <SplashScreen />;
 
-            const inAuthGroup = segments?.[0] === '(tabs)'
+            const inAuthGroup = segments?.[0] === '(tabs)' || '(screens)'
 
             if (!user && inAuthGroup) {
                 router.replace('/Login');
@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     router.replace('/(tabs)')
                 }
             }
+            
         }
         checkAuth();
     }, [user, loading]);
@@ -135,6 +136,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
             if (error.code === 'auth/wrong-password') {
                 alert('Incorrect password.');
+            }
+            if (error.code === 'auth/network-request-failed') {
+                alert('Network Error, Please check your internet connection');
             }
             console.log(error);
         } finally {

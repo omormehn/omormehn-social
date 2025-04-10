@@ -24,7 +24,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const Login = () => {
 
-  const { login, error, loading, googleLogin } = useAuth();
+  const { login, error, loading, googleLogin, isLoading } = useAuth();
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
@@ -100,7 +100,7 @@ const Login = () => {
               {/* Logos/ Social Platform*/}
               <View className='flex-row justify-center items-center gap-6'>
                 <TouchableOpacity activeOpacity={0.5} onPress={googleLogin}>
-                  {loading ? (
+                  {isLoading ? (
                     <ActivityIndicator size={30} color={'black'} />
                   ) : (
                     <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
