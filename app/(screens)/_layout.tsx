@@ -18,6 +18,7 @@ export default function AppLayout() {
     <Stack>
       <Stack.Screen name='Settings'  options={{ headerShown: false,  }} />
       <Stack.Screen name='EditProfile'  options={{ headerShown: false,  }} />
+      <Stack.Screen name='CameraScreen'  options={{ headerShown: false,  }} />
     </Stack>
 
   )

@@ -29,6 +29,22 @@
           "backgroundColor": "#ffffff"
         }
       ],
+      [ 
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(Omor social) to access your camera",
+          "microphonePermission": "Allow $(Omor social) to access your microphone",
+          "recordAudioAndroid": true
+        }
+	    ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(Omor social) to access your photos.",
+          "savePhotosPermission": "Allow $(Omor social) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
       [
         "@react-native-google-signin/google-signin",
         {

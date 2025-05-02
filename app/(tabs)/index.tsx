@@ -9,6 +9,8 @@ import HomeFilter from '@/components/HomeFilter';
 import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
 import SplashScreen from '@/components/SplashScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
 const HomeScreen = () => {
 
@@ -20,6 +22,7 @@ const HomeScreen = () => {
 
     return (
         <View className='flex-1'>
+            <StatusBar style="dark" translucent={false} />
             <View className='bg-white pb-4'>
                 {/* Top 1 */}
                 <View className='flex-row px-4 pt-8 gap-2'>

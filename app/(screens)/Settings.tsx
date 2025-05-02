@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 const SettingScreen = () => {
 
     const { logout, user } = useAuth();
+    
     return (
         <ImageBackground source={bg.darkBg} className='flex-1 flex-col gap-8' resizeMode='cover'>
             <View className='items-center'>

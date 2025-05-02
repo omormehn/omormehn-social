@@ -4,6 +4,7 @@ import Svg, { Path } from "react-native-svg";
 import { LinearGradient } from 'expo-linear-gradient';
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import Icon from 'react-native-vector-icons/Feather';
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -15,7 +16,6 @@ interface CustomTabBarProps extends BottomTabBarProps {
 
 const CustomTabBar = ({
   state,
-  descriptors,
   navigation,
   iconPaths,
 }: CustomTabBarProps) => {
@@ -49,7 +49,7 @@ const CustomTabBar = ({
         {/* Floating Button */}
         <TouchableOpacity
           style={styles.floatingButton}
-          onPress={() => console.log("Add Pressed")}
+          onPress={() => router.push('/CameraScreen')}
         >
           <LinearGradient
             colors={['#5151C6', '#888BF4']}

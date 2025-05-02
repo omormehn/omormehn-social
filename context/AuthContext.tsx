@@ -113,6 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             );       
 
             await signInWithCredential(auth, googleCredential);
+            router.replace('/(tabs)');
             return;
         } catch (error) {
             console.log('e: ', error);
