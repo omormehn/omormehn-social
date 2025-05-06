@@ -1,6 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions, CameraMode } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
-import { Button, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
 
 
 import * as MediaLibrary from "expo-media-library";
