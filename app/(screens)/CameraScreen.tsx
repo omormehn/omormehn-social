@@ -1,13 +1,14 @@
 import { CameraView, CameraType, useCameraPermissions, CameraMode } from 'expo-camera';
-import { useEffect, useRef, useState } from 'react';
-import { Button, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 
-
+import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from "expo-media-library";
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
+import { auth } from '@/services/firebaseConfig';
 
 
 const CameraScreen = () => {
@@ -17,8 +18,9 @@ const CameraScreen = () => {
   const [uri, setUri] = useState<string | null>(null);
   const [mode, setMode] = useState<CameraMode>("picture");
   const [facing, setFacing] = useState<CameraType>('back');
+  const [albums, setAlbums] = useState(null);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions()
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
 
   // if (!cameraPermission) {
   //   return null;
@@ -51,6 +53,9 @@ const CameraScreen = () => {
     setUri(photo?.uri!);
   }
 
+  
+
+
   const renderPhoto = () => {
     return (
       <View>
@@ -76,14 +81,27 @@ const CameraScreen = () => {
     console.log({ video });
   };
 
-
-
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
   const toggleMode = () => {
     setMode((prev) => (prev === "picture" ? "video" : "picture"));
   };
+
+ 
+
+  const pickMedia = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setUri(uri);
+    }
+  };
+
 
   const renderCamera = () => {
     return (
@@ -102,6 +120,9 @@ const CameraScreen = () => {
             ) : (
               <Feather name="video" size={32} color="white" />
             )}
+          </Pressable>
+          <Pressable onPress={pickMedia}>
+            <Icon name="images" size={32} color="white" />
           </Pressable>
           <Pressable onPress={mode === "picture" ? takePicture : recordVideo}>
             {({ pressed }) => (
@@ -131,7 +152,6 @@ const CameraScreen = () => {
       </CameraView>
     );
   };
-
   return (
     <View style={styles.container}>
       {uri ? renderPhoto() : renderCamera()}
@@ -197,4 +217,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default CameraScreen
+export default CameraScreen;
