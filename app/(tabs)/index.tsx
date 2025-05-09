@@ -1,3 +1,4 @@
+import 'react-native-url-polyfill/auto';
 
 import React, { useEffect, useState } from 'react'
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Text } from 'react-native'
@@ -8,8 +9,6 @@ import SearchBar from '@/components/SearchBar';
 import HomeFilter from '@/components/HomeFilter';
 import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
-import SplashScreen from '@/components/SplashScreen';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 const HomeScreen = () => {

@@ -8,7 +8,9 @@ import * as MediaLibrary from "expo-media-library";
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import { auth } from '@/services/firebaseConfig';
+
+
+
 
 
 const CameraScreen = () => {

@@ -1,9 +1,8 @@
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import '../global.css';
-import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
-import React, { useContext, useEffect, useState } from 'react';
-import { AppProvider } from '@/context/AppContext';
-import SplashScreen from '@/components/SplashScreen';
+import { AuthProvider } from '@/context/AuthContext';
+import React from 'react';
+import 'react-native-url-polyfill/auto';
 
 
 
@@ -16,7 +15,7 @@ export default function RootLayout() {
       <Stack >
         <Stack.Screen
           name="(screens)"
-          options={{ headerShown: false, statusbarColor: 'auto' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Onboarding"
@@ -28,7 +27,7 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="(tabs)"
-          options={{ headerShown: false, statusbarColor: 'auto' }}
+          options={{ headerShown: false }}
         />
       </Stack>
     </AuthProvider >
