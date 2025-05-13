@@ -1,32 +1,28 @@
 import { CameraView, CameraType, useCameraPermissions, CameraMode } from 'expo-camera';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-
-
+import { Button, Image, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from "expo-media-library";
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
-
-
-
+import { supabase } from '@/services/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { decode } from 'base64-arraybuffer';
+import { router } from 'expo-router';
 
 
 const CameraScreen = () => {
   const ref = useRef<CameraView>(null);
+  const { user } = useAuth();
 
   const [recording, setRecording] = useState(false);
   const [uri, setUri] = useState<string | null>(null);
+  const [files, setFiles] = useState<any>(null);
   const [mode, setMode] = useState<CameraMode>("picture");
   const [facing, setFacing] = useState<CameraType>('back');
   const [albums, setAlbums] = useState(null);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
-
-  // if (!cameraPermission) {
-  //   return null;
-  // }
 
   useEffect(() => {
     (async () => {
@@ -50,63 +46,44 @@ const CameraScreen = () => {
     })();
   }, [cameraPermission]);
 
-  const takePicture = async () => {
-    const photo = await ref.current?.takePictureAsync();
-    setUri(photo?.uri!);
-  }
+  useEffect(() => {
+    if (!user) return;
 
-  
+    loadImages();
+  }, [user]);
 
 
-  const renderPhoto = () => {
-    return (
-      <View>
-        {uri &&
-          <Image
-            source={{ uri }}
-            resizeMode="contain"
-            style={{ width: 300, aspectRatio: 1 }}
-          />}
-        <Button onPress={() => setUri(null)} title="Take another picture" />
-      </View>
-    );
-  }
-
-  const recordVideo = async () => {
-    if (recording) {
-      setRecording(false);
-      ref.current?.stopRecording();
-      return;
+  const loadImages = async () => {
+    const { data } = await supabase.storage.from('files').list(user.id);
+    if (data) {
+      setFiles(data);
     }
-    setRecording(true);
-    const video = await ref.current?.recordAsync();
-    console.log({ video });
-  };
-
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
-  const toggleMode = () => {
-    setMode((prev) => (prev === "picture" ? "video" : "picture"));
-  };
-
- 
 
   const pickMedia = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setUri(uri);
+      if (!result.canceled) {
+        const img = result.assets[0];
+        const base64 = await FileSystem.readAsStringAsync(img.uri, { encoding: 'base64' });
+        const filePath = `${user.id}/${new Date().getTime()}.${img.type === 'image' ? 'png' : 'mp4'}`;
+        const contentType = img.type === 'image' ? 'image/png' : 'video/mp4';
+        await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
+        await loadImages();
+      }
+      router.push("/(tabs)");
+    } catch (error) {
+      console.error("Error picking media: ", error);
     }
   };
 
 
-  const renderCamera = () => {
-    return (
+  return (
+    <View style={styles.container}>
       <CameraView
         style={styles.camera}
         ref={ref}
@@ -116,47 +93,11 @@ const CameraScreen = () => {
         responsiveOrientationWhenOrientationLocked
       >
         <View style={styles.shutterContainer}>
-          <Pressable onPress={toggleMode}>
-            {mode === "picture" ? (
-              <AntDesign name="picture" size={32} color="white" />
-            ) : (
-              <Feather name="video" size={32} color="white" />
-            )}
-          </Pressable>
           <Pressable onPress={pickMedia}>
             <Icon name="images" size={32} color="white" />
           </Pressable>
-          <Pressable onPress={mode === "picture" ? takePicture : recordVideo}>
-            {({ pressed }) => (
-              <View
-                style={[
-                  styles.shutterBtn,
-                  {
-                    opacity: pressed ? 0.5 : 1,
-                  },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.shutterBtnInner,
-                    {
-                      backgroundColor: mode === "picture" ? "white" : "red",
-                    },
-                  ]}
-                />
-              </View>
-            )}
-          </Pressable>
-          <Pressable onPress={toggleCameraFacing}>
-            <Icon name="rotate-left" size={32} color="white" />
-          </Pressable>
         </View>
       </CameraView>
-    );
-  };
-  return (
-    <View style={styles.container}>
-      {uri ? renderPhoto() : renderCamera()}
     </View>
   );
 }

@@ -10,11 +10,20 @@ import HomeFilter from '@/components/HomeFilter';
 import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
+import { router } from 'expo-router';
 
 const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
-    const { loading } = useAuth();
+
+    const { session, loading, user } = useAuth();
+
+    useEffect(() => {
+        if (!loading && !session) {
+            router.replace('/(auth)/Login');
+        }
+    })
+
 
     // if (loading) return <SplashScreen />
 

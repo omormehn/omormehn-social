@@ -49,7 +49,7 @@ const CustomTabBar = ({
         {/* Floating Button */}
         <TouchableOpacity
           style={styles.floatingButton}
-          onPress={() => router.push('/CameraScreen')}
+          onPress={() => {router.push('/(screens)/CameraScreen'); console.log('Floating button pressed') }}
         >
           <LinearGradient
             colors={['#5151C6', '#888BF4']}

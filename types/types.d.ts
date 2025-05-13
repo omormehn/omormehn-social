@@ -1,6 +1,7 @@
+import { Session } from './../node_modules/@supabase/functions-js/src/edge-runtime.d';
 import { SettingOption } from '@/components/SettingOption';
 import { HomeFilter } from '@/components/HomeFilter';
-import { User } from 'firebase/auth'
+import { User } from '@supabase/supabase-js';
 
 interface AppContextProps {
     user: { emailVerified?: boolean } | null;
@@ -30,16 +31,11 @@ interface AuthButtonProps {
 }
 
 interface AuthContextType {
-    user: User | null;
-    login: (email: string, password: string) => void;
-    register: (email: string, password: string, confirmPassword: string) => void;
-    logout: () => void;
-    googleLogin: () => void;
-    error: any | null;
+    session: Session | null;
     loading: boolean;
-    isLoading: boolean;
-    message: string;
-
+    user: User | null;
+    updateUser: (user: any) => void;
+    logout: () => void;
 }
 type AuthVerificationProps = {
     title: string;

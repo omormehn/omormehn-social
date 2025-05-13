@@ -9,7 +9,6 @@ import AuthButton from '@/components/AuthButton'
 import { router } from 'expo-router'
 
 const EditProfile = () => {
-    const { user } = useAuth();
 
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
@@ -60,7 +59,7 @@ const EditProfile = () => {
                                 <NameContainer
                                     email={name}
                                     onchangetext={() => setName(name)}
-                                    placeHolder={user?.displayName!}
+                                  
                                 />
                             </View>
                             {/* Email */}
@@ -69,7 +68,7 @@ const EditProfile = () => {
                                 <NameContainer
                                     email={email}
                                     onchangetext={() => setEmail(email)}
-                                    placeHolder={user?.email!}
+                                    // placeHolder={user?.email!}
                                 />
                             </View>
                         </View>

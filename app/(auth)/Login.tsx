@@ -11,11 +11,10 @@ import AuthFormWrapper from '@/components/AuthFormWrapper';
 import PasswordContainer, { EmailContainer } from '@/components/InputContainer';
 import AuthContainer from '@/components/AuthContainer';
 import AuthButton from '@/components/AuthButton';
+import { supabase } from '@/services/supabase';
 
 
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '@/services/firebaseConfig';
+
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -23,12 +22,13 @@ const screenWidth = Dimensions.get('window').width;
 
 
 const Login = () => {
+  const { loading, updateUser, user } = useAuth();
 
-  const { login, error, loading, googleLogin, isLoading } = useAuth();
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const eyeIcon = eyeOpen ? 'eye-off' : 'eye'
 
@@ -37,14 +37,17 @@ const Login = () => {
   const router = useRouter();
 
 
-
-
-
   // Handle form
   const handleSubmit = async () => {
     try {
-      await login(email, password);
-      router.replace('/(screens)/SelectCategory')
+      const { data, error } = await supabase.auth.signInWithPassword({email, password});
+      if(error) {
+        console.log("Error in login", error);
+        setError(error.message);
+        return;
+      }
+      updateUser(data.user);
+      router.replace('/(tabs)')
     } catch (error) {
       console.log("error in login", error)
     }
@@ -91,7 +94,7 @@ const Login = () => {
 
 
               {/* Log in Button */}
-              <AuthButton onpress={handleSubmit} title='LOG IN' loading={loading} />
+              <AuthButton onpress={handleSubmit} loading={loading} title='LOG IN'  />
 
               <Text style={{ letterSpacing: 1 }} className='text-center text-lg pt-4 '>
                 OR LOG IN BY
@@ -99,14 +102,10 @@ const Login = () => {
 
               {/* Logos/ Social Platform*/}
               <View className='flex-row justify-center items-center gap-6'>
-                <TouchableOpacity activeOpacity={0.5} onPress={googleLogin}>
-                  {isLoading ? (
-                    <ActivityIndicator size={30} color={'black'} />
-                  ) : (
+                <TouchableOpacity activeOpacity={0.5}>
                     <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
                       <Logo size={25} color='#5151C6' name='google' />
                     </View>
-                  )}
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.5}>
                   <View className='h-14 w-14 rounded-full justify-center items-center  bg-logoBg'>

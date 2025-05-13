@@ -10,7 +10,6 @@ import { StatusBar } from 'expo-status-bar';
 
 
 const ProfileScreen = () => {
-  const { user } = useAuth();
 
   const [focus, setFocus] = useState("shots");
 
@@ -26,7 +25,7 @@ const ProfileScreen = () => {
         {/* Img */}
         <Image className='w-full' source={bg.categoryImg} />
         {/* Username */}
-        <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-medium '>@{user?.displayName}</Text>
+        <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-medium '>Nathan</Text>
         {/* Setting Icon */}
         <TouchableOpacity onPress={() => router.push('/(screens)/Settings')} className='absolute right-5 top-12'>
           <Image source={icon.settingsIcon} />
@@ -45,7 +44,7 @@ const ProfileScreen = () => {
         {/* Name and location */}
         <View className='pt-6'>
           {/* Name */}
-          <Text className='text-xl  font-bold'>{user?.displayName}</Text>
+          <Text className='text-xl  font-bold'>Nathan</Text>
           <Text className='text-lg text-center text-shade'>P.W, Maroko</Text>
         </View>
 

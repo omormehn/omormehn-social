@@ -3,13 +3,10 @@ import AuthContainer from '@/components/AuthContainer';
 import AuthFormWrapper from '@/components/AuthFormWrapper';
 import PasswordContainer, { EmailContainer } from '@/components/InputContainer';
 import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView';
-import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
-import { auth } from '@/services/firebaseConfig';
+import { supabase } from '@/services/supabase';
 import { cleanErrorMessage } from '@/utils/error';
-import { createUserWithEmailAndPassword } from '@firebase/auth';
-import { Redirect, useRouter } from 'expo-router';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Logo from 'react-native-vector-icons/FontAwesome';
@@ -18,7 +15,6 @@ import Logo from 'react-native-vector-icons/FontAwesome';
 
 const Register = () => {
 
-    const { register, error, loading, message } = useAuth();
     const router = useRouter();
 
     const [eyeOpen, setEyeClose] = useState(false);
@@ -26,6 +22,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
 
 
 
@@ -39,11 +36,16 @@ const Register = () => {
 
     const handleSubmit = async () => {
         try {
-            await register(email, password, confirmPassword);
-
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            console.log("data", data);
+            if (error) {
+                console.log("Error in reg", error);
+                setError(error.message);
+                return;
+            }
 
         } catch (error) {
-            if (!error) { router.push('/(screens)') }
+            if (!error) { router.push('/(auth)/Login') }
             console.log("error in reg", error)
         }
     }
@@ -84,14 +86,13 @@ const Register = () => {
 
                         {error ? (
                             <Text style={{ color: 'red', textAlign: 'center' }}>
-                                {cleanErrorMessage(error)}
+                                {error}
                             </Text>
                         ) : ''}
 
                         <View style={{ paddingVertical: 30, gap: 15 }} className='pt-4'>
                             {/* Sign in Button */}
-                            <AuthButton onpress={handleSubmit} title='SIGN UP' loading={loading} />
-                            {message && <Text>{message}</Text>}
+                            <AuthButton onpress={handleSubmit} title='SIGN UP' />
 
                             <Text style={{ letterSpacing: 1 }} className='text-center text-lg pt-4 '>
                                 OR SIGN IN WITH

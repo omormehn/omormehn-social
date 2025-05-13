@@ -1,15 +1,14 @@
 import { View, Text, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import AuthContainer from '@/components/AuthContainer'
-import AuthVerificationContainer from '@/components/AuthVerificationContainer'
+
 import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView'
-import { EmailContainer } from '@/components/InputContainer'
+
 import { bg } from '@/constants/bg'
-import { sendEmailVerification } from 'firebase/auth'
-import { useAuth } from '@/context/AuthContext'
+
 const EmailVerification = () => {
 
-  const { user } = useAuth();
+
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
@@ -20,7 +19,6 @@ const EmailVerification = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true)
-      await sendEmailVerification(user!);
     } catch (error) {
       console.log(error);
       alert(error)

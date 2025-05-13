@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 
 const SettingScreen = () => {
 
-    const { logout, user } = useAuth();
+    const { logout } = useAuth();    
     
     return (
         <ImageBackground source={bg.darkBg} className='flex-1 flex-col gap-8' resizeMode='cover'>
@@ -18,8 +18,8 @@ const SettingScreen = () => {
                     <Image source={bg.profile} style={{ width: 84, height: 80 }} />
                     {/* Name */}
                     <View>
-                        <Text className='text-xl text-white font-semibold'>{user?.displayName}</Text>
-                        <Text className=' text-shade'>{user?.email}</Text>
+                        <Text className='text-xl text-white font-semibold'>Nathan</Text>
+                        <Text className=' text-shade'>nath@email.com</Text>
                     </View>
                     <TouchableOpacity className='absolute right-5 top-5' onPress={() => { router.push('/(screens)/EditProfile') }}>
                         <Icon name='edit' color={'white'} size={20} />
@@ -37,7 +37,7 @@ const SettingScreen = () => {
                 <SettingOption title='Terms & Privacy' />
             </View>
             {/* <Button onPress={logout} title='Logout' /> */}
-            <TouchableOpacity className='ml-6' onPress={logout}>
+            <TouchableOpacity onPress={logout} className='ml-6'>
                 <View className='bg-white flex-row w-36 rounded-full py-3 px-6 items-center gap-2'>
                     <Icon name='log-out' size={23} />
                     <Text className='text-lg'>Log out</Text>
