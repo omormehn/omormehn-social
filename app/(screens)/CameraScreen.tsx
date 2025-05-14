@@ -9,6 +9,7 @@ import { supabase } from '@/services/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { decode } from 'base64-arraybuffer';
 import { router } from 'expo-router';
+import { pickImage } from '@/utils/camaera';
 
 
 const CameraScreen = () => {
@@ -54,32 +55,34 @@ const CameraScreen = () => {
 
 
   const loadImages = async () => {
-    const { data } = await supabase.storage.from('files').list(user.id);
+    const { data } = await supabase.storage.from('files').list(user?.id);
     if (data) {
       setFiles(data);
     }
   }
 
   const pickMedia = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        quality: 1,
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setUri(result.assets[0].uri);
+      router.push({
+        pathname: "/PostScreen",
+        params: { 
+          uri: result.assets[0].uri,
+          type: result.assets[0].type, 
+        }
       });
-
-      if (!result.canceled) {
-        const img = result.assets[0];
-        const base64 = await FileSystem.readAsStringAsync(img.uri, { encoding: 'base64' });
-        const filePath = `${user.id}/${new Date().getTime()}.${img.type === 'image' ? 'png' : 'mp4'}`;
-        const contentType = img.type === 'image' ? 'image/png' : 'video/mp4';
-        await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
-        await loadImages();
-      }
-      router.push("/(tabs)");
-    } catch (error) {
-      console.error("Error picking media: ", error);
     }
-  };
+    return result;
+  }
+
+  const renderPhoto = async () => {
+
+  }
+
 
 
   return (
@@ -107,7 +110,7 @@ const CameraScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+
   },
   message: {
     textAlign: 'center',

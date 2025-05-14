@@ -4,20 +4,14 @@ import * as FileSystem from 'expo-file-system';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/services/supabase';
 import { router } from 'expo-router';
+import { User } from '@supabase/supabase-js';
 
 const { user } = useAuth();
 
 
 
 
-export const loadImages = async () => {
-    const { data } = await supabase.storage.from('files').list(user.id);
-    if (data) {
-        return data;
-    }
-}
-
-export const pickMedia = async () => {
+export const pickImage = async (user: User, loadImages: (user: User) => void) => {
     try {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -30,7 +24,7 @@ export const pickMedia = async () => {
             const filePath = `${user.id}/${new Date().getTime()}.${img.type === 'image' ? 'png' : 'mp4'}`;
             const contentType = img.type === 'image' ? 'image/png' : 'video/mp4';
             await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
-            await loadImages();
+            await loadImages(user);
         }
         router.push("/(tabs)");
     } catch (error) {

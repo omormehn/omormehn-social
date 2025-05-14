@@ -17,17 +17,19 @@ import { supabase } from '@/services/supabase';
 
 
 
+
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 
 
 const Login = () => {
-  const { loading, updateUser, user } = useAuth();
+  const { updateUser } = useAuth()!;
 
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const eyeIcon = eyeOpen ? 'eye-off' : 'eye'
@@ -39,17 +41,21 @@ const Login = () => {
 
   // Handle form
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({email, password});
-      if(error) {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
         console.log("Error in login", error);
         setError(error.message);
         return;
       }
       updateUser(data.user);
+      setIsLoading(true);
       router.replace('/(tabs)')
     } catch (error) {
       console.log("error in login", error)
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -94,7 +100,7 @@ const Login = () => {
 
 
               {/* Log in Button */}
-              <AuthButton onpress={handleSubmit} loading={loading} title='LOG IN'  />
+              <AuthButton onpress={handleSubmit} loading={isLoading} title='LOG IN' />
 
               <Text style={{ letterSpacing: 1 }} className='text-center text-lg pt-4 '>
                 OR LOG IN BY
@@ -103,9 +109,9 @@ const Login = () => {
               {/* Logos/ Social Platform*/}
               <View className='flex-row justify-center items-center gap-6'>
                 <TouchableOpacity activeOpacity={0.5}>
-                    <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
-                      <Logo size={25} color='#5151C6' name='google' />
-                    </View>
+                  <View className='h-14 w-14 rounded-full justify-center items-center bg-logoBg'>
+                    <Logo size={25} color='#5151C6' name='google' />
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.5}>
                   <View className='h-14 w-14 rounded-full justify-center items-center  bg-logoBg'>
@@ -117,7 +123,7 @@ const Login = () => {
               {/* Alternative Sign In */}
               <View className='flex-row items-center justify-center'>
                 <Text>Don't have an account? </Text>
-                <TouchableOpacity activeOpacity={0.6} onPress={() => router.push('/Register')}>
+                <TouchableOpacity activeOpacity={0.6} onPress={() => router.push('/(auth)/Register')}>
                   <Text className='text-secondary font-bold text-base'>SIGN UP</Text>
                 </TouchableOpacity>
               </View>

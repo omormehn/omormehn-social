@@ -37,13 +37,12 @@ const Register = () => {
     const handleSubmit = async () => {
         try {
             const { data, error } = await supabase.auth.signUp({ email, password });
-            console.log("data", data);
             if (error) {
                 console.log("Error in reg", error);
                 setError(error.message);
                 return;
             }
-
+            router.push('/(auth)/EmailVerification');
         } catch (error) {
             if (!error) { router.push('/(auth)/Login') }
             console.log("error in reg", error)

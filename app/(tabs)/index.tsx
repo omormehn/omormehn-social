@@ -1,7 +1,7 @@
 import 'react-native-url-polyfill/auto';
 
 import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Text } from 'react-native'
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native'
 
 import Icon from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/AntDesign';
@@ -11,6 +11,7 @@ import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
+import { supabase } from '@/services/supabase';
 
 const HomeScreen = () => {
 
@@ -18,15 +19,94 @@ const HomeScreen = () => {
 
     const { session, loading, user } = useAuth();
 
+    const [media, setMedia] = useState<any[]>([]);
+
     useEffect(() => {
-        if (!loading && !session) {
-            router.replace('/(auth)/Login');
+        if (user) {
+            loadImages();
         }
-    })
+    }, [user]);
 
 
-    // if (loading) return <SplashScreen />
+    const loadImages = async () => {
+        const { data, error } = await supabase.storage.from('files').list(user?.id)
 
+
+        if (error) {
+            console.error("Failed to list media:", error);
+            return;
+        }
+
+        const files = await Promise.all(data.map(async (file) => {
+            const { data: signedUrlData } = await supabase
+                .storage
+                .from('files')
+                .createSignedUrl(`${user?.id}/${file.name}`, 60 * 60);
+
+            if (error) {
+                console.error("Failed to download file:", error);
+                return null;
+            }
+
+
+            return {
+                name: file.name,
+                url: signedUrlData?.signedUrl,
+                type: file.name.endsWith('.mp4') ? 'video' : 'image'
+            };
+        }));
+
+        setMedia(files)
+    }
+
+    const renderItem = ({ item }: { item: any }) => (
+        <TouchableOpacity activeOpacity={0.8}
+            style={styles.cardShadow}
+            className='mt-10   bg-white w-full rounded-lg'>
+
+            {/* Part 1 */}
+            <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
+                <TouchableOpacity className='flex-row gap-2 items-center'>
+                    <Image className='size-10' source={bg.profile} />
+                    <Text>Useni Nathan</Text>
+                </TouchableOpacity>
+                <Text>1 hour ago</Text>
+            </View>
+
+            {/* Part 2 */}
+            <View className='w-full'>
+                <Image
+                    source={{ uri: item.url }}
+                    style={{ aspectRatio: 1, width: '100%' }}
+                    className="rounded-lg"
+                />
+            </View>
+
+            {/* Part 3 */}
+            <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
+
+                <TouchableOpacity>
+                    <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
+                </TouchableOpacity>
+
+                <View className='flex-row gap-4 items-center'>
+
+                    {/* Comment */}
+                    <TouchableOpacity style={styles.card}>
+                        <Text>20</Text>
+                        <Icon3 name='message1' size={15} color={'#5151C6'} />
+                    </TouchableOpacity>
+
+
+                    {/* Likes */}
+                    <TouchableOpacity style={styles.card}>
+                        <Text>250</Text>
+                        <Icon name='heart' size={15} color={'#5151C6'} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
         <View className='flex-1'>
@@ -53,100 +133,21 @@ const HomeScreen = () => {
                 </View>
             </View>
 
-            {/* Body */}
+            <FlatList
+                data={media}
+                keyExtractor={(item) => item.name}
+                renderItem={renderItem}
+                contentContainerStyle={{ padding: 16 }}
+            />
+
+            {/* Body
             <ScrollView contentContainerStyle={{
                 alignItems: 'center',
                 paddingHorizontal: 25,
                 paddingBottom: 100
             }}>
-                {/* Card 1 */}
-                <TouchableOpacity activeOpacity={0.8}
-                    style={styles.cardShadow}
-                    className='mt-10   bg-white w-full rounded-lg'>
 
-                    {/* Part 1 */}
-                    <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
-                        <TouchableOpacity className='flex-row gap-2 items-center'>
-                            <Image className='size-10' source={bg.profile} />
-                            <Text>Useni Nathan</Text>
-                        </TouchableOpacity>
-                        <Text>1 hour ago</Text>
-                    </View>
-
-                    {/* Part 2 */}
-                    <View className='w-full'>
-                        <Image source={bg.homeContent1} />
-                    </View>
-
-                    {/* Part 3 */}
-                    <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
-
-                        <TouchableOpacity>
-                            <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
-                        </TouchableOpacity>
-
-                        <View className='flex-row gap-4 items-center'>
-
-                            {/* Comment */}
-                            <TouchableOpacity style={styles.card}>
-                                <Text>20</Text>
-                                <Icon3 name='message1' size={15} color={'#5151C6'} />
-                            </TouchableOpacity>
-
-
-                            {/* Likes */}
-                            <TouchableOpacity style={styles.card}>
-                                <Text>250</Text>
-                                <Icon name='heart' size={15} color={'#5151C6'} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-
-                {/* Card 2 */}
-                <TouchableOpacity activeOpacity={0.8}
-                    style={styles.cardShadow}
-                    className='mt-10   bg-white w-full rounded-lg'>
-
-                    {/* Part 1 */}
-                    <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
-                        <TouchableOpacity className='flex-row gap-2 items-center'>
-                            <Image className='size-10' source={bg.profile} />
-                            <Text>John Doe</Text>
-                        </TouchableOpacity>
-                        <Text>10 hour ago</Text>
-                    </View>
-
-                    {/* Part 2 */}
-                    <View className='w-full'>
-                        <Image source={bg.homeContent2} />
-                    </View>
-
-                    {/* Part 3 */}
-                    <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
-
-                        <TouchableOpacity>
-                            <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
-                        </TouchableOpacity>
-
-                        <View className='flex-row gap-4 items-center'>
-
-                            {/* Comment */}
-                            <TouchableOpacity style={styles.card}>
-                                <Text>70</Text>
-                                <Icon3 name='message1' size={15} color={'#5151C6'} />
-                            </TouchableOpacity>
-
-
-                            {/* Likes */}
-                            <TouchableOpacity style={styles.card}>
-                                <Text>2500</Text>
-                                <Icon name='heart' size={15} color={'#5151C6'} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            </ScrollView>
+            </ScrollView> */}
         </View>
     )
 }
