@@ -1,7 +1,7 @@
 import { View, Text, TextInput } from 'react-native'
-import React from 'react'
 import Icon from 'react-native-vector-icons/Feather';
 import { EmailProps, PasswordProps } from '@/types/types';
+import React = require('react');
 
 export default function PasswordContainer(
     { password,
@@ -16,12 +16,12 @@ export default function PasswordContainer(
             <TextInput
                 placeholder={placeholder}
                 placeholderTextColor="gray"
-                className="text-lg w-[90%]"
+                className="text-lg text-black w-[90%]"
                 value={password}
                 onChangeText={onchangetext}
                 secureTextEntry={secureTextEntry}
             />
-            <Icon name={iconName} onPress={onpress} size={17} className='text-end absolute right-5 top-5 ' />
+            <Icon name={iconName} onPress={onpress} size={17} className='absolute right-5 top-8' />
         </View>
     )
 }
@@ -50,7 +50,6 @@ export function NameContainer({ email, onchangetext, placeHolder }: EmailProps) 
                 value={email}
                 onChangeText={onchangetext}
                 autoCapitalize='none'
-                keyboardType='email-address'
             />
         </View>
     )

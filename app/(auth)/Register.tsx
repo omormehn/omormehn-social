@@ -1,25 +1,28 @@
+import React = require('react');
 import AuthButton from '@/components/AuthButton';
 import AuthContainer from '@/components/AuthContainer';
 import AuthFormWrapper from '@/components/AuthFormWrapper';
-import PasswordContainer, { EmailContainer } from '@/components/InputContainer';
+import PasswordContainer, { EmailContainer, NameContainer } from '@/components/InputContainer';
 import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/services/supabase';
-import { cleanErrorMessage } from '@/utils/error';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Logo from 'react-native-vector-icons/FontAwesome';
 
 
 
 const Register = () => {
 
+    const { user } = useAuth();
+
     const router = useRouter();
 
     const [eyeOpen, setEyeClose] = useState(false);
     const [confirmPasswordEyeOpen, setConfirmPasswordEyeOpen] = useState(false);
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
@@ -36,13 +39,26 @@ const Register = () => {
 
     const handleSubmit = async () => {
         try {
+            console.log(username)
             const { data, error } = await supabase.auth.signUp({ email, password });
+            console.log('user', data)
+            if (!error && data) {
+                const { error } = await supabase.from('profiles').insert([
+                    {
+                        id: data.user?.id,
+                        username: username
+                    }
+                ]);
+                console.log('inside if', data)
+                console.log('inside if error is', error)
+            }
             if (error) {
                 console.log("Error in reg", error);
                 setError(error.message);
                 return;
             }
-            router.push('/(auth)/EmailVerification');
+            router.replace('/(auth)/Login')
+            // router.push('/(auth)/EmailVerification');
         } catch (error) {
             if (!error) { router.push('/(auth)/Login') }
             console.log("error in reg", error)
@@ -57,11 +73,18 @@ const Register = () => {
                 {/* Form Section */}
                 <AuthFormWrapper>
                     <View style={{ gap: 10 }} className='px-4 pt-14'>
+                        {/* Name input */}
+                        <NameContainer
+                            email={username}
+                            placeHolder='Enter Username'
+                            onchangetext={(text) => setUsername(text)}
+                        />
                         {/* Email Input */}
                         <EmailContainer
                             email={email}
                             onchangetext={(text) => setEmail(text)}
                         />
+
 
                         {/* Password Input */}
                         <PasswordContainer

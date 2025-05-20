@@ -1,5 +1,6 @@
+import React = require('react');
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator, SafeAreaView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Logo from 'react-native-vector-icons/FontAwesome';
 
@@ -13,13 +14,6 @@ import AuthContainer from '@/components/AuthContainer';
 import AuthButton from '@/components/AuthButton';
 import { supabase } from '@/services/supabase';
 
-
-
-
-
-
-const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
 
 
 const Login = () => {
@@ -83,9 +77,9 @@ const Login = () => {
               iconName={eyeIcon}
               onpress={handleEyeSwitch}
             />
-            {/* {error ? (
-            <Text style={{ color: 'red', textAlign: 'center' }}> {cleanErrorMessage(error)}</Text>
-          ) : ''} */}
+            {error ? (
+              <Text style={{ color: 'red', textAlign: 'center' }}> {error}</Text>
+            ) : ''}
 
 
             <View style={{ paddingVertical: 30, gap: 15 }} className='pt-4'>

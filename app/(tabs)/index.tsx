@@ -1,8 +1,8 @@
 import 'react-native-url-polyfill/auto';
-
-import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native'
-
+import React = require('react');
+import { useEffect, useState } from 'react'
+import { Image, StyleSheet, TouchableOpacity, View, Text, FlatList, Button } from 'react-native'
+import { Video } from 'expo-av';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import SearchBar from '@/components/SearchBar';
@@ -10,16 +10,23 @@ import HomeFilter from '@/components/HomeFilter';
 import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
-import { router } from 'expo-router';
 import { supabase } from '@/services/supabase';
+import Loader from '@/components/Loader';
+import dayjs = require('dayjs');
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
 
-    const { session, loading, user } = useAuth();
+    const { session, user } = useAuth();
+    // console.log(user)
 
     const [media, setMedia] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    dayjs.extend(relativeTime);
 
     useEffect(() => {
         if (user) {
@@ -27,86 +34,105 @@ const HomeScreen = () => {
         }
     }, [user]);
 
-
     const loadImages = async () => {
-        const { data, error } = await supabase.storage.from('files').list(user?.id)
-
-
-        if (error) {
-            console.error("Failed to list media:", error);
-            return;
-        }
-
-        const files = await Promise.all(data.map(async (file) => {
-            const { data: signedUrlData } = await supabase
-                .storage
-                .from('files')
-                .createSignedUrl(`${user?.id}/${file.name}`, 60 * 60);
-
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('media_uploads')
+                .select('*, profiles(username) ')
+                .order('created_at', { ascending: false });
+            // console.log('data', data)
             if (error) {
-                console.error("Failed to download file:", error);
-                return null;
+                console.error("Failed to list media:", error);
+                setError(error.message)
+                return;
             }
 
+            const files = await Promise.all(data.map(async (file) => {
+                const { data: signedUrlData } = await supabase
+                    .storage
+                    .from('files')
+                    .createSignedUrl(file.file_name, 60 * 60);
 
-            return {
-                name: file.name,
-                url: signedUrlData?.signedUrl,
-                type: file.name.endsWith('.mp4') ? 'video' : 'image'
-            };
-        }));
+                if (error) {
+                    console.error("Failed to download file:", error);
+                    return null;
+                }
+                return {
+                    name: file.file_name,
+                    uploader: file.profiles.username,
+                    url: signedUrlData?.signedUrl,
+                    type: file.file_name.endsWith('.mp4') ? 'video' : 'image',
+                    created_at: file.created_at
+                };
+            }));
 
-        setMedia(files)
+            setMedia(files)
+
+        } catch (error) {
+            console.error("Error loading images:", error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
-    const renderItem = ({ item }: { item: any }) => (
-        <TouchableOpacity activeOpacity={0.8}
-            style={styles.cardShadow}
-            className='mt-10   bg-white w-full rounded-lg'>
 
-            {/* Part 1 */}
-            <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
-                <TouchableOpacity className='flex-row gap-2 items-center'>
-                    <Image className='size-10' source={bg.profile} />
-                    <Text>Useni Nathan</Text>
-                </TouchableOpacity>
-                <Text>1 hour ago</Text>
-            </View>
 
-            {/* Part 2 */}
-            <View className='w-full'>
-                <Image
-                    source={{ uri: item.url }}
-                    style={{ aspectRatio: 1, width: '100%' }}
-                    className="rounded-lg"
-                />
-            </View>
+    const renderItem = ({ item }: { item: any }) => {
+        const isVideo = item.type === 'video' || item.uri?.endsWith('mp4')
+        return (
+            <TouchableOpacity activeOpacity={0.8}
+                style={styles.cardShadow}
+                className='mt-10  bg-white w-full rounded-lg'>
 
-            {/* Part 3 */}
-            <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
-
-                <TouchableOpacity>
-                    <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
-                </TouchableOpacity>
-
-                <View className='flex-row gap-4 items-center'>
-
-                    {/* Comment */}
-                    <TouchableOpacity style={styles.card}>
-                        <Text>20</Text>
-                        <Icon3 name='message1' size={15} color={'#5151C6'} />
+                {/* Part 1 */}
+                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
+                    <TouchableOpacity className='flex-row gap-2 items-center'>
+                        <Image className='size-10' source={bg.profile} />
+                        <Text>{item.uploader}</Text>
                     </TouchableOpacity>
-
-
-                    {/* Likes */}
-                    <TouchableOpacity style={styles.card}>
-                        <Text>250</Text>
-                        <Icon name='heart' size={15} color={'#5151C6'} />
-                    </TouchableOpacity>
+                    <Text>{dayjs(item.created_at).fromNow()}</Text>
                 </View>
-            </View>
-        </TouchableOpacity>
-    );
+
+                {/* Part 2 */}
+                <View className='w-full'>
+                    {isVideo ? (
+                        <Video />
+                    ) : (
+                        <Image
+                            source={{ uri: item.url }}
+                            style={{ aspectRatio: 1, width: '100%' }}
+                            className="rounded-lg"
+                        />
+                    )}
+                </View>
+
+                {/* Part 3 */}
+                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
+
+                    <TouchableOpacity>
+                        <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
+                    </TouchableOpacity>
+
+                    <View className='flex-row gap-4 items-center'>
+
+                        {/* Comment */}
+                        <TouchableOpacity style={styles.card}>
+                            <Text>20</Text>
+                            <Icon3 name='message1' size={15} color={'#5151C6'} />
+                        </TouchableOpacity>
+
+
+                        {/* Likes */}
+                        <TouchableOpacity style={styles.card}>
+                            <Text>250</Text>
+                            <Icon name='heart' size={15} color={'#5151C6'} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    }
 
     return (
         <View className='flex-1'>
@@ -133,21 +159,30 @@ const HomeScreen = () => {
                 </View>
             </View>
 
-            <FlatList
-                data={media}
-                keyExtractor={(item) => item.name}
-                renderItem={renderItem}
-                contentContainerStyle={{ padding: 16 }}
-            />
+            <View className='flex-1 justify-center items-center'>
+                {error && !isLoading && (
+                    <View className='py-4 gap-4'>
+                        <Text>{error}</Text>
+                        <Button onPress={loadImages} title='Retry' color={'#888BF4'} />
+                    </View>
+                )}
+            </View>
 
-            {/* Body
-            <ScrollView contentContainerStyle={{
-                alignItems: 'center',
-                paddingHorizontal: 25,
-                paddingBottom: 100
-            }}>
+            {media.length === 0 && !isLoading && (
+                <Text className='text-center'>No media Available</Text>
+            )}
 
-            </ScrollView> */}
+            {isLoading ? <Loader /> : (
+                <FlatList
+                    data={media}
+                    keyExtractor={(item) => item.name}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ padding: 16 }}
+                    style={{ marginBottom: 100 }}
+                    refreshing={isLoading}
+                    onRefresh={loadImages}
+                />
+            )}
         </View>
     )
 }

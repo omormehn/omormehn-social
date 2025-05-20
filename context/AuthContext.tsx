@@ -1,11 +1,11 @@
-
-import { router, useRouter, useSegments } from "expo-router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React = require("react");
+import { useRouter, useSegments } from "expo-router";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { AuthContextType } from "@/types/types";
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from "@/services/supabase";
-import { ActivityIndicator } from "react-native";
+
 
 
 const AuthContext = createContext<AuthContextType | null>(null);

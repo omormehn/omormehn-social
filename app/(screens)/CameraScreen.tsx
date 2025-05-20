@@ -1,15 +1,15 @@
+import React = require('react');
 import { CameraView, CameraType, useCameraPermissions, CameraMode } from 'expo-camera';
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Image, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import { useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, View, Pressable, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from "expo-media-library";
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { supabase } from '@/services/supabase';
+
 import { useAuth } from '@/context/AuthContext';
-import { decode } from 'base64-arraybuffer';
 import { router } from 'expo-router';
-import { pickImage } from '@/utils/camaera';
+
 
 
 const CameraScreen = () => {
@@ -25,41 +25,32 @@ const CameraScreen = () => {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
 
+  const supportedRatios = ['16:9', '4:3', '3:2', '1:1'];
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setMounted(true);
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     (async () => {
       if (!cameraPermission?.granted) {
-        // Camera permissions are not granted yet.
-        return (
-          <View style={styles.container}>
-            <Text style={styles.message}>We need your permission to show the camera</Text>
-            <Button onPress={requestCameraPermission} title="grant permission" />
-          </View>
-        );
+        await requestCameraPermission();
       }
+
       if (!mediaLibraryPermission?.granted) {
         await requestMediaLibraryPermission();
-        return (
-          <View style={styles.container}>
-            <Text>No access to camera or media library. Please enable permissions in settings.</Text>
-          </View>
-        );
       }
     })();
   }, [cameraPermission]);
 
-  useEffect(() => {
-    if (!user) return;
-
-    loadImages();
-  }, [user]);
 
 
-  const loadImages = async () => {
-    const { data } = await supabase.storage.from('files').list(user?.id);
-    if (data) {
-      setFiles(data);
-    }
-  }
 
   const pickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -70,38 +61,55 @@ const CameraScreen = () => {
       setUri(result.assets[0].uri);
       router.push({
         pathname: "/PostScreen",
-        params: { 
+        params: {
           uri: result.assets[0].uri,
-          type: result.assets[0].type, 
+          type: result.assets[0].type,
+          name: result.assets[0].fileName
         }
       });
+
     }
     return result;
   }
 
-  const renderPhoto = async () => {
-
+  const takePhoto = async () => {
+    const photo = await ref.current?.takePictureAsync();
+    setUri(photo?.uri!)
+    router.push({
+      pathname: "/PostScreen",
+      params: {
+        uri: photo?.uri,
+        type: 'image'
+      }
+    });
   }
 
 
-
   return (
-    <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        ref={ref}
-        mode={mode}
-        facing={facing}
-        mute={false}
-        responsiveOrientationWhenOrientationLocked
-      >
-        <View style={styles.shutterContainer}>
-          <Pressable onPress={pickMedia}>
-            <Icon name="images" size={32} color="white" />
-          </Pressable>
+    <SafeAreaView edges={['top', 'bottom']} className='flex-1 h-full '>
+      {mounted && (
+        <View className='flex-1'>
+          <TouchableOpacity onPress={pickMedia} className='absolute z-50 bottom-2 '>
+            <Icon name="images" size={32} color="white" className='' />
+          </TouchableOpacity>
+
+          <View style={{ position: 'absolute', width: '100%', bottom: 44, alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+            <TouchableOpacity onPress={takePhoto} style={styles.shutterBtn} >
+              <View style={styles.shutterBtnInner} className='bg-white w-28 size-20 rounded-full' />
+            </TouchableOpacity>
+          </View>
+          <CameraView
+            style={{ width: '100%', height: '100%', zIndex: 0 }}
+            ref={ref}
+            mode={mode}
+            facing={facing}
+            mute={false}
+            responsiveOrientationWhenOrientationLocked
+          />
         </View>
-      </CameraView>
-    </View>
+      )}
+
+    </SafeAreaView>
   );
 }
 
@@ -137,13 +145,13 @@ const styles = StyleSheet.create({
   },
   shutterContainer: {
     position: "absolute",
-    bottom: 44,
+    bottom: 70,
     left: 0,
     width: "100%",
-    alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: 'center',
     paddingHorizontal: 30,
+
   },
   shutterBtn: {
     backgroundColor: "transparent",

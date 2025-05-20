@@ -10,7 +10,7 @@ const _layout = () => {
 
   const { loading } = useAuth();
 
-  if (loading) return <SplashScreen />;
+  // if (loading) return <SplashScreen />;
 
 
   return (

@@ -1,7 +1,6 @@
-import { Session } from './../node_modules/@supabase/functions-js/src/edge-runtime.d';
 import { SettingOption } from '@/components/SettingOption';
 import { HomeFilter } from '@/components/HomeFilter';
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
 interface AppContextProps {
     user: { emailVerified?: boolean } | null;

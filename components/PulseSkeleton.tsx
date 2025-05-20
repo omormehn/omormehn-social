@@ -1,3 +1,4 @@
+import React = require("react");
 import { useEffect, useRef } from "react";
 import { Animated } from "react-native";
 
