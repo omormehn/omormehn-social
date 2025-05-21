@@ -98,6 +98,7 @@ const CameraScreen = () => {
               <View style={styles.shutterBtnInner} className='bg-white w-28 size-20 rounded-full' />
             </TouchableOpacity>
           </View>
+          
           <CameraView
             style={{ width: '100%', height: '100%', zIndex: 0 }}
             ref={ref}

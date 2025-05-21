@@ -1,30 +1,32 @@
 import 'react-native-url-polyfill/auto';
-import React = require('react');
-import { useEffect, useState } from 'react'
-import { Image, StyleSheet, TouchableOpacity, View, Text, FlatList, Button } from 'react-native'
-import { Video } from 'expo-av';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { StyleSheet, TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
-import Icon3 from 'react-native-vector-icons/AntDesign';
 import SearchBar from '@/components/SearchBar';
 import HomeFilter from '@/components/HomeFilter';
-import { bg } from '@/constants/bg';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
 import Loader from '@/components/Loader';
 import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
+import PostsCard from '@/components/PostsCard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
 
-    const { session, user } = useAuth();
+    const { user } = useAuth();
     // console.log(user)
 
     const [media, setMedia] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [visibleVideo, setVisibleVideo] = useState<string | null>(null);
+
 
     dayjs.extend(relativeTime);
 
@@ -49,6 +51,7 @@ const HomeScreen = () => {
             }
 
             const files = await Promise.all(data.map(async (file) => {
+                
                 const { data: signedUrlData } = await supabase
                     .storage
                     .from('files')
@@ -58,6 +61,7 @@ const HomeScreen = () => {
                     console.error("Failed to download file:", error);
                     return null;
                 }
+                
                 return {
                     name: file.file_name,
                     uploader: file.profiles.username,
@@ -76,63 +80,26 @@ const HomeScreen = () => {
         }
     }
 
+    const onViewRef = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+        if (viewableItems.length > 0) {
+            const firstVisibleItem = viewableItems[0].item;
+            if (firstVisibleItem.type === 'video') {
+                setVisibleVideo(firstVisibleItem.url);
+            } else {
+                setVisibleVideo(null);
+            }
+        } else {
+            setVisibleVideo(null);
+        }
+    }, []);
 
 
-    const renderItem = ({ item }: { item: any }) => {
-        const isVideo = item.type === 'video' || item.uri?.endsWith('mp4')
-        return (
-            <TouchableOpacity activeOpacity={0.8}
-                style={styles.cardShadow}
-                className='mt-10  bg-white w-full rounded-lg'>
-
-                {/* Part 1 */}
-                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
-                    <TouchableOpacity className='flex-row gap-2 items-center'>
-                        <Image className='size-10' source={bg.profile} />
-                        <Text>{item.uploader}</Text>
-                    </TouchableOpacity>
-                    <Text>{dayjs(item.created_at).fromNow()}</Text>
-                </View>
-
-                {/* Part 2 */}
-                <View className='w-full'>
-                    {isVideo ? (
-                        <Video />
-                    ) : (
-                        <Image
-                            source={{ uri: item.url }}
-                            style={{ aspectRatio: 1, width: '100%' }}
-                            className="rounded-lg"
-                        />
-                    )}
-                </View>
-
-                {/* Part 3 */}
-                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
-
-                    <TouchableOpacity>
-                        <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
-                    </TouchableOpacity>
-
-                    <View className='flex-row gap-4 items-center'>
-
-                        {/* Comment */}
-                        <TouchableOpacity style={styles.card}>
-                            <Text>20</Text>
-                            <Icon3 name='message1' size={15} color={'#5151C6'} />
-                        </TouchableOpacity>
+    const viewConfigRef = useRef({
+        itemVisiblePercentThreshold: 50,
+        minimumViewTime: 300
+    });
 
 
-                        {/* Likes */}
-                        <TouchableOpacity style={styles.card}>
-                            <Text>250</Text>
-                            <Icon name='heart' size={15} color={'#5151C6'} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        );
-    }
 
     return (
         <View className='flex-1'>
@@ -168,7 +135,7 @@ const HomeScreen = () => {
                 )}
             </View>
 
-            {media.length === 0 && !isLoading && (
+            {media.length === 0 && !isLoading && error === null && (
                 <Text className='text-center'>No media Available</Text>
             )}
 
@@ -176,11 +143,17 @@ const HomeScreen = () => {
                 <FlatList
                     data={media}
                     keyExtractor={(item) => item.name}
-                    renderItem={renderItem}
+                    renderItem={({item}) => <PostsCard item={item} visibleVideo={visibleVideo!}/>}
                     contentContainerStyle={{ padding: 16 }}
                     style={{ marginBottom: 100 }}
                     refreshing={isLoading}
                     onRefresh={loadImages}
+                    onViewableItemsChanged={onViewRef}
+                    viewabilityConfig={viewConfigRef.current}
+                    windowSize={5}
+                    initialNumToRender={3}
+                    maxToRenderPerBatch={3}
+                    updateCellsBatchingPeriod={100}
                 />
             )}
         </View>
@@ -199,6 +172,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5
+    },
+    placeholder: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0'
     }
 })
 

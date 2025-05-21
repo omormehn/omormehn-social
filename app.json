@@ -51,6 +51,13 @@
           "iosUrlScheme": "com.googleusercontent.apps.167506380300-6tc90gebcqqpslcgh07os3moqqckis9d"
         }
       ],
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
       "expo-font",
       "expo-secure-store"
     ],

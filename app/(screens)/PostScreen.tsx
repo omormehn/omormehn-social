@@ -1,5 +1,5 @@
 import React = require('react');
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
 
@@ -17,21 +17,25 @@ const PostScreen = () => {
 
     const { uri, type } = useLocalSearchParams();
 
+    const [loading, setLoading] = React.useState(false);
+
 
 
     const uploadToSupabase = async () => {
+        setLoading(true)
         const base64 = await FileSystem.readAsStringAsync(uri as string, { encoding: 'base64' });
         const filePath = `${user?.id}/${new Date().getTime()}.${type === 'image' ? 'png' : 'mp4'}`;
         const contentType = type === 'image' ? 'image/png' : 'video/mp4';
         const { data, error } = await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
         if (!error) {
-            const {error} = await supabase.from('media_uploads').insert([
+            await supabase.from('media_uploads').insert([
                 {
                     user_id: user?.id,
                     file_name: filePath
                 }
             ]);
-            console.log(error)
+            setLoading(false);
+
         } else {
             console.error('Upload failed:', error);
         }
@@ -41,14 +45,19 @@ const PostScreen = () => {
 
     return (
         <View className='flex-1 gap-16'>
-            {uri &&
-                <Image className=' w-full' source={ {uri} } style={{ aspectRatio: 1 }} />
-            }
-
-            <View className='flex-row justify-center gap-8 p-4 '>
-                <PostButton title='x' onclick={() => router.replace("/(tabs)")} />
-                <PostButton title='check' onclick={uploadToSupabase} />
-            </View>
+            {loading ? (
+                <ActivityIndicator className='flex-1 justify-center items-center'  size={53} color={'black'}/>
+            ) : (
+                <View>
+                    {uri &&
+                        <Image className=' w-full' source={{ uri }} style={{ aspectRatio: 1 }} />
+                    }
+                    <View className='flex-row justify-center gap-8 p-4 '>
+                        <PostButton title='x' onclick={() => router.replace("/(tabs)")} />
+                        <PostButton title='check' onclick={uploadToSupabase} loading={loading} />
+                    </View>
+                </View>
+            )}
         </View>
     )
 }

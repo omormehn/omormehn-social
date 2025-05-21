@@ -18,7 +18,7 @@ const SearchBar = () => {
             <View style={{ width: 290 }}>
                 <TextInput
                     placeholder='Search'
-                    className=''
+                    placeholderTextColor={'black'}
                 />
             </View>
         </View>
