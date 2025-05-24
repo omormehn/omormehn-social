@@ -12,6 +12,10 @@ import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PostsCard from '@/components/PostsCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCachedMedia, setCachedMedia } from '@/utils/cached';
+
+import { useIsFocused } from '@react-navigation/native';
+import { useLocalSearchParams, useSearchParams } from 'expo-router/build/hooks';
 
 
 const HomeScreen = () => {
@@ -20,38 +24,59 @@ const HomeScreen = () => {
 
     const { user } = useAuth();
     // console.log(user)
+    const { status } = useLocalSearchParams();
 
     const [media, setMedia] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
     const [visibleVideo, setVisibleVideo] = useState<string | null>(null);
+    const [isImageLoading, setImageLoading] = useState(false);
+
+    const PAGE_SIZE = 10;
+
+
+    
 
 
     dayjs.extend(relativeTime);
 
     useEffect(() => {
-        if (user) {
+        if (!user) return;
+
+        if (status === '1') {
             loadImages();
         }
-    }, [user]);
+        loadImages();
+    }, [user, status]);
 
-    const loadImages = async () => {
+    const loadImages = async (pageNum = 1, refresh = false) => {
+        if ((!refresh && isLoading) || (!refresh && pageNum > 1 && !hasMore)) return;
         setIsLoading(true);
+        setImageLoading(true);
         try {
+            if (pageNum === 1 && !refresh) {
+                const cachedData = await getCachedMedia();
+                if (cachedData) {
+                    setMedia(cachedData);
+                    setIsLoading(false);
+                    return;
+                }
+            }
             const { data, error } = await supabase
                 .from('media_uploads')
                 .select('*, profiles(username) ')
-                .order('created_at', { ascending: false });
-            // console.log('data', data)
+                .order('created_at', { ascending: false })
+                .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
+
             if (error) {
                 console.error("Failed to list media:", error);
                 setError(error.message)
                 return;
             }
-
             const files = await Promise.all(data.map(async (file) => {
-                
                 const { data: signedUrlData } = await supabase
                     .storage
                     .from('files')
@@ -61,7 +86,7 @@ const HomeScreen = () => {
                     console.error("Failed to download file:", error);
                     return null;
                 }
-                
+                // console.log(data)
                 return {
                     name: file.file_name,
                     uploader: file.profiles.username,
@@ -70,13 +95,24 @@ const HomeScreen = () => {
                     created_at: file.created_at
                 };
             }));
+            // console.log("files: ",data)
 
-            setMedia(files)
+            if (pageNum === 1) {
+                setMedia(files);
+                await setCachedMedia(files);
+            } else {
+                setMedia(prev => [...prev, ...files]);
+            }
+
+
+            setHasMore(files.length === PAGE_SIZE);
+            setPage(prev => prev + 1);
 
         } catch (error) {
             console.error("Error loading images:", error);
         } finally {
             setIsLoading(false);
+            setImageLoading(false);
         }
     }
 
@@ -98,6 +134,10 @@ const HomeScreen = () => {
         itemVisiblePercentThreshold: 50,
         minimumViewTime: 300
     });
+
+    const renderItem = useCallback(({ item }: { item: any }) => {
+        return <PostsCard item={item} visibleVideo={visibleVideo!} isLoading={isImageLoading} />
+    }, []);
 
 
 
@@ -130,7 +170,7 @@ const HomeScreen = () => {
                 {error && !isLoading && (
                     <View className='py-4 gap-4'>
                         <Text>{error}</Text>
-                        <Button onPress={loadImages} title='Retry' color={'#888BF4'} />
+                        <Button onPress={() => loadImages()} title='Retry' color={'#888BF4'} />
                     </View>
                 )}
             </View>
@@ -143,11 +183,13 @@ const HomeScreen = () => {
                 <FlatList
                     data={media}
                     keyExtractor={(item) => item.name}
-                    renderItem={({item}) => <PostsCard item={item} visibleVideo={visibleVideo!}/>}
+                    renderItem={renderItem}
                     contentContainerStyle={{ padding: 16 }}
                     style={{ marginBottom: 100 }}
                     refreshing={isLoading}
                     onRefresh={loadImages}
+                    onEndReached={() => loadImages(page)}
+                    onEndReachedThreshold={0.5}
                     onViewableItemsChanged={onViewRef}
                     viewabilityConfig={viewConfigRef.current}
                     windowSize={5}

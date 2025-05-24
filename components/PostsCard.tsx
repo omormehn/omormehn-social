@@ -1,6 +1,6 @@
 import { bg } from "@/constants/bg";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Icon3 from 'react-native-vector-icons/AntDesign';
@@ -8,8 +8,8 @@ import MediaPlaceholder from "./MediaPlaceholder";
 import VideoRender from "./VideoRender";
 
 
-const PostsCard = ({ item, visibleVideo }: { item: any, visibleVideo: string | null }) => {
-    const [isLoading, setIsLoading] = useState(false);
+
+const PostsCard = ({ item, visibleVideo, isLoading }: { item: any, visibleVideo: string | null, isLoading?: boolean }) => {
     const [hasError, setHasError] = useState(false);
 
 
@@ -39,19 +39,21 @@ const PostsCard = ({ item, visibleVideo }: { item: any, visibleVideo: string | n
                     <View className='w-full'>
                         {
                             item.type === 'video' ? (
-                                <VideoRender  uri={item.url} isActive={visibleVideo === item.url} />
-                            ) : (
-                                <Image
-                                    source={{ uri: item.url }}
-                                    style={{ aspectRatio: 1, width: '100%' }}
-                                    className="rounded-lg"
-                                    onLoadStart={() => setIsLoading(true)}
-                                    onLoadEnd={() => setIsLoading(false)}
-                                    onError={() => {
-                                        setHasError(true);
-                                        setIsLoading(false)
-                                    }}
-                                />
+                                <VideoRender uri={item.url} isActive={visibleVideo === item.url} />
+                            ) : item.type === 'image' && (
+                                <View>
+                                    <Image
+                                        source={{ uri: item.url }}
+                                        style={{ aspectRatio: 1, width: '100%' }}
+                                        className="rounded-lg"
+                                        // onLoadStart={() => setIsLoading(true)}
+                                        // onLoadEnd={() => setIsLoading(false)}
+                                        onError={() => {
+                                            setHasError(true);
+                                            isLoading = false;
+                                        }}
+                                    />
+                                </View>
                             )
                         }
                     </View>
@@ -85,7 +87,7 @@ const PostsCard = ({ item, visibleVideo }: { item: any, visibleVideo: string | n
     );
 }
 
-export default PostsCard
+export default memo(PostsCard);
 
 const styles = StyleSheet.create({
     cardShadow: {
