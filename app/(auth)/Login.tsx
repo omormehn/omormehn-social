@@ -38,13 +38,23 @@ const Login = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
       if (error) {
         console.log("Error in login", error);
         setError(error.message);
         return;
       }
-      updateUser(data.user);
-      setIsLoading(true);
+      if (data) {
+        const { data: profileData, error: err } = await supabase.from('profiles').select('username').eq('id', data.user.id).single();
+        console.log(profileData)
+        if(err) {
+          console.log('error fetching profile', err.message)
+        } else {
+          const username = profileData.username
+          updateUser({...data.user, username})
+
+        }
+      }
       router.replace('/(tabs)')
     } catch (error) {
       console.log("error in login", error)

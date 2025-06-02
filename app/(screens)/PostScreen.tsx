@@ -1,5 +1,5 @@
 import React = require('react');
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
 
@@ -10,6 +10,7 @@ import { supabase } from '@/services/supabase';
 import { decode } from 'base64-arraybuffer';
 import { Image } from 'expo-image'
 import VideoRender from '@/components/VideoRender';
+import Video, { VideoRef } from 'react-native-video';
 
 
 
@@ -21,7 +22,6 @@ const PostScreen = () => {
     const [loading, setLoading] = React.useState(false);
 
     const url = uri.toString();
-    console.log('urlr is ', type)
 
 
 
@@ -46,7 +46,7 @@ const PostScreen = () => {
                 console.error('Upload failed:', error);
             }
             console.log("File uploaded successfully: ", data);
-            router.push({
+            router.replace({
                 pathname: "/(tabs)",
                 params: {
                     status
@@ -59,6 +59,8 @@ const PostScreen = () => {
         }
     }
 
+    const videoRef = React.useRef<VideoRef>(null);
+
     return (
         <View className='flex-1 gap-16'>
             {loading ? (
@@ -66,14 +68,13 @@ const PostScreen = () => {
             ) : (
                 <View>
                     {type === 'image' ? (
-                        <Image className=' w-full' source={{ uri }} style={{ aspectRatio: 1 }} />
+                        <Image className=' w-full' source={{ uri: uri }} style={styles.video} />
 
                     ) : type === 'video' && (
-                        <VideoRender uri={url}/>
-
+                        <Video source={{ uri: url }} ref={videoRef} style={{ aspectRatio: 1 }} />
                     )}
                     <View className='flex-row justify-center gap-8 p-4 '>
-                        <PostButton title='x' onclick={() => router.replace("/(tabs)")} />
+                        <PostButton title='x' onclick={() => router.back()} />
                         <PostButton title='check' onclick={uploadToSupabase} loading={loading} />
                     </View>
                 </View>
@@ -83,3 +84,14 @@ const PostScreen = () => {
 }
 
 export default PostScreen
+
+const styles = StyleSheet.create({
+    video: {
+        aspectRatio: 1,
+        width: Dimensions.get('window').width,
+       
+        // or use aspectRatio directly:
+        // aspectRatio: 16/9,
+        // width: '100%',
+    }
+})

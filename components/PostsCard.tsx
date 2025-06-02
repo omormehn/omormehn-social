@@ -1,20 +1,83 @@
 import { bg } from "@/constants/bg";
 import dayjs from "dayjs";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import MediaPlaceholder from "./MediaPlaceholder";
 import VideoRender from "./VideoRender";
 
+import Video, { VideoRef } from 'react-native-video';
+import { supabase } from "@/services/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 
-const PostsCard = ({ item, visibleVideo, isLoading }: { item: any, visibleVideo: string | null, isLoading?: boolean }) => {
+
+const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: any, visibleVideo?: string | null, isLoading?: boolean, postId: number, comments?: number }) => {
     const [hasError, setHasError] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [isLike, setLike] = useState(false);
+    const [likeCount, setLikeCount] = useState(0)
 
+    const { user } = useAuth();
+    const videoRef = useRef<VideoRef>(null);
+
+    const muteAudio = () => {
+        if (isMuted) {
+            setIsMuted(false);
+        }
+        setIsMuted(true);
+    }
+
+    useEffect(() => {
+        const fetchLikeData = async () => {
+            if (!user) return;
+
+            const { count, error: countError } = await supabase
+                .from('likes')
+                .select('*', { count: 'exact', head: true })
+                .eq('post_id', postId)
+            if (countError) throw countError;
+            const { data: likesData, error: likesError } = await supabase.from('likes').select('*').eq('post_id', postId).eq('user_id', user.id).maybeSingle();
+            setLike(!!likesData);
+            setLikeCount(count!)
+        }
+        fetchLikeData();
+    }, [postId, user])
+
+    const handleLike = async () => {
+        if (!user) return;
+        const likeStates = { isLike, likeCount }
+        setLike(!isLike);
+        setLikeCount(prev => isLike ? prev! - 1 : prev! + 1);
+
+        try {
+            if (isLike) {
+                const { error } = await supabase.from('likes').delete().eq('user_id', user?.id).eq('post_id', postId);
+                if (error) {
+                    console.log('error delete', error)
+                }
+            } else {
+                const { error } = await supabase.from('likes').insert([
+                    {
+                        user_id: user?.id,
+                        post_id: postId
+                    }
+                ]);
+                if (error) {
+                    console.log('error insert', error)
+                }
+            }
+        } catch (error) {
+            console.log('error in handle like', error)
+            setLike(likeStates.isLike);
+            setLikeCount(likeStates.likeCount);
+        }
+    }
+    // console.log(user?.id)
 
     return (
-        <TouchableOpacity activeOpacity={0.8}
+        <View
             style={styles.cardShadow}
             className='mt-10  bg-white w-full rounded-lg'>
 
@@ -33,12 +96,14 @@ const PostsCard = ({ item, visibleVideo, isLoading }: { item: any, visibleVideo:
                     <MediaPlaceholder />
                 ) : hasError ? (
                     <View style={styles.placeholderContainer}>
-                        <Text>Couldn't load media</Text>
+                        <Text className="text-center">Couldn't load media</Text>
                     </View>
                 ) : (
-                    <View className='w-full'>
+                    <View className='w-full '>
                         {
                             item.type === 'video' ? (
+                                // <Video source={{ uri: item.url }} resizeMode="cover" onPointerDown={muteAudio} muted={isMuted ? !isMuted : isMuted} ref={videoRef} style={{ aspectRatio: 1 }} />
+
                                 <VideoRender uri={item.url} isActive={visibleVideo === item.url} />
                             ) : item.type === 'image' && (
                                 <View>
@@ -46,8 +111,6 @@ const PostsCard = ({ item, visibleVideo, isLoading }: { item: any, visibleVideo:
                                         source={{ uri: item.url }}
                                         style={{ aspectRatio: 1, width: '100%' }}
                                         className="rounded-lg"
-                                        // onLoadStart={() => setIsLoading(true)}
-                                        // onLoadEnd={() => setIsLoading(false)}
                                         onError={() => {
                                             setHasError(true);
                                             isLoading = false;
@@ -71,19 +134,24 @@ const PostsCard = ({ item, visibleVideo, isLoading }: { item: any, visibleVideo:
 
                     {/* Comment */}
                     <TouchableOpacity style={styles.card}>
-                        <Text>20</Text>
+                        <Text>{comments ? comments : 0}</Text>
                         <Icon3 name='message1' size={15} color={'#5151C6'} />
                     </TouchableOpacity>
 
 
                     {/* Likes */}
-                    <TouchableOpacity style={styles.card}>
-                        <Text>250</Text>
-                        <Icon name='heart' size={15} color={'#5151C6'} />
+                    <TouchableOpacity onPress={handleLike} style={styles.card}>
+                        <Text>{likeCount}</Text>
+
+                        {isLike ? (
+                            <Text>❤️</Text>
+                        ) : (
+                            <Icon name='heart' size={16} color={'#5151C6'} />
+                        )}
                     </TouchableOpacity>
                 </View>
             </View>
-        </TouchableOpacity>
+        </View>
     );
 }
 
@@ -102,5 +170,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 5
     },
-    placeholderContainer: {}
+    placeholderContainer: {
+        aspectRatio: 1,
+        textAlign: 'center'
+    }
 });

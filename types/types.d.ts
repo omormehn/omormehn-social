@@ -2,6 +2,18 @@ import { SettingOption } from '@/components/SettingOption';
 import { HomeFilter } from '@/components/HomeFilter';
 import { User, Session } from '@supabase/supabase-js';
 
+
+type CustomUser = User & {
+    username?: string
+}
+
+interface AuthContextType {
+    session: Session | null;
+    loading: boolean;
+    user: CustomUser | null;
+    updateUser: (user: any) => void;
+    logout: () => void;
+}
 interface AppContextProps {
     user: { emailVerified?: boolean } | null;
     hasSeenOnboarding: boolean;
@@ -29,13 +41,7 @@ interface AuthButtonProps {
     loading?: boolean;
 }
 
-interface AuthContextType {
-    session: Session | null;
-    loading: boolean;
-    user: User | null;
-    updateUser: (user: any) => void;
-    logout: () => void;
-}
+
 type AuthVerificationProps = {
     title: string;
     description: string;

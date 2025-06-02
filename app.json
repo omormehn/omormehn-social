@@ -16,7 +16,16 @@
         "foregroundImage": "./assets/splash.png",
         "backgroundImage": "./assets/home.png"
       },
-      "package": "com.omormehn.omor"
+      "package": "com.omormehn.omor",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -29,14 +38,14 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      [ 
+      [
         "expo-camera",
         {
           "cameraPermission": "Allow $(Omor social) to access your camera",
           "microphonePermission": "Allow $(Omor social) to access your microphone",
           "recordAudioAndroid": true
         }
-	    ],
+      ],
       [
         "expo-media-library",
         {
@@ -59,7 +68,19 @@
         }
       ],
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "react-native-video",
+        {
+          "enableNotificationControls": true,
+          "androidExtensions": {
+            "useExoplayerRtsp": false,
+            "useExoplayerSmoothStreaming": false,
+            "useExoplayerHls": false,
+            "useExoplayerDash": false
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -69,7 +90,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "8acde320-d332-465a-96ea-9716e0093b9c"
+        "projectId": "8f485f0c-cf6e-4b40-9837-f8c3da345c51"
       }
     },
     "runtimeVersion": "1.0.0",

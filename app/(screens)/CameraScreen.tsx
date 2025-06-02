@@ -1,11 +1,14 @@
 import React = require('react');
-import { CameraView, CameraType, useCameraPermissions, CameraMode } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, CameraMode, Camera, useMicrophonePermissions } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, View, Pressable, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from "expo-media-library";
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
@@ -17,15 +20,12 @@ const CameraScreen = () => {
   const { user } = useAuth();
 
   const [recording, setRecording] = useState(false);
-  const [uri, setUri] = useState<string | null>(null);
-  const [files, setFiles] = useState<any>(null);
   const [mode, setMode] = useState<CameraMode>("picture");
   const [facing, setFacing] = useState<CameraType>('back');
-  const [albums, setAlbums] = useState(null);
+  const [cameraReady, setCameraReady] = useState(false);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
-
-  const supportedRatios = ['16:9', '4:3', '3:2', '1:1'];
 
   const [mounted, setMounted] = useState(false);
 
@@ -46,9 +46,11 @@ const CameraScreen = () => {
       if (!mediaLibraryPermission?.granted) {
         await requestMediaLibraryPermission();
       }
+      if (!microphonePermission?.granted) {
+        await requestMicrophonePermission();
+      }
     })();
   }, [cameraPermission]);
-
 
 
 
@@ -58,7 +60,6 @@ const CameraScreen = () => {
       quality: 1,
     });
     if (!result.canceled) {
-      setUri(result.assets[0].uri);
       router.push({
         pathname: "/PostScreen",
         params: {
@@ -72,9 +73,12 @@ const CameraScreen = () => {
     return result;
   }
 
+  const toggleFacing = () => {
+    setFacing(prev => prev === 'back' ? 'front' : 'back');
+  }
+
   const takePhoto = async () => {
     const photo = await ref.current?.takePictureAsync();
-    setUri(photo?.uri!)
     router.push({
       pathname: "/PostScreen",
       params: {
@@ -84,29 +88,103 @@ const CameraScreen = () => {
     });
   }
 
+  const startRecording = async () => {
+    if (!cameraReady || !ref.current) {
+      Alert.alert('Camera not ready', 'Please wait for camera to initialize');
+      return;
+    }
+    if (recording) {
+      setRecording(false);
+      ref.current?.stopRecording();
+      return;
+    }
+    try {
+      setRecording(true)
+      const video = await ref.current?.recordAsync();
+      router.push({
+        pathname: '/(screens)/PostScreen',
+        params: {
+          uri: video?.uri,
+          type: 'video'
+        }
+      })
+    } catch (error) {
+      console.log("error recording", error)
+    } finally {
+      setRecording(false)
+    }
+  }
+  const stopRecording = () => {
+    if (recording && ref.current) {
+      ref.current.stopRecording();
+      console.log('Recording stopped');
+    }
+  };
 
+  const toggleRecording = () => {
+    if (recording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  const toggleMode = () => {
+    setMode((prev) => (prev === "picture" ? "video" : "picture"));
+  };
+
+  if (!cameraPermission?.granted || !microphonePermission?.granted) {
+    return (
+      <View>
+        <Text>Camera and microphone permissions are required</Text>
+      </View>
+    );
+  }
   return (
     <SafeAreaView edges={['top', 'bottom']} className='flex-1 h-full '>
       {mounted && (
         <View className='flex-1'>
-          <TouchableOpacity onPress={pickMedia} className='absolute z-50 bottom-2 '>
-            <Icon name="images" size={32} color="white" className='' />
-          </TouchableOpacity>
-
-          <View style={{ position: 'absolute', width: '100%', bottom: 44, alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-            <TouchableOpacity onPress={takePhoto} style={styles.shutterBtn} >
-              <View style={styles.shutterBtnInner} className='bg-white w-28 size-20 rounded-full' />
-            </TouchableOpacity>
-          </View>
-          
           <CameraView
             style={{ width: '100%', height: '100%', zIndex: 0 }}
             ref={ref}
             mode={mode}
             facing={facing}
             mute={false}
-            responsiveOrientationWhenOrientationLocked
+            onCameraReady={() => {
+              console.log('camera is ready')
+              setCameraReady(true)
+            }}
           />
+          <View className='absolute z-50 flex-col top-10 right-10 gap-8 items-center'>
+            <TouchableOpacity onPress={pickMedia} className=' '>
+              <Icon name="images" size={35} color="white" className='' />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleFacing} className=''>
+              <MaterialIcons name="cameraswitch" size={35} color="white" className='' />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ position: 'absolute', width: '100%', bottom: 44, alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+            <Pressable onPress={toggleMode}>
+              {mode === "picture" ? (
+                <AntDesign name="picture" size={32} color="white" />
+              ) : (
+                <Feather name="video" size={32} color="white" />
+              )}
+            </Pressable>
+            <TouchableOpacity
+              onPress={mode === "picture" ? takePhoto : toggleRecording}
+              style={[
+                styles.shutterBtn,
+                recording && { borderColor: 'red' }
+              ]}
+            >
+              <View style={[
+                styles.shutterBtnInner,
+                recording && { backgroundColor: 'red' }
+              ]} />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -165,6 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   shutterBtnInner: {
+    color: 'white',
     width: 70,
     height: 70,
     borderRadius: 50,

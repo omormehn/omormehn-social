@@ -2,8 +2,8 @@ import React = require("react");
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { AuthContextType } from "@/types/types";
-import { Session, User } from '@supabase/supabase-js'
+import { AuthContextType, CustomUser } from "@/types/types";
+import { Session } from '@supabase/supabase-js'
 import { supabase } from "@/services/supabase";
 
 
@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<CustomUser | null>(null);
 
+    
 
 
 
