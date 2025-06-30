@@ -3,7 +3,7 @@ import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
 
-import PostButton from '@/components/PostButton';
+import PostButton from '@/components/button/PostButton';
 import { router } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from '@/services/supabase';

@@ -1,7 +1,7 @@
-import { View, Text, Image } from 'react-native'
-import React from 'react'
-import { bg } from '@/constants/bg'
-import AuthFormWrapper from './AuthFormWrapper'
+import { View, Text, Image } from 'react-native';
+import React from 'react';
+import { bg } from '@/constants/bg';
+import AuthFormWrapper from './AuthFormWrapper';
 
 interface AuthContainerProps {
     children: React.ReactNode;

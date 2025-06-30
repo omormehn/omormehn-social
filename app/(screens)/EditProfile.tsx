@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { bg } from '@/constants/bg'
 import Icon from 'react-native-vector-icons/Feather'
 import { LinearGradient } from 'expo-linear-gradient'
-import { NameContainer } from '@/components/InputContainer'
+import { NameContainer } from '@/components/container/InputContainer'
 import { useAuth } from '@/context/AuthContext'
-import AuthButton from '@/components/AuthButton'
+import AuthButton from '@/components/button/AuthButton'
 import { router } from 'expo-router'
 
 const EditProfile = () => {

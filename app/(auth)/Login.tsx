@@ -7,11 +7,11 @@ import Logo from 'react-native-vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 
-import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView';
-import AuthFormWrapper from '@/components/AuthFormWrapper';
-import PasswordContainer, { EmailContainer } from '@/components/InputContainer';
-import AuthContainer from '@/components/AuthContainer';
-import AuthButton from '@/components/AuthButton';
+import KeyboardAvoidWrapper from '@/components/container/KeyboardAvoidView';
+import AuthFormWrapper from '@/components/container/AuthFormWrapper';
+import PasswordContainer, { EmailContainer } from '@/components/container/InputContainer';
+import AuthContainer from '@/components/container/AuthContainer';
+import AuthButton from '@/components/button/AuthButton';
 import { supabase } from '@/services/supabase';
 
 
@@ -37,23 +37,11 @@ const Login = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         console.log("Error in login", error);
         setError(error.message);
         return;
-      }
-      if (data) {
-        const { data: profileData, error: err } = await supabase.from('profiles').select('username').eq('id', data.user.id).single();
-        console.log(profileData)
-        if(err) {
-          console.log('error fetching profile', err.message)
-        } else {
-          const username = profileData.username
-          updateUser({...data.user, username})
-
-        }
       }
       router.replace('/(tabs)')
     } catch (error) {

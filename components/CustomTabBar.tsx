@@ -36,7 +36,7 @@ const CustomTabBar = ({
               key={index}
               onPress={onPress}
             >
-              <View className="bg- size-10">
+              <View className="size-10">
                 <Image
                   source={isFocused ? iconPaths[route.name]?.active : iconPaths[route.name]?.inactive}
                   style={{ width: 24, height: 24, tintColor: isFocused ? "#6C63FF" : "#BDBDBD" }}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: "absolute",
     top: -40,
-    left: 162,
+    left: 170,
   },
   plusButton: {
     width: 25,

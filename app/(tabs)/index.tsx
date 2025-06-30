@@ -3,20 +3,22 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 import SearchBar from '@/components/SearchBar';
-import HomeFilter from '@/components/HomeFilter';
+import HomeFilter from '@/components/card/HomeFilter';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
-import Loader from '@/components/Loader';
+import Loader from '@/components/loaders/Loader';
 import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
-import PostsCard from '@/components/PostsCard';
+import PostsCard from '@/components/card/PostsCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCachedMedia, setCachedMedia } from '@/utils/cached';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams, useSearchParams } from 'expo-router/build/hooks';
 import Video, { VideoRef } from 'react-native-video';
+import { BottomTabView } from '@react-navigation/bottom-tabs';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 
 const HomeScreen = () => {
@@ -36,6 +38,7 @@ const HomeScreen = () => {
     const [visibleVideo, setVisibleVideo] = useState<string | null>(null);
     const [isImageLoading, setImageLoading] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const videoRef = useRef<VideoRef>(null);
     const isFetching = useRef(false);
@@ -75,7 +78,6 @@ const HomeScreen = () => {
         }
 
     }
-
 
     const loadMedia = async (pageNum: number) => {
         try {
@@ -194,7 +196,8 @@ const HomeScreen = () => {
 
     const url1 = "https://begpiazlwddpujjmdwwh.supabase.co/storage/v1/object/sign/files/5ca53814-cb08-43e1-b097-798c64683742/1747921668919.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InN0b3JhZ2UtdXJsLXNpZ25pbmcta2V5XzRhNDk4MTAxLTQ5YjYtNDlmNC1iYmRmLTFjNzQzNWQ5YzMyMSJ9.eyJ1cmwiOiJmaWxlcy81Y2E1MzgxNC1jYjA4LTQzZTEtYjA5Ny03OThjNjQ2ODM3NDIvMTc0NzkyMTY2ODkxOS5tcDQiLCJpYXQiOjE3NDgwNjA5MzksImV4cCI6MTc0ODA2NDUzOX0.6dEQfG3NXQ15blWTPlH6RfR9w2dD2Ge15YAlS39nO1Y"
 
-
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const snap = ['50%']
 
 
 

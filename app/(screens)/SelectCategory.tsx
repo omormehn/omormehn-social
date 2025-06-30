@@ -3,7 +3,7 @@ import React from 'react'
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { bg } from '@/constants/bg';
-import AuthButton from '@/components/AuthButton';
+import AuthButton from '@/components/button/AuthButton';
 
 const SelectCategory = () => {
 

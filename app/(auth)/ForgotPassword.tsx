@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
 import React, { useState } from 'react'
-import AuthContainer from '@/components/AuthContainer'
-import AuthVerificationContainer from '@/components/AuthVerificationContainer'
-import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView'
-import { EmailContainer } from '@/components/InputContainer'
+import AuthContainer from '@/components/container/AuthContainer'
+import AuthVerificationContainer from '@/components/container/AuthVerificationContainer'
+import KeyboardAvoidWrapper from '@/components/container/KeyboardAvoidView'
+import { EmailContainer } from '@/components/container/InputContainer'
 
 import { router } from 'expo-router'
 

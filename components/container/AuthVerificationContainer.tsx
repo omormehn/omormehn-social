@@ -2,8 +2,8 @@ import { View, Text, Image } from 'react-native'
 import React, { useState } from 'react'
 import { AuthVerificationProps } from '@/types/types'
 import { LinearGradient } from 'expo-linear-gradient'
-import { EmailContainer } from './InputContainer'
-import AuthButton from './AuthButton'
+import { EmailContainer } from './InputContainer';
+import AuthButton from './../button/AuthButton'
 import { bg } from '@/constants/bg'
 
 const AuthVerificationContainer = ({ title, description, children, onpress, loading, name }: AuthVerificationProps) => {

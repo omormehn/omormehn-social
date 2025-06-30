@@ -1,8 +1,8 @@
 import { View, Text, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
-import AuthContainer from '@/components/AuthContainer'
+import AuthContainer from '@/components/container/AuthContainer'
 
-import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView'
+import KeyboardAvoidWrapper from '@/components/container/KeyboardAvoidView'
 
 import { bg } from '@/constants/bg'
 

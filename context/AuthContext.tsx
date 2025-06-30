@@ -19,8 +19,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<CustomUser | null>(null);
 
-    
 
+    // add username
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+
+            const { data, error } = await supabase.from('profiles')
+                .select('username')
+                .eq('id', user?.id)
+                .single();
+
+            if (error) {
+                console.log("Error fetching profile on app start:", error.message);
+            }
+            updateUser({ ...user, username: data?.username || '' });
+        }
+
+        fetchUserProfile();
+
+    }, [])
+    console.log('username', user?.username)
 
 
     useEffect(() => {
@@ -54,6 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!loading) {
             const inAuthGroup = segments[0] === "(tabs)" || "(screens)";
+            
 
             if (!session && inAuthGroup) {
                 router.replace("/(auth)/Login");

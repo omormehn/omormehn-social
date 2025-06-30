@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 
 import { useNavigation } from 'expo-router';
-import PulseSkeleton from './PulseSkeleton';
+import PulseSkeleton from './loaders/PulseSkeleton';
 
 
 

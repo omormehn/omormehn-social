@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
 import Icon from 'react-native-vector-icons/Feather';
-import HomeFilter from '@/components/HomeFilter';
+import HomeFilter from '@/components/card/HomeFilter';
 import { router } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
-import PostsCard from '@/components/PostsCard';
+import PostsCard from '@/components/card/PostsCard';
 import dayjs from 'dayjs';
 
 

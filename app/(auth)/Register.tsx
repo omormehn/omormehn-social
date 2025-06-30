@@ -1,9 +1,9 @@
 import React = require('react');
-import AuthButton from '@/components/AuthButton';
-import AuthContainer from '@/components/AuthContainer';
-import AuthFormWrapper from '@/components/AuthFormWrapper';
-import PasswordContainer, { EmailContainer, NameContainer } from '@/components/InputContainer';
-import KeyboardAvoidWrapper from '@/components/KeyboardAvoidView';
+import AuthButton from '@/components/button/AuthButton';
+import AuthContainer from '@/components/container/AuthContainer';
+import AuthFormWrapper from '@/components/container/AuthFormWrapper';
+import PasswordContainer, { EmailContainer, NameContainer } from '@/components/container/InputContainer';
+import KeyboardAvoidWrapper from '@/components/container/KeyboardAvoidView';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/services/supabase';
 import { useRouter } from 'expo-router';

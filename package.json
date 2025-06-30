@@ -17,6 +17,7 @@
   "dependencies": {
     "@expo/config-plugins": "^10.0.2",
     "@expo/vector-icons": "^14.0.2",
+    "@gorhom/bottom-sheet": "^5.1.6",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-google-signin/google-signin": "^13.3.1",
