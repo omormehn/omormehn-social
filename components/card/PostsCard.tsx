@@ -109,7 +109,11 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 {/* Part 1 */}
                 <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
                     <TouchableOpacity className='flex-row gap-2 items-center'>
-                        <Image className='size-10' source={bg.profile} />
+                        {item.url ? (
+                            <Image className='size-10 rounded-full' source={{uri: item.url}}  />
+                        ) : (
+                            <Image className='size-10' source={bg.profile} />
+                        )}
                         <Text>{item.uploader}</Text>
                     </TouchableOpacity>
                     <Text>{dayjs(item.created_at).fromNow()}</Text>

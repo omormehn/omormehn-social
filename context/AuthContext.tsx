@@ -17,30 +17,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<CustomUser | null>(null);
 
 
     // add username
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            const {
-                data: { user },
-            } = await supabase.auth.getUser();
 
-            const { data, error } = await supabase.from('profiles')
-                .select('username')
-                .eq('id', user?.id)
-                .single();
-
-            if (error) {
-                console.log("Error fetching profile on app start:", error.message);
-            }
-            updateUser({ ...user, username: data?.username || '' });
-        }
-
-        fetchUserProfile();
-
-    }, [])
     console.log('username', user?.username)
 
 
@@ -52,7 +34,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 return;
             }
             setSession(data.session);
-            setUser(data.session?.user!);
+            if (data.session?.user) {
+                const metadata = data.session?.user.user_metadata || {};
+                setUser({
+                    ...data.session?.user,
+                    username: metadata.username || '',
+                    avatar: metadata.avatar || ''
+                });
+            }
             setLoading(false);
         }
 
@@ -60,7 +49,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
-            setUser(session?.user!);
+            if (session?.user) {
+                const metadata = session.user.user_metadata || {};
+                updateUser({
+                    ...session.user,
+                    username: metadata.username || '',
+                    avatar: metadata.avatar || ''
+                });
+            } else {
+                setUser(null);
+            }
+
         });
 
         return () => {
@@ -72,10 +71,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(data);
     }
 
+
     useEffect(() => {
         if (!loading) {
             const inAuthGroup = segments[0] === "(tabs)" || "(screens)";
-            
+
 
             if (!session && inAuthGroup) {
                 router.replace("/(auth)/Login");
@@ -89,7 +89,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [loading, session]);
 
-
+    const login = async (email: string, password: string) => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                console.log("Error in login", error);
+                setError(error.message);
+                return;
+            }
+            router.replace('/(tabs)')
+        } catch (error) {
+            console.log("error in login", error)
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const logout = async () => {
         await supabase.auth.signOut();
@@ -98,7 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ session, loading, user, updateUser, logout }}>
+        <AuthContext.Provider value={{ session, loading, user, updateUser, login, logout }}>
             {children}
         </AuthContext.Provider>
     )

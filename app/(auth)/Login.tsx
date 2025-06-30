@@ -17,13 +17,12 @@ import { supabase } from '@/services/supabase';
 
 
 const Login = () => {
-  const { updateUser } = useAuth()!;
+  const { updateUser, login, loading } = useAuth()!;
 
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const eyeIcon = eyeOpen ? 'eye-off' : 'eye'
@@ -35,20 +34,7 @@ const Login = () => {
 
   // Handle form
   const handleSubmit = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        console.log("Error in login", error);
-        setError(error.message);
-        return;
-      }
-      router.replace('/(tabs)')
-    } catch (error) {
-      console.log("error in login", error)
-    } finally {
-      setIsLoading(false);
-    }
+    await login(email, password);
   }
 
 
@@ -92,7 +78,7 @@ const Login = () => {
 
 
               {/* Log in Button */}
-              <AuthButton onpress={handleSubmit} loading={isLoading} title='LOG IN' />
+              <AuthButton onpress={handleSubmit} loading={loading} title='LOG IN' />
 
               <Text style={{ letterSpacing: 1 }} className='text-center text-lg pt-4 '>
                 OR LOG IN BY

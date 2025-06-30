@@ -8,18 +8,22 @@ import { router } from 'expo-router';
 
 const SettingScreen = () => {
 
-    const { logout } = useAuth();    
-    
+    const { logout, user } = useAuth();
+
     return (
         <ImageBackground source={bg.darkBg} className='flex-1 flex-col gap-8' resizeMode='cover'>
             <View className='items-center'>
                 <View style={styles.card} className='flex-row px-4 items-center gap-2'>
                     {/* profile picture */}
-                    <Image source={bg.profile} style={{ width: 84, height: 80 }} />
+                    {user?.avatar ? (
+                        <Image source={{ uri: user.avatar }} className='rounded-full' resizeMode='cover' style={{ width: '25%', aspectRatio: 1 }} />
+                    ) : (
+                        <Image source={bg.profile} resizeMode='cover' style={{ width: 84, height: 80 }} />
+                    )}
                     {/* Name */}
                     <View>
-                        <Text className='text-xl text-white font-semibold'>Nathan</Text>
-                        <Text className=' text-shade'>nath@email.com</Text>
+                        <Text className='text-xl text-white font-semibold'>{user?.username}</Text>
+                        <Text className=' text-shade'>{user?.email}</Text>
                     </View>
                     <TouchableOpacity className='absolute right-5 top-5' onPress={() => { router.push('/(screens)/EditProfile') }}>
                         <Icon name='edit' color={'white'} size={20} />

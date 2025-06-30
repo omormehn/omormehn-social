@@ -1,4 +1,4 @@
-import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView, ActivityIndicator, FlatList } from 'react-native'
+import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView, ActivityIndicator, FlatList, Modal, TouchableWithoutFeedback } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
 import PostsCard from '@/components/card/PostsCard';
 import dayjs from 'dayjs';
+import { BlurView } from 'expo-blur';
 
 
 const ProfileScreen = () => {
@@ -22,12 +23,15 @@ const ProfileScreen = () => {
   const [collectionCount, setCollectionCount] = useState(Number);
   const [shotCount, setShotCount] = useState(Number);
   const [posts, setPosts] = useState<any[]>([]);
+  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+
 
   useEffect(() => {
     fetchUsersPost();
   }, [])
 
   const fetchUsersPost = async () => {
+    if (!user) return;
     setLoading(true)
     try {
       const { data, error } = await supabase.from('media_uploads').select('*').eq('user_id', user?.id);
@@ -111,7 +115,29 @@ const ProfileScreen = () => {
 
 
   return (
-    <View className='flex-1 bg-white'>
+    <View className='flex-1 bg-white' >
+
+      <Modal
+        visible={isAvatarVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsAvatarVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setIsAvatarVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.centeredContainer}>
+              <Image
+                source={{ uri: user?.avatar }}
+                style={styles.popupAvatar}
+                resizeMode="cover"
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+
+
       {/* Top Image */}
       <View>
         {/* Img */}
@@ -127,11 +153,15 @@ const ProfileScreen = () => {
       {/* Body */}
       <View className='flex-1 items-center gap-10 px-4'>
         {/* Profile Image */}
-        <View className='justify-center items-center'>
+        <TouchableOpacity onPress={() => setIsAvatarVisible(true)} className='justify-center items-center'>
           <View style={styles.profilePic}>
-            <Image style={{ width: 84, height: 80, }} source={bg.profile} resizeMode='cover' />
+            {user?.avatar === '' ? (
+              <Image style={{ width: 84, height: 80, }} source={bg.profile} resizeMode='cover' />
+            ) : (
+              <Image style={{ width: '100%', aspectRatio: 1, }} className='rounded-full' source={{ uri: user?.avatar }} />
+            )}
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Name and location */}
         <View className='pt-6'>
@@ -200,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     width: 80,
     height: 80,
-    borderWidth: 5,
+    borderWidth: 2,
     borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'
@@ -223,6 +253,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5
   },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popupAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+
 })
 
 export default ProfileScreen

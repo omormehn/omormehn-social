@@ -26,7 +26,6 @@ const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
     const { user } = useAuth();
-    const { status } = useLocalSearchParams();
 
     // States
     const [media, setMedia] = useState<any[]>([]);
@@ -38,11 +37,10 @@ const HomeScreen = () => {
     const [visibleVideo, setVisibleVideo] = useState<string | null>(null);
     const [isImageLoading, setImageLoading] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const videoRef = useRef<VideoRef>(null);
+
     const isFetching = useRef(false);
-    const flatListRef = useRef<FlatList>(null);
+
 
     dayjs.extend(relativeTime);
 
@@ -83,7 +81,7 @@ const HomeScreen = () => {
         try {
             const { data, error } = await supabase
                 .from('media_uploads')
-                .select('*, profiles(username)')
+                .select('*, profiles(username, avatar_url)')
                 .order('created_at', { ascending: false })
                 .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
 
@@ -104,6 +102,7 @@ const HomeScreen = () => {
                         id: file.id,
                         name: file.file_name,
                         uploader: file.profiles.username,
+                        avatar: file.profiles.avatar_url,
                         url: signedUrlData?.signedUrl,
                         type: file.file_name.endsWith('.mp4') ? 'video' : 'image',
                         created_at: file.created_at
@@ -193,11 +192,6 @@ const HomeScreen = () => {
     const renderItem = useCallback(({ item }: { item: any }) => {
         return <PostsCard item={item} visibleVideo={visibleVideo!} isLoading={isImageLoading} postId={item.id} />
     }, [visibleVideo]);
-
-    const url1 = "https://begpiazlwddpujjmdwwh.supabase.co/storage/v1/object/sign/files/5ca53814-cb08-43e1-b097-798c64683742/1747921668919.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InN0b3JhZ2UtdXJsLXNpZ25pbmcta2V5XzRhNDk4MTAxLTQ5YjYtNDlmNC1iYmRmLTFjNzQzNWQ5YzMyMSJ9.eyJ1cmwiOiJmaWxlcy81Y2E1MzgxNC1jYjA4LTQzZTEtYjA5Ny03OThjNjQ2ODM3NDIvMTc0NzkyMTY2ODkxOS5tcDQiLCJpYXQiOjE3NDgwNjA5MzksImV4cCI6MTc0ODA2NDUzOX0.6dEQfG3NXQ15blWTPlH6RfR9w2dD2Ge15YAlS39nO1Y"
-
-    const bottomSheetRef = useRef<BottomSheet>(null);
-    const snap = ['50%']
 
 
 

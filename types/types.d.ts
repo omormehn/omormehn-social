@@ -12,6 +12,7 @@ type Comment = {
     id: string;
     comment: string;
     user_name: string;
+    avatar: string;
     user_id: string;
     created_at: string;
 }
@@ -22,7 +23,7 @@ type CommentContextProp = {
     openDrawer: (postId: string, uploader: string) => void;
     fetchComments: (postId: string) => Promise<void>;
     comments: Comment[];
-    addComment: (userId: string, username: string , comment: string, postId: string) => Promise<any>;
+    addComment: (userId: string, username: string , comment: string, postId: string, avatar: string) => Promise<any>;
     loading: boolean;
     countComments: (postId: string) => Promise<number>;
     commentCount: Record;
@@ -32,6 +33,7 @@ type CommentContextProp = {
 
 type CustomUser = User & {
     username?: string
+    avatar?: string
 }
 
 interface AuthContextType {
@@ -39,6 +41,7 @@ interface AuthContextType {
     loading: boolean;
     user: CustomUser | null;
     updateUser: (user: any) => void;
+    login: (email: string, password: string) => void;
     logout: () => void;
 }
 interface AppContextProps {

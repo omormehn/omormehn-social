@@ -49,7 +49,7 @@ export function NameContainer({ email, onchangetext, placeHolder }: EmailProps) 
                 className="text-lg"
                 value={email}
                 onChangeText={onchangetext}
-                autoCapitalize='none'
+                autoCapitalize='none'                
             />
         </View>
     )

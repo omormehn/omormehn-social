@@ -1,4 +1,4 @@
-import { Text, View, TextInput as RNTextInput, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from 'react-native'
+import { Text, View, TextInput as RNTextInput, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform, Image } from 'react-native'
 import React, { useCallback, useRef, useState } from 'react'
 import BottomSheet, { BottomSheetFlatList, BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useCommentDrawer } from '@/context/CommentContext'
 import CommentSkeleton from './loaders/CommentSkeleton'
 import { Comment, Prop } from '@/types/types'
+import { bg } from '@/constants/bg'
 
 
 
@@ -33,13 +34,12 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
             Keyboard.dismiss();
         }
     }, []);
-    console.log('user', user?.username)
 
     const handleSubmit = async () => {
         if (!comment.trim() || !currentPost || !user) return;
 
         try {
-            await addComment(user?.id, user?.username!, comment.trim(), currentPost.id);
+            await addComment(user?.id, user?.username!, comment.trim(), currentPost.id, user?.avatar!);
             console.log(currentPost)
             setComment("")
             Keyboard.dismiss()
@@ -64,8 +64,13 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
     const renderComment = ({ item }: { item: Comment }) => {
         return (
             <View className='flex-row px-4 gap-2 py-4 items-start'>
+
                 {/* Avatar */}
-                <View className='size-10 bg-gray-200 rounded-full' />
+                {item.avatar ? (
+                    <Image source={{ uri: item.avatar }} style={{ width: '10%', aspectRatio: 1 }} className='rounded-full' />
+                ) : (
+                    <Image source={bg.profile} style={{ width: '100%', aspectRatio: 1 }} className='rounded-full' />
+                )}
 
                 <View className='flex-1'>
                     <View className='flex-row gap-2'>
@@ -76,6 +81,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
                                 <Text className='text-center text-base'>Author</Text>
                             </View>
                         )}
+
                     </View>
                     <Text>{item.comment}</Text>
                 </View>
@@ -123,6 +129,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={{ paddingBottom: 20 }}
                                 ItemSeparatorComponent={() => <View className='h-px bg-gray-50 mx-4' />}
+                                keyboardDismissMode={"on-drag"}
                             />
                         ) : (
                             renderEmptyState()
@@ -138,7 +145,12 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
                 >
                     <View className='border-t border-gray-200 bg-white'>
                         <View className='flex-row gap-2 items-center px-4 py-3'>
-                            <View className='size-12  bg-gray-100 rounded-full' />
+                            {user?.avatar ? (
+                                <Image source={{ uri: user.avatar }} style={{ width: '10%', aspectRatio: 1, }} className='rounded-full' />
+
+                            ) : (
+                                <Image source={bg.profile} style={{ width: '25%', aspectRatio: 1, height: 100 }} resizeMode='contain' />
+                            )}
                             <View className='flex-1 bg-gray-100 rounded-full px-4 py-2 mr-3'>
                                 <BottomSheetTextInput
                                     ref={textInputRef!}

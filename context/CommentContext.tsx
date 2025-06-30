@@ -20,7 +20,7 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
     const postIdRef = useRef<string | null>(null);
     const uploaderRef = useRef<string | null>(null);
 
-    const openDrawer = useCallback(async (postId: string, uploader: string) => {
+    const openDrawer = useCallback(async (postId: string,  uploader: string) => {
         setCurrentPost({ id: postId, uploader });
         await fetchComments(postId);
         setTimeout(() => {
@@ -38,7 +38,6 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
                 .eq("post_id", postId)
                 .order("created_at", { ascending: false });
 
-            console.log('post_id', postId)
             if (error) {
                 console.error('Error fetching comments:', error);
             } else {
@@ -78,7 +77,7 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
         }
     }, []);
 
-    const addComment = useCallback(async (userId: string, username: string, comment: string, postId: string) => {
+    const addComment = useCallback(async (userId: string, username: string, comment: string, postId: string, avatar: string) => {
         try {
             const { data, error } = await supabase
                 .from('comments')
@@ -86,10 +85,11 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
                     comment,
                     user_id: userId,
                     post_id: postId,
-                    user_name: username
+                    user_name: username,
+                    avatar: avatar
                 }])
                 .select();
-                console.log(comment, postId, username, userId)
+            console.log(comment, postId, username, userId)
             if (error) {
                 console.error('Error inserting comment:', error);
             }
