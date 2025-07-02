@@ -13,12 +13,11 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 
 
-const Tab = createBottomTabNavigator();
+
 
 export default function RootLayout() {
 
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const snapPoints = useMemo(() => ['25%'], []);
 
   return (
     <AuthProvider>

@@ -9,7 +9,7 @@ import * as FileSystem from 'expo-file-system';
 import { supabase } from '@/services/supabase';
 import { decode } from 'base64-arraybuffer';
 import VideoRender from '@/components/VideoRender';
-import Video, { VideoRef } from 'react-native-video';
+
 
 
 
@@ -52,7 +52,6 @@ const PostScreen = () => {
         }
     }
 
-    const videoRef = React.useRef<VideoRef>(null);
 
     return (
         <View className='flex-1 gap-16'>
@@ -64,7 +63,8 @@ const PostScreen = () => {
                         <Image className=' w-full' source={{ uri: url }} style={styles.video} />
 
                     ) : type === 'video' && (
-                        <Video source={{ uri: url }} ref={videoRef} style={{ aspectRatio: 1 }} />
+                        <VideoRender uri={url} isActive/>
+                        
                     )}
                     <View className='flex-row justify-center gap-8 p-4 '>
                         <PostButton title='x' onclick={() => router.back()} />

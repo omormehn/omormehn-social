@@ -6,7 +6,6 @@ import Icon from "react-native-vector-icons/Feather";
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import MediaPlaceholder from "../loaders/MediaPlaceholder";
 import VideoRender from "../VideoRender";
-import { VideoRef } from 'react-native-video';
 import { supabase } from "@/services/supabase";
 import { useAuth } from "@/context/AuthContext";
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -100,6 +99,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
         }
     }
 
+
     return (
         <>
             <View
@@ -110,7 +110,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
                     <TouchableOpacity className='flex-row gap-2 items-center'>
                         {item.url ? (
-                            <Image className='size-10 rounded-full' source={{uri: item.avatar}}  />
+                            <Image className='size-10 rounded-full' source={{ uri: item.avatar }} />
                         ) : (
                             <Image className='size-10' source={bg.profile} />
                         )}
@@ -120,7 +120,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 </View>
 
                 {/* Part 2 */}
-                <View className='w-full'>
+                <View className='w-full h-[50%]'>
                     {isLoading && !hasError ? (
                         <MediaPlaceholder />
                     ) : hasError ? (
@@ -131,7 +131,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                         <View className='w-full '>
                             {
                                 item.type === 'video' ? (
-                                    // <Video source={{ uri: item.url }} resizeMode="cover" onPointerDown={muteAudio} muted={isMuted ? !isMuted : isMuted} ref={videoRef} style={{ aspectRatio: 1 }} />
+                                    // <Video source={{ uri: item.url }}  resizeMode="cover"  ref={videoRef} style={{ aspectRatio: 1 }} />
 
                                     <VideoRender uri={item.url} isActive={visibleVideo === item.url} />
                                 ) : item.type === 'image' && (

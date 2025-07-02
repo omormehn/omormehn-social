@@ -5,7 +5,7 @@ import { useVideoPlayer, VideoView } from 'expo-video'
 const VideoRender = ({ uri, isActive }: { uri: string, isActive?: boolean }) => {
     const player = useVideoPlayer(uri, (player) => {
         player.loop = true;
-        
+
     })
 
     useEffect(() => {
