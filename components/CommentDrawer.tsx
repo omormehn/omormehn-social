@@ -20,7 +20,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const snapPoints = ['85%'];
 
-    const textInputRef = useRef<RNTextInput>(null);
+    const textInputRef = useRef<RNTextInput | undefined>(null);
 
     const handleStateChange = useCallback((index: number) => {
         const isOpen = index >= 0;
@@ -40,9 +40,8 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
 
         try {
             await addComment(user?.id, user?.username!, comment.trim(), currentPost.id, user?.avatar!);
-            console.log(currentPost)
             setComment("")
-            Keyboard.dismiss()
+            Keyboard.dismiss();
         } catch (error) {
             console.error('Failed to submit comment:', error);
         }
@@ -107,7 +106,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
             enablePanDownToClose
             index={-1}
             onChange={handleStateChange}
-            keyboardBehavior="fillParent"
+            keyboardBehavior="interactive"
             android_keyboardInputMode="adjustResize"
         >
             <BottomSheetView className='flex-1 h-full'>
@@ -153,7 +152,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
                             )}
                             <View className='flex-1 bg-gray-100 rounded-full px-4 py-2 mr-3'>
                                 <BottomSheetTextInput
-                                    ref={textInputRef!}
+                                    ref={textInputRef}
                                     placeholder="Enter comment..."
                                     value={comment}
                                     onChangeText={setComment}
