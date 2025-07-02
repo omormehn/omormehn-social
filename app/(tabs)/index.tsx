@@ -200,7 +200,7 @@ const HomeScreen = () => {
             <StatusBar style="dark" translucent={false} />
             <View className='bg-white pb-4'>
                 {/* Top 1 */}
-                <View className='flex-row px-4 pt-8 gap-8'>
+                <View className='flex-row px-4 pt-8 gap-2'>
                     <SearchBar />
                     <TouchableOpacity className='bg-gray-100 py-4 px-4 rounded-full'>
                         <Icon name='send' size={20} />

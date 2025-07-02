@@ -20,12 +20,12 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
     const postIdRef = useRef<string | null>(null);
     const uploaderRef = useRef<string | null>(null);
 
-    const openDrawer = useCallback(async (postId: string, uploader: string) => {
+    const openDrawer = useCallback(async (postId: string,  uploader: string) => {
         setCurrentPost({ id: postId, uploader });
         await fetchComments(postId);
-
-        bottomSheetRef.current?.expand();
-
+        setTimeout(() => {
+            bottomSheetRef.current?.expand();
+        }, 5);
     }, []);
 
     const fetchComments = useCallback(async (postId: string) => {
@@ -117,8 +117,7 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
             countComments,
             commentCount,
             addComment,
-            currentPost,
-            bottomSheetRef
+            currentPost
         }
     }, [openDrawer, fetchComments, comments, loading, countComments, commentCount, addComment, currentPost]);
 
@@ -126,6 +125,7 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
     return (
         <CommentContext.Provider value={value}>
             {children}
+            {currentPost && <CommentDrawer key={currentPost.id} uploader={uploaderRef.current!} bottomSheetRef={bottomSheetRef} />}
         </CommentContext.Provider>
     )
 }
