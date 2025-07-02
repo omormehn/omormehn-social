@@ -110,7 +110,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
                     <TouchableOpacity className='flex-row gap-2 items-center'>
                         {item.url ? (
-                            <Image className='size-10 rounded-full' source={{uri: item.url}}  />
+                            <Image className='size-10 rounded-full' source={{uri: item.avatar}}  />
                         ) : (
                             <Image className='size-10' source={bg.profile} />
                         )}

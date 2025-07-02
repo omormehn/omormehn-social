@@ -1,5 +1,5 @@
 import React = require('react');
-import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, View, Image } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
 
@@ -8,7 +8,6 @@ import { router } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from '@/services/supabase';
 import { decode } from 'base64-arraybuffer';
-import { Image } from 'expo-image'
 import VideoRender from '@/components/VideoRender';
 import Video, { VideoRef } from 'react-native-video';
 
@@ -26,7 +25,6 @@ const PostScreen = () => {
 
 
     const uploadToSupabase = async () => {
-        let status = 0;
         try {
             setLoading(true)
             const base64 = await FileSystem.readAsStringAsync(uri as string, { encoding: 'base64' });
@@ -41,16 +39,11 @@ const PostScreen = () => {
                     }
                 ]);
                 setLoading(false);
-                status = 1;
             } else {
                 console.error('Upload failed:', error);
             }
-            console.log("File uploaded successfully: ", data);
             router.replace({
                 pathname: "/(tabs)",
-                params: {
-                    status
-                }
             });
         } catch (error) {
             console.log('Error in upload', error)
@@ -68,7 +61,7 @@ const PostScreen = () => {
             ) : (
                 <View>
                     {type === 'image' ? (
-                        <Image className=' w-full' source={{ uri: uri }} style={styles.video} />
+                        <Image className=' w-full' source={{ uri: url }} style={styles.video} />
 
                     ) : type === 'video' && (
                         <Video source={{ uri: url }} ref={videoRef} style={{ aspectRatio: 1 }} />

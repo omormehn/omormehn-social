@@ -3,52 +3,51 @@ import { Text } from 'react-native'
 import { Tabs } from 'expo-router'
 import CustomTabBar from '@/components/CustomTabBar'
 import { icon } from '@/constants/icon'
-import { CommentContextProvider } from '@/context/CommentContext'
+
 
 
 
 const _layout = () => {
 
+
   return (
-    <CommentContextProvider>
-      <Tabs
-        screenOptions={{
-          tabBarShowLabel: false,
-          tabBarStyle: {
-            zIndex: 0
-          }
+    <Tabs
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          zIndex: 0
+        }
+      }}
+      tabBar={(props: any) => <CustomTabBar
+        iconPaths={{
+          index: { active: icon.homeIcon, inactive: icon.homeIcon1 },
+          DiscoverScreen: { active: icon.categoryIcon, inactive: icon.categoryIcon1 },
+          NotificationScreen: { active: icon.notificationIcon1, inactive: icon.notificationIcon1 },
+          ProfileScreen: { active: icon.profileIcon, inactive: icon.profileIcon1 }
         }}
-        tabBar={(props: any) => <CustomTabBar
-          iconPaths={{
-            index: { active: icon.homeIcon, inactive: icon.homeIcon1 },
-            DiscoverScreen: { active: icon.categoryIcon, inactive: icon.categoryIcon1 },
-            NotificationScreen: { active: icon.notificationIcon1, inactive: icon.notificationIcon1 },
-            ProfileScreen: { active: icon.profileIcon, inactive: icon.profileIcon1 }
-          }}
-          {...props} />}
-      >
-        <Tabs.Screen name='index'
-          options={{
-            title: 'Home',
-            headerShown: false,
-          }} />
-        <Tabs.Screen name='DiscoverScreen'
-          options={{
-            title: 'Discover',
-            headerShown: false,
-          }} />
-        <Tabs.Screen name='NotificationScreen'
-          options={{
-            title: 'Notification',
-            headerShown: false,
-          }} />
-        <Tabs.Screen name='ProfileScreen'
-          options={{
-            title: 'Profile',
-            headerShown: false,
-          }} />
-      </Tabs>
-    </CommentContextProvider>
+        {...props} />}
+    >
+      <Tabs.Screen name='index'
+        options={{
+          title: 'Home',
+          headerShown: false,
+        }} />
+      <Tabs.Screen name='DiscoverScreen'
+        options={{
+          title: 'Discover',
+          headerShown: false,
+        }} />
+      <Tabs.Screen name='NotificationScreen'
+        options={{
+          title: 'Notification',
+          headerShown: false,
+        }} />
+      <Tabs.Screen name='ProfileScreen'
+        options={{
+          title: 'Profile',
+          headerShown: false,
+        }} />
+    </Tabs>
   )
 }
 

@@ -1,5 +1,5 @@
-import { Text, View, TextInput as RNTextInput, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform, Image } from 'react-native'
-import React, { useCallback, useRef, useState } from 'react'
+import { Text, View, TextInput as RNTextInput, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform, Image, BackHandler } from 'react-native'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import BottomSheet, { BottomSheetFlatList, BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useAuth } from '@/context/AuthContext'
@@ -7,13 +7,15 @@ import { useCommentDrawer } from '@/context/CommentContext'
 import CommentSkeleton from './loaders/CommentSkeleton'
 import { Comment, Prop } from '@/types/types'
 import { bg } from '@/constants/bg'
+import { useFocusEffect } from '@react-navigation/native'
+// import { useFocusEffect } from 'expo-router'
 
 
 
 const CommentDrawer = ({ bottomSheetRef }: Prop) => {
 
     const { user } = useAuth();
-    const { currentPost, fetchComments, comments, addComment, loading } = useCommentDrawer();
+    const { currentPost, comments, addComment, loading } = useCommentDrawer();
 
 
     const [comment, setComment] = useState("");
@@ -22,11 +24,27 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
 
     const textInputRef = useRef<RNTextInput>(null);
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (isSheetOpen) {
+                    bottomSheetRef.current?.close();
+                    return true;
+                }
+                return false;
+            }
+
+            const listener = BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+            return () => listener.remove();
+        }, [isSheetOpen])
+    )
+
+
     const handleStateChange = useCallback((index: number) => {
         const isOpen = index >= 0;
         setIsSheetOpen(isOpen);
         if (isOpen) {
-            fetchComments(currentPost.id);
             requestAnimationFrame(() => {
                 textInputRef.current?.focus();
             });
@@ -98,6 +116,8 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
             </Text>
         </View>
     );
+
+
 
 
     return (

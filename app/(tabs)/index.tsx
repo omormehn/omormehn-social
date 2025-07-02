@@ -108,7 +108,6 @@ const HomeScreen = () => {
                         created_at: file.created_at
                     };
                 }));
-            // console.log("files: ", data)
 
 
             return files.filter(Boolean);

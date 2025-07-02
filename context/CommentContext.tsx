@@ -1,4 +1,3 @@
-import CommentDrawer from "@/components/CommentDrawer";
 import { supabase } from "@/services/supabase";
 import { CommentContextProp, CommentUpdater } from "@/types/types";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -7,8 +6,7 @@ import React, { useContext, useState, useCallback, useMemo, createContext, useRe
 
 
 const CommentContext = createContext<CommentContextProp | null>(null);
-export const CommentContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const bottomSheetRef = useRef<BottomSheetMethods>(null);
+export const CommentContextProvider = ({ children, bottomSheetRef }: { children: React.ReactNode, bottomSheetRef: React.RefObject<BottomSheetMethods | null> }) => {
 
     const [currentPost, setCurrentPost] = useState<{ id: string, uploader: string } | null>(null);
     const [comments, setComments] = useState<any[]>([]);
@@ -16,20 +14,16 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
     const [commentCount, setCommentCount] = useState<Record<string, number>>({});
 
 
-
-    const postIdRef = useRef<string | null>(null);
-    const uploaderRef = useRef<string | null>(null);
-
-    const openDrawer = useCallback(async (postId: string,  uploader: string) => {
+    const openDrawer = useCallback(async (postId: string, uploader: string) => {
         setCurrentPost({ id: postId, uploader });
+        bottomSheetRef.current?.expand();
         await fetchComments(postId);
-        setTimeout(() => {
-            bottomSheetRef.current?.expand();
-        }, 5);
+        console.log("open", postId)
     }, []);
 
-    const fetchComments = useCallback(async (postId: string) => {
+    const fetchComments = async (postId: string) => {
         if (!postId) return;
+        console.log("fetching:", postId);
         setLoading(true);
         try {
             const { data, error } = await supabase
@@ -44,7 +38,7 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
                 setComments(data || []);
                 setCommentCount(prev => ({
                     ...prev,
-                    [postId!]: data?.length || 0
+                    [postId]: data?.length || 0
                 }));
             }
         } catch (error) {
@@ -52,7 +46,8 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
         } finally {
             setLoading(false);
         }
-    }, []);
+    };
+
 
     const countComments = useCallback(async (postId?: string) => {
         if (!postId) return 0;
@@ -117,7 +112,8 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
             countComments,
             commentCount,
             addComment,
-            currentPost
+            currentPost,
+            bottomSheetRef
         }
     }, [openDrawer, fetchComments, comments, loading, countComments, commentCount, addComment, currentPost]);
 
@@ -125,7 +121,6 @@ export const CommentContextProvider = ({ children }: { children: React.ReactNode
     return (
         <CommentContext.Provider value={value}>
             {children}
-            {currentPost && <CommentDrawer key={currentPost.id} uploader={uploaderRef.current!} bottomSheetRef={bottomSheetRef} />}
         </CommentContext.Provider>
     )
 }

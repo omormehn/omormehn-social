@@ -27,7 +27,8 @@ type CommentContextProp = {
     loading: boolean;
     countComments: (postId: string) => Promise<number>;
     commentCount: Record;
-    currentPost: any
+    currentPost: any;
+    bottomSheetRef: Ref
 };
 
 

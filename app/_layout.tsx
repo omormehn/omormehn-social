@@ -7,6 +7,9 @@ import 'react-native-url-polyfill/auto';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { CommentContextProvider } from "@/context/CommentContext";
+import CommentDrawer from "@/components/CommentDrawer";
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 
 
@@ -14,31 +17,34 @@ const Tab = createBottomTabNavigator();
 
 export default function RootLayout() {
 
-  const bottomSheetRef = useRef(null);
+  const bottomSheetRef = useRef<BottomSheetMethods>(null);
   const snapPoints = useMemo(() => ['25%'], []);
 
   return (
     <AuthProvider>
-      <GestureHandlerRootView >
-        <Stack >
-          <Stack.Screen
-            name="(auth)"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="(screens)"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Onboarding"
-            options={{ headerShown: false }}
-          />
-        </Stack>
-      </GestureHandlerRootView>
+      <CommentContextProvider bottomSheetRef={bottomSheetRef}>
+        <GestureHandlerRootView >
+          <Stack >
+            <Stack.Screen
+              name="(auth)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(screens)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Onboarding"
+              options={{ headerShown: false }}
+            />
+          </Stack>
+          <CommentDrawer bottomSheetRef={bottomSheetRef}/>
+        </GestureHandlerRootView>
+      </CommentContextProvider>
     </AuthProvider >
   );
 }
