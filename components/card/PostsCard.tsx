@@ -10,6 +10,7 @@ import { supabase } from "@/services/supabase";
 import { useAuth } from "@/context/AuthContext";
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useCommentDrawer } from "@/context/CommentContext";
+import { router } from "expo-router";
 
 
 
@@ -99,6 +100,20 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
         }
     }
 
+    const routeToProfile = (uploader: { id: string;[key: string]: any }) => {
+        if (user?.id === uploader.id) {
+            router.push("/ProfileScreen")
+        } else {
+            router.push({
+                pathname: "/ProfileView",
+                params: {
+                    uploader: JSON.stringify(uploader)
+                }
+            })
+        }
+
+    }
+
 
     return (
         <>
@@ -106,13 +121,13 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 className='mt-4 w-full '>
                 {/* Part 1 */}
                 <View style={{ gap: 35 }} className='flex-row justify-between items-center px-2 py-2'>
-                    <TouchableOpacity className='flex-row gap-2 items-center'>
+                    <TouchableOpacity onPress={() => routeToProfile(item.uploader)} className='flex-row gap-2 items-center'>
                         {item.url ? (
-                            <Image className='size-10 rounded-full' source={{ uri: item.avatar }} />
+                            <Image className='size-10 rounded-full' source={{ uri: item.uploader.avatar }} />
                         ) : (
                             <Image className='size-10' source={bg.profile} />
                         )}
-                        <Text>{item.uploader}</Text>
+                        <Text>{item.uploader.username}</Text>
                     </TouchableOpacity>
                     <Text>{dayjs(item.created_at).fromNow()}</Text>
                 </View>
@@ -132,19 +147,19 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                                     <VideoRender uri={item.url} isActive={visibleVideo === item.url} />
                                 </View>
                             ) : item.type === 'image' && (
-                                    <View className="relative">
-                                        <Image
-                                            source={{ uri: item.url }}
-                                            style={{ height: 480, width: '100%' }}
-                                            className="rounded-lg w-full"
-                                            onError={() => {
-                                                setHasError(true);
-                                                isLoading = false;
-                                            }}
-                                            resizeMode="cover"
-                                        />
-                                    </View>
-                                )}
+                                <View className="relative">
+                                    <Image
+                                        source={{ uri: item.url }}
+                                        style={{ height: 480, width: '100%' }}
+                                        className="rounded-lg w-full"
+                                        onError={() => {
+                                            setHasError(true);
+                                            isLoading = false;
+                                        }}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                            )}
                         </View>
                     )}
                 </View>
@@ -158,7 +173,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
 
                     <View className='flex-row gap-4 items-center'>
                         {/* Comment */}
-                        <TouchableOpacity style={styles.card} onPress={() => openDrawer(item.id, item.uploader)}>
+                        <TouchableOpacity style={styles.card} onPress={() => openDrawer(item.id, item.uploader.username)}>
                             <Text>{count}</Text>
                             <Icon3 name='message1' size={15} color={'#5151C6'} />
                         </TouchableOpacity>
@@ -177,7 +192,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                     </View>
                 </View>
                 <View className="px-6 pb-8">
-                    <Text className="font-bold">{item.comment && item.uploader} <Text className="font-normal"> {item.comment}</Text></Text>
+                    <Text className="font-bold">{item.comment && item.uploader.username} <Text className="font-normal"> {item.comment}</Text></Text>
                 </View>
             </View>
         </>

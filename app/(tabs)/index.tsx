@@ -77,7 +77,7 @@ const HomeScreen = () => {
         try {
             const { data, error } = await supabase
                 .from('media_uploads')
-                .select('*, profiles(username, avatar_url)')
+                .select('*, profiles(*)')
                 .order('created_at', { ascending: false })
                 .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
 
@@ -98,8 +98,11 @@ const HomeScreen = () => {
                         id: file.id,
                         name: file.file_name,
                         comment: file?.comment,
-                        uploader: file.profiles.username,
-                        avatar: file.profiles.avatar_url,
+                        uploader: {
+                            id: file.profiles.id,
+                            username: file.profiles.username,
+                            avatar: file.profiles.avatar_url,
+                        },
                         url: signedUrlData?.signedUrl,
                         type: file.file_name.endsWith('.mp4') ? 'video' : 'image',
                         created_at: file.created_at
@@ -185,7 +188,7 @@ const HomeScreen = () => {
         minimumViewTime: 300
     });
 
-  
+
 
     const renderItem = useCallback(({ item }: { item: any }) => {
         return <PostsCard item={item} visibleVideo={visibleVideo!} isLoading={isImageLoading} postId={item.id} />
@@ -236,8 +239,8 @@ const HomeScreen = () => {
                     data={media}
                     keyExtractor={(item) => `${item.name}-${item.created_at}`}
                     renderItem={renderItem}
-                    contentContainerStyle={{ }}
-                    style={{ marginBottom: 100,}}
+                    contentContainerStyle={{}}
+                    style={{ marginBottom: 100, }}
                     refreshing={isRefreshing}
                     onRefresh={handleRefresh}
                     onEndReached={loadMore}
