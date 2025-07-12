@@ -43,23 +43,19 @@ const ProfileScreen = () => {
         setError(true);
         return;
       }
-      // console.log('User posts:', data);
-      // if (data) {
-      //   setShotCount(data.filter(item => item.type === 'image').length);
-      //   setCollectionCount(data.filter(item => item.type === 'video').length);
-      // }
-
+      
 
       const posts = await Promise.all(
         data.map(async (post) => {
           const { data: signedUrl } = await supabase.storage.from('files').createSignedUrl(post.file_name, 60 * 60);
           return {
+            id: post.id,
             url: signedUrl?.signedUrl,
             created_at: post.created_at
           }
         })
       );
-      // console.log('postd', posts)
+
       setPosts(posts);
     } catch (error) {
       console.log('error in fetch', error)

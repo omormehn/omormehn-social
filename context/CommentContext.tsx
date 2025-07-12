@@ -56,7 +56,6 @@ export const CommentContextProvider = ({ children, bottomSheetRef }: { children:
                 .from("comments")
                 .select("*", { count: "exact", head: true })
                 .eq("post_id", postId);
-            console.log('count', count)
             if (error) {
                 console.error('Error counting comments:', error);
                 return 0;

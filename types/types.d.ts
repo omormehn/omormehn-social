@@ -31,6 +31,13 @@ type CommentContextProp = {
     bottomSheetRef: Ref
 };
 
+type LikeContextProps = {
+    fetchLikes: (postId: string) => Promise<any>;
+    addLike: (postId: string) => void;
+    deleteLike: (postId: string) => void;
+    count: number
+}
+
 
 type CustomUser = User & {
     username?: string

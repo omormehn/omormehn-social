@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/services/supabase';
 import Profile from '@/components/Profile';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 
 const ProfileView = () => {
-
+    const navigation = useNavigation();
     const { uploader: data } = useLocalSearchParams();
     const uploader = JSON.parse(data as string)
 
@@ -17,6 +17,13 @@ const ProfileView = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
+    useLayoutEffect(() => {
+        if (uploader.username) {
+            navigation.setOptions({
+                title: uploader.username
+            })
+        }
+    }, [navigation, uploader.username])
 
     useEffect(() => {
         fetchUsersPost();
@@ -58,7 +65,7 @@ const ProfileView = () => {
     }
     return (
         <View className='flex-1'>
-            <Profile posts={posts} user={uploader}/>
+            <Profile posts={posts} user={uploader} />
         </View>
     )
 }

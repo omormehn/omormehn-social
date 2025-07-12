@@ -9,16 +9,16 @@ import { Settings } from 'react-native';
 export default function AppLayout() {
 
 
- 
+
 
   // if (!hasSelectedCategory) return <Redirect href="/(screens)/SelectCategory" />;
 
   return (
     <Stack>
-      <Stack.Screen name='Settings'  options={{ headerShown: false,  }} />
-      <Stack.Screen name='EditProfile'  options={{ headerShown: false,  }} />
-      <Stack.Screen name='CameraScreen'  options={{ headerShown: false,  }} />
-      <Stack.Screen name='PostScreen'  options={{ title: 'New Post'}} />
+      <Stack.Screen name='Settings' options={{ headerShown: false, }} />
+      <Stack.Screen name='EditProfile' options={{ headerShown: false, }} />
+      <Stack.Screen name='CameraScreen' options={{ headerShown: false, }} />
+      <Stack.Screen name='PostScreen'/>
     </Stack>
 
   )

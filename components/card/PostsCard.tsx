@@ -8,20 +8,24 @@ import MediaPlaceholder from "../loaders/MediaPlaceholder";
 import VideoRender from "../VideoRender";
 import { supabase } from "@/services/supabase";
 import { useAuth } from "@/context/AuthContext";
-import BottomSheet from '@gorhom/bottom-sheet';
 import { useCommentDrawer } from "@/context/CommentContext";
 import { router } from "expo-router";
+import { useLikes } from "@/context/LikeContext";
 
 
 
-const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: any, visibleVideo?: string | null, isLoading?: boolean, postId: number, comments?: number }) => {
+const PostsCard = ({ item, visibleVideo, isLoading, postId }: { item: any, visibleVideo?: string | null, isLoading?: boolean, postId: number, comments?: number }) => {
     const [hasError, setHasError] = useState(false);
-    const [isMuted, setIsMuted] = useState(false);
     const [isLike, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0)
     const [count, setCount] = useState(0);
+    const [isRouting, setIsRouting] = useState(false);
 
     const { user } = useAuth();
+
+    const { fetchLikes, addLike, deleteLike } = useLikes();
+
+
 
     const { openDrawer, countComments, commentCount } = useCommentDrawer();
 
@@ -44,28 +48,13 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
     useEffect(() => {
         refreshCount();
     }, [item.id]);
-
-
-
-    const muteAudio = () => {
-        if (isMuted) {
-            setIsMuted(false);
-        }
-        setIsMuted(true);
-    }
-
     useEffect(() => {
         const fetchLikeData = async () => {
             if (!user) return;
 
-            const { count, error: countError } = await supabase
-                .from('likes')
-                .select('*', { count: 'exact', head: true })
-                .eq('post_id', postId)
-            if (countError) throw countError;
-            const { data: likesData } = await supabase.from('likes').select('*').eq('post_id', postId).eq('user_id', user.id).maybeSingle();
-            setLike(!!likesData);
-            setLikeCount(count!)
+            const data = await fetchLikes(postId);
+            setLike(!!data.likesData);
+            setLikeCount(data.count!)
         }
         fetchLikeData();
     }, [postId, user])
@@ -78,20 +67,10 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
 
         try {
             if (isLike) {
-                const { error } = await supabase.from('likes').delete().eq('user_id', user?.id).eq('post_id', postId);
-                if (error) {
-                    console.log('error delete', error)
-                }
+                await deleteLike(postId);
             } else {
-                const { error } = await supabase.from('likes').insert([
-                    {
-                        user_id: user?.id,
-                        post_id: postId
-                    }
-                ]);
-                if (error) {
-                    console.log('error insert', error)
-                }
+                await addLike(postId);
+
             }
         } catch (error) {
             console.log('error in handle like', error)
@@ -101,6 +80,8 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
     }
 
     const routeToProfile = (uploader: { id: string;[key: string]: any }) => {
+        if (isRouting) return;
+        setIsRouting(true)
         if (user?.id === uploader.id) {
             router.push("/ProfileScreen")
         } else {
@@ -121,7 +102,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 className='mt-4 w-full '>
                 {/* Part 1 */}
                 <View style={{ gap: 35 }} className='flex-row justify-between items-center px-2 py-2'>
-                    <TouchableOpacity onPress={() => routeToProfile(item.uploader)} className='flex-row gap-2 items-center'>
+                    <TouchableOpacity onPress={() => routeToProfile(item.uploader)} disabled={isRouting} className='flex-row gap-2 items-center'>
                         {item.url ? (
                             <Image className='size-10 rounded-full' source={{ uri: item.uploader.avatar }} />
                         ) : (

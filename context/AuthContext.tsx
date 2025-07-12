@@ -21,11 +21,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<CustomUser | null>(null);
 
 
-    // add username
-
-    console.log('username', user?.username)
-
-
     useEffect(() => {
         const getSession = async () => {
             const { data, error } = await supabase.auth.getSession();

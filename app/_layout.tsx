@@ -10,6 +10,7 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { CommentContextProvider } from "@/context/CommentContext";
 import CommentDrawer from "@/components/CommentDrawer";
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import LikeContextProvider from '@/context/LikeContext';
 
 
 
@@ -22,27 +23,29 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <CommentContextProvider bottomSheetRef={bottomSheetRef}>
-        <GestureHandlerRootView >
-          <Stack >
-            <Stack.Screen
-              name="(auth)"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="(tabs)"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="(screens)"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Onboarding"
-              options={{ headerShown: false }}
-            />
-          </Stack>
-          <CommentDrawer bottomSheetRef={bottomSheetRef}/>
-        </GestureHandlerRootView>
+        <LikeContextProvider>
+          <GestureHandlerRootView >
+            <Stack >
+              <Stack.Screen
+                name="(auth)"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="(screens)"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Onboarding"
+                options={{ headerShown: false }}
+              />
+            </Stack>
+            <CommentDrawer bottomSheetRef={bottomSheetRef} />
+          </GestureHandlerRootView>
+        </LikeContextProvider>
       </CommentContextProvider>
     </AuthProvider >
   );

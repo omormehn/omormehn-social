@@ -9,17 +9,28 @@ import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
 import dayjs from 'dayjs';
+import { useLikes } from '@/context/LikeContext';
 
 
 
 const Profile = ({ posts, user }: { posts: any[], user: any }) => {
     const { user: data } = useAuth();
-
+    const { fetchLikes } = useLikes();
 
     const [focus, setFocus] = useState("Shots");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+    const [count, setCount] = useState(0)
+
+    useEffect(() => {
+        const id = posts.map((p) => p.id)
+        async () => {
+            const data = await fetchLikes(id)
+        }
+
+    })
+
 
     const renderItem = ({ item }: { item: any }) => {
         return (
@@ -49,7 +60,7 @@ const Profile = ({ posts, user }: { posts: any[], user: any }) => {
                     <View className='flex-row gap-4 items-center'>
                         {/* Likes */}
                         <TouchableOpacity style={styles.card}>
-                            <Text>250</Text>
+                            <Text>{count}</Text>
                             <Icon name='heart' size={15} color={'#5151C6'} />
                         </TouchableOpacity>
                     </View>
@@ -68,6 +79,88 @@ const Profile = ({ posts, user }: { posts: any[], user: any }) => {
             // setPosts(posts.filter(post => post.type === 'image'));
         }
     }
+
+    const renderProfileHeader = () => (
+        <View className='flex-1 gap-4'>
+
+            {/* Top Image */}
+            <View className='w-full'>
+                {/* Img */}
+                <Image className='w-full' source={bg.categoryImg} />
+                {/* Username */}
+                <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-bold text-xl '>@{user?.username}</Text>
+                {/* Setting Icon */}
+                {data?.id === user.id && (
+                    <TouchableOpacity onPress={() => router.push('/(screens)/Settings')} className='absolute right-5 top-12'>
+                        <Image source={icon.settingsIcon} />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {/* Profile Image */}
+            <TouchableOpacity onPress={() => setIsAvatarVisible(true)} className='justify-center items-center'>
+                <View style={styles.profilePic}>
+                    {user?.avatar === '' ? (
+                        <Image style={{ width: 84, height: 80, }} source={bg.profile} resizeMode='cover' />
+                    ) : (
+                        <Image style={{ width: '100%', aspectRatio: 1, }} className='rounded-full' source={{ uri: user?.avatar }} />
+                    )}
+                </View>
+            </TouchableOpacity>
+
+            <View className='items-center px-4 gap-4'>
+                {/* Name and location */}
+                <View className='pt-6'>
+                    {/* Name */}
+                    <Text className='text-xl text-center font-bold'>{user?.username}</Text>
+                    <Text className='text-lg text-center text-shade'>P.W, Maroko</Text>
+                </View>
+
+                {/* Followers */}
+                <View className='bg-grayBg py-4 px-2 w-full flex-row justify-center gap-8 rounded-md'>
+                    <Text className='font-bold'>
+                        200 {" "}<Text className='text-placeHolder'>Followers</Text>
+                    </Text>
+                    <Text className='font-bold'>
+                        150  {" "}<Text className='text-placeHolder'>Following</Text>
+                    </Text>
+                </View>
+                <View className='flex-row gap-4 py-2'>
+                    <TouchableOpacity className='px-6 py-2 bg-gray-200 rounded-xl'>
+                        <Text className='text-base font-semibold'>Follow</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity className='px-4 py-2 bg-gray-200 rounded-xl'>
+                        <Text>Message</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Socials */}
+                {data?.id === user.id && (
+                    <View className='flex-row gap-8 py-2 items-center'>
+                        <Icon size={20} color={'#8F90A7'} name='facebook' />
+                        <View style={styles.seperator} />
+                        <Icon size={20} color={'#8F90A7'} name='instagram' />
+                        <View style={styles.seperator} />
+                        <Icon size={20} color={'#8F90A7'} name='globe' />
+                    </View>
+                )}
+
+                {/* Filter */}
+                <View className='flex-row'>
+                    {["Shots", "Collections"].map((title) => (
+                        <HomeFilter
+                            key={title}
+                            title={title}
+                            focus={focus === title}
+                            onpress={() => handleFilterChange(title)}
+                            w={180}
+                        />
+                    ))}
+                </View>
+
+            </View>
+        </View>
+    )
 
 
     return (
@@ -94,85 +187,13 @@ const Profile = ({ posts, user }: { posts: any[], user: any }) => {
 
 
 
-            {/* Top Image */}
-            <View>
-                {/* Img */}
-                <Image className='w-full' source={bg.categoryImg} />
-                {/* Username */}
-                <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-bold text-xl '>@{user?.username}</Text>
-                {/* Setting Icon */}
-                {data?.id === user.id && (
-                    <TouchableOpacity onPress={() => router.push('/(screens)/Settings')} className='absolute right-5 top-12'>
-                        <Image source={icon.settingsIcon} />
-                    </TouchableOpacity>
-                )}
-            </View>
+
 
             {/* Body */}
-            <View className='flex-1 items-center gap-4 px-4'>
-                {/* Profile Image */}
-                <TouchableOpacity onPress={() => setIsAvatarVisible(true)} className='justify-center items-center pt-4'>
-                    <View style={styles.profilePic}>
-                        {user?.avatar === '' ? (
-                            <Image style={{ width: 84, height: 80, }} source={bg.profile} resizeMode='cover' />
-                        ) : (
-                            <Image style={{ width: '100%', aspectRatio: 1, }} className='rounded-full' source={{ uri: user?.avatar }} />
-                        )}
-                    </View>
-                </TouchableOpacity>
-
-                {/* Name and location */}
-                <View className='pt-6'>
-                    {/* Name */}
-                    <Text className='text-xl text-center font-bold'>{user?.username}</Text>
-                    <Text className='text-lg text-center text-shade'>P.W, Maroko</Text>
-                </View>
-
-                {/* Followers */}
-                <View className='bg-grayBg py-4 w-full flex-row justify-center gap-8 rounded-md'>
-                    <Text className='font-bold'>
-                        200 {" "}<Text className='text-placeHolder'>Followers</Text>
-                    </Text>
-                    <Text className='font-bold'>
-                        150  {" "}<Text className='text-placeHolder'>Following</Text>
-                    </Text>
-                </View>
-                <View className='flex-row gap-4 py-4'>
-                    <TouchableOpacity className='px-6 py-2 bg-gray-200 rounded-xl'>
-                        <Text className='text-base font-semibold'>Follow</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className='px-4 py-2 bg-gray-200 rounded-xl'>
-                        <Text>Message</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Socials */}
-                {data?.id === user.id && (
-                    <View className='flex-row gap-8  items-center'>
-                        <Icon size={20} color={'#8F90A7'} name='facebook' />
-                        <View style={styles.seperator} />
-                        <Icon size={20} color={'#8F90A7'} name='instagram' />
-                        <View style={styles.seperator} />
-                        <Icon size={20} color={'#8F90A7'} name='globe' />
-                    </View>
-                )}
-
-
-
+            <View className='flex-1 items-center gap-4'>
                 {/* Extra */}
                 <View>
-                    {/* Filter */}
-                    <View className='flex-row'>
-                        {["Shots", "Collections"].map((title) => (
-                            <HomeFilter
-                                key={title}
-                                title={title}
-                                focus={focus === title}
-                                onpress={() => handleFilterChange(title)}
-                                w={180}
-                            />
-                        ))}
-                    </View>
+
                     {/* Body */}
                     {loading ? (
                         <ActivityIndicator className='h-[60%] justify-center items-center' size={50} />
@@ -185,6 +206,7 @@ const Profile = ({ posts, user }: { posts: any[], user: any }) => {
                         <FlatList
                             data={posts}
                             renderItem={renderItem}
+                            ListHeaderComponent={renderProfileHeader}
                         />
                     )}
                 </View>
