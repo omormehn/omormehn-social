@@ -164,14 +164,18 @@ const CameraScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View style={{ position: 'absolute', width: '100%', bottom: 44, alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-            <Pressable onPress={toggleMode}>
+          <View style={{ position: 'absolute', bottom: 70, left: 90}} >
+            <Pressable style={{ left: 0 }} onPress={toggleMode}>
               {mode === "picture" ? (
                 <AntDesign name="picture" size={32} color="white" />
               ) : (
                 <Feather name="video" size={32} color="white" />
               )}
             </Pressable>
+          </View>
+
+          <View style={{ position: 'absolute', width: '100%', bottom: 44, alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+
             <TouchableOpacity
               onPress={mode === "picture" ? takePhoto : toggleRecording}
               style={[

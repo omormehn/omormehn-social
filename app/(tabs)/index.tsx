@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
+import { TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 import SearchBar from '@/components/SearchBar';
 import HomeFilter from '@/components/card/HomeFilter';
@@ -11,14 +11,10 @@ import Loader from '@/components/loaders/Loader';
 import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PostsCard from '@/components/card/PostsCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCachedMedia, setCachedMedia } from '@/utils/cached';
 
-import { useIsFocused } from '@react-navigation/native';
-import { useLocalSearchParams, useSearchParams } from 'expo-router/build/hooks';
-import Video, { VideoRef } from 'react-native-video';
-import { BottomTabView } from '@react-navigation/bottom-tabs';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+
+
 
 
 const HomeScreen = () => {
@@ -101,6 +97,7 @@ const HomeScreen = () => {
                     return {
                         id: file.id,
                         name: file.file_name,
+                        comment: file?.comment,
                         uploader: file.profiles.username,
                         avatar: file.profiles.avatar_url,
                         url: signedUrlData?.signedUrl,
@@ -188,6 +185,8 @@ const HomeScreen = () => {
         minimumViewTime: 300
     });
 
+  
+
     const renderItem = useCallback(({ item }: { item: any }) => {
         return <PostsCard item={item} visibleVideo={visibleVideo!} isLoading={isImageLoading} postId={item.id} />
     }, [visibleVideo]);
@@ -237,8 +236,8 @@ const HomeScreen = () => {
                     data={media}
                     keyExtractor={(item) => `${item.name}-${item.created_at}`}
                     renderItem={renderItem}
-                    contentContainerStyle={{ padding: 16 }}
-                    style={{ marginBottom: 100 }}
+                    contentContainerStyle={{ }}
+                    style={{ marginBottom: 100,}}
                     refreshing={isRefreshing}
                     onRefresh={handleRefresh}
                     onEndReached={loadMore}
@@ -259,21 +258,9 @@ const HomeScreen = () => {
                         minIndexForVisible: 0,
                     }}
                 />
-                //   <Video fullscreen source={{uri: url1}} style={{aspectRatio: 1, width: '100%', backgroundColor: 'black'}}/>
             )}
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-
-
-    placeholder: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f0f0f0'
-    }
-})
 
 export default HomeScreen

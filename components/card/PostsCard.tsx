@@ -103,11 +103,9 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
     return (
         <>
             <View
-                style={styles.cardShadow}
-                className='mt-10  bg-white w-full rounded-lg'>
-
+                className='mt-4 w-full '>
                 {/* Part 1 */}
-                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-2'>
+                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-2 py-2'>
                     <TouchableOpacity className='flex-row gap-2 items-center'>
                         {item.url ? (
                             <Image className='size-10 rounded-full' source={{ uri: item.avatar }} />
@@ -120,7 +118,7 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                 </View>
 
                 {/* Part 2 */}
-                <View className='w-full h-[50%]'>
+                <View className='w-full'>
                     {isLoading && !hasError ? (
                         <MediaPlaceholder />
                     ) : hasError ? (
@@ -128,32 +126,31 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                             <Text className="text-center">Couldn't load media</Text>
                         </View>
                     ) : (
-                        <View className='w-full '>
-                            {
-                                item.type === 'video' ? (
-                                    // <Video source={{ uri: item.url }}  resizeMode="cover"  ref={videoRef} style={{ aspectRatio: 1 }} />
-
+                        <View className='w-full'>
+                            {item.type === 'video' ? (
+                                <View className="relative">
                                     <VideoRender uri={item.url} isActive={visibleVideo === item.url} />
-                                ) : item.type === 'image' && (
-                                    <View>
+                                </View>
+                            ) : item.type === 'image' && (
+                                    <View className="relative">
                                         <Image
                                             source={{ uri: item.url }}
-                                            style={{ aspectRatio: 1, width: '100%' }}
-                                            className="rounded-lg"
+                                            style={{ height: 480, width: '100%' }}
+                                            className="rounded-lg w-full"
                                             onError={() => {
                                                 setHasError(true);
                                                 isLoading = false;
                                             }}
+                                            resizeMode="cover"
                                         />
                                     </View>
-                                )
-                            }
+                                )}
                         </View>
                     )}
                 </View>
 
                 {/* Part 3 */}
-                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-4'>
+                <View style={{ gap: 35 }} className='flex-row justify-between items-center px-4 py-3'>
 
                     <TouchableOpacity>
                         <Icon3 name='pluscircleo' size={17} color={'#5151C6'} />
@@ -178,6 +175,9 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId, comments }: { item: 
                             )}
                         </TouchableOpacity>
                     </View>
+                </View>
+                <View className="px-6 pb-8">
+                    <Text className="font-bold">{item.comment && item.uploader} <Text className="font-normal"> {item.comment}</Text></Text>
                 </View>
             </View>
         </>

@@ -1,5 +1,5 @@
 import React = require('react');
-import { ActivityIndicator, Dimensions, StyleSheet, View, Image } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, View, Image, TextInput, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
 
@@ -19,6 +19,7 @@ const PostScreen = () => {
     const { uri, type } = useLocalSearchParams();
 
     const [loading, setLoading] = React.useState(false);
+    const [comment, setComment] = React.useState("");
 
     const url = uri.toString();
 
@@ -30,12 +31,13 @@ const PostScreen = () => {
             const base64 = await FileSystem.readAsStringAsync(uri as string, { encoding: 'base64' });
             const filePath = `${user?.id}/${new Date().getTime()}.${type === 'image' ? 'png' : 'mp4'}`;
             const contentType = type === 'image' ? 'image/png' : 'video/mp4';
-            const { data, error } = await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
+            const { error } = await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
             if (!error) {
                 await supabase.from('media_uploads').insert([
                     {
                         user_id: user?.id,
-                        file_name: filePath
+                        file_name: filePath,
+                        comment
                     }
                 ]);
                 setLoading(false);
@@ -52,39 +54,55 @@ const PostScreen = () => {
         }
     }
 
+    if (loading) {
+        return (
+            <ActivityIndicator className='flex-1 justify-center items-center' size={53} color={'black'} />
+        )
+    }
+
 
     return (
-        <View className='flex-1 gap-16'>
-            {loading ? (
-                <ActivityIndicator className='flex-1 justify-center items-center' size={53} color={'black'} />
-            ) : (
-                <View>
+        <View className='flex-1 bg-white'>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', top: 8, right: 10 }}>
+                <TouchableOpacity onPress={uploadToSupabase}>
+                    <Text className='font-bold'>Post</Text>
+                </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} className='px-4 pt-6 gap-4'>
+                <View className='mb-4'>
                     {type === 'image' ? (
-                        <Image className=' w-full' source={{ uri: url }} style={styles.video} />
-
-                    ) : type === 'video' && (
-                        <VideoRender uri={url} isActive/>
-                        
+                        <Image
+                            source={{ uri: url }}
+                            resizeMode='cover'
+                            style={{ height: 350, width: '100%', borderRadius: 8 }}
+                        />
+                    ) : (
+                        <VideoRender
+                            uri={url}
+                            isActive
+                            height={350}
+                            permit={false}
+                        />
                     )}
-                    <View className='flex-row justify-center gap-8 p-4 '>
-                        <PostButton title='x' onclick={() => router.back()} />
-                        <PostButton title='check' onclick={uploadToSupabase} loading={loading} />
-                    </View>
                 </View>
-            )}
+                <View className='w-full mb-4 border border-gray-300 rounded-2xl px-4 py-2 '>
+                    <TextInput
+                        placeholder="Enter comment..."
+                        placeholderTextColor="gray"
+                        value={comment}
+                        onChangeText={setComment}
+                        multiline
+                    />
+                </View>
+            </ScrollView>
         </View>
     )
+
 }
 
-export default PostScreen
-
 const styles = StyleSheet.create({
-    video: {
-        aspectRatio: 1,
-        width: Dimensions.get('window').width,
-       
-        // or use aspectRatio directly:
-        // aspectRatio: 16/9,
-        // width: '100%',
-    }
+
 })
+
+
+export default PostScreen;

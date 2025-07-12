@@ -7,8 +7,7 @@ import { useCommentDrawer } from '@/context/CommentContext'
 import CommentSkeleton from './loaders/CommentSkeleton'
 import { Comment, Prop } from '@/types/types'
 import { bg } from '@/constants/bg'
-import { useFocusEffect } from '@react-navigation/native'
-// import { useFocusEffect } from 'expo-router'
+import { useFocusEffect } from 'expo-router';
 
 
 
@@ -20,7 +19,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
 
     const [comment, setComment] = useState("");
     const [isSheetOpen, setIsSheetOpen] = useState(false);
-    const snapPoints = ['85%'];
+    const snapPoints = ['100%'];
 
     const textInputRef = useRef<RNTextInput>(null);
 

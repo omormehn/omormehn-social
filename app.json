@@ -68,19 +68,7 @@
         }
       ],
       "expo-font",
-      "expo-secure-store",
-      [
-        "react-native-video",
-        {
-          "enableNotificationControls": true,
-          "androidExtensions": {
-            "useExoplayerRtsp": false,
-            "useExoplayerSmoothStreaming": false,
-            "useExoplayerHls": false,
-            "useExoplayerDash": false
-          }
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
