@@ -6,6 +6,7 @@ import Profile from '@/components/Profile';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 
 const ProfileView = () => {
+    const { user } = useAuth();
     const navigation = useNavigation();
     const { uploader: data } = useLocalSearchParams();
     const uploader = JSON.parse(data as string)
@@ -16,6 +17,53 @@ const ProfileView = () => {
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false)
+
+    const checkFollowing = async () => {
+        const { data, error: fetchError } = await supabase
+            .from("profiles")
+            .select("following")
+            .eq("id", user?.id)
+            .single()
+        const existingFollowing = data?.following || []
+        existingFollowing.includes(uploader?.username) && setIsFollowing(true)
+        return { existingFollowing, fetchError };
+    }
+
+    useEffect(() => {
+        checkFollowing();
+        return () => { }
+    }, [uploader, user])
+
+
+
+    const followUser = async () => {
+        if (!user || !uploader) return;
+        const { existingFollowing, fetchError } = await checkFollowing()
+
+        if (fetchError) {
+            console.log("error fetching following")
+        }
+        setIsFollowing(true)
+
+        if (existingFollowing.includes(uploader.username)) {
+            setIsFollowing(false);
+            const updatedFollowing = existingFollowing.filter((item: any) => item !== uploader.username)
+            await supabase.from("profiles").update([
+                {
+                    following: updatedFollowing
+                }
+            ]).eq("id", user.id).single()
+            return;
+        }
+        const updatedFollowing = [...existingFollowing, uploader.username]
+
+        const { data, error } = await supabase.from("profiles").update([
+            {
+                following: updatedFollowing
+            }
+        ]).eq("id", user.id).single()
+    }
 
     useLayoutEffect(() => {
         if (uploader.username) {
@@ -65,7 +113,7 @@ const ProfileView = () => {
     }
     return (
         <View className='flex-1'>
-            <Profile posts={posts} user={uploader} />
+            <Profile posts={posts} user={uploader} followUser={followUser} isFollowing={isFollowing} />
         </View>
     )
 }

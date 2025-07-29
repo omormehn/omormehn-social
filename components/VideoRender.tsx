@@ -2,18 +2,21 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useVideoPlayer, VideoView } from 'expo-video'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { useAuth } from '@/context/AuthContext';
 
 
 const VideoRender = ({ uri, isActive, height = 510, permit = true }: { uri: string, isActive?: boolean, height?: number, permit?: boolean }) => {
+    const { user } = useAuth()
     const [videoEnd, setVideoEnd] = useState(false);
     const [isMute, setMute] = useState(false);
 
     const player = useVideoPlayer(uri, (player) => {
+        if (!user) return;
         player.loop = false
     });
 
     useEffect(() => {
-        if (!player) return;
+        if (!player || user) return;
 
         const onVideoEnd = () => {
             setVideoEnd(true)
@@ -23,7 +26,7 @@ const VideoRender = ({ uri, isActive, height = 510, permit = true }: { uri: stri
         return () => {
             player.removeListener('playToEnd', onVideoEnd)
         }
-    }, [player])
+    }, [player, user])
 
 
     useEffect(() => {

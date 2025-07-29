@@ -86,16 +86,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (email: string, password: string) => {
         setLoading(true);
+        setError(null)
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) {
-                console.log("Error in login", error);
                 setError(error.message);
-                return;
+                console.log("error in login", error.message)
+                return { success: false, error }
             }
             router.replace('/(tabs)')
-        } catch (error) {
+            return { success: true }
+        } catch (error: any) {
             console.log("error in login", error)
+            return { success: false, error };
         } finally {
             setLoading(false);
         }
@@ -108,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ session, loading, user, updateUser, login, logout }}>
+        <AuthContext.Provider value={{ session, loading, user, updateUser, login, logout, error }}>
             {children}
         </AuthContext.Provider>
     )

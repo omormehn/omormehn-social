@@ -31,7 +31,9 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     fetchUsersPost();
-  }, [])
+  }, []);
+
+
 
   const fetchUsersPost = async () => {
     if (!user) return;
@@ -43,7 +45,7 @@ const ProfileScreen = () => {
         setError(true);
         return;
       }
-      
+
 
       const posts = await Promise.all(
         data.map(async (post) => {
@@ -68,7 +70,7 @@ const ProfileScreen = () => {
 
   return (
     <View className='flex-1 bg-white' >
-      <Profile posts={posts} user={user} />
+      <Profile posts={posts} user={user} allowFollow={false} />
     </View>
 
   )

@@ -12,7 +12,7 @@ const SearchBar = () => {
             paddingVertical: 3,
             paddingHorizontal: 15,
             borderRadius: 20,
-            width: 300
+            width: 310
         }}  >
             <Icon name='search' size={20} color='#5151C6' className='' />
             <View style={{ width: 290 }}>

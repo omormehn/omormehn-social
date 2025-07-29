@@ -17,13 +17,11 @@ import { supabase } from '@/services/supabase';
 
 
 const Login = () => {
-  const { updateUser, login, loading } = useAuth()!;
-
+  const { error, login, loading } = useAuth();
 
   const [eyeOpen, setEyeClose] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
   const eyeIcon = eyeOpen ? 'eye-off' : 'eye'
 
@@ -34,7 +32,7 @@ const Login = () => {
 
   // Handle form
   const handleSubmit = async () => {
-    await login(email, password);
+  await login(email, password);
   }
 
 
@@ -62,7 +60,7 @@ const Login = () => {
               onpress={handleEyeSwitch}
             />
             {error ? (
-              <Text style={{ color: 'red', textAlign: 'center' }}> {error}</Text>
+              <Text style={{ color: 'red', paddingHorizontal: 10 }}> {error}</Text>
             ) : ''}
 
 

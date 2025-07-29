@@ -10,27 +10,32 @@ import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
 import dayjs from 'dayjs';
 import { useLikes } from '@/context/LikeContext';
+import Entypo from "react-native-vector-icons/Entypo"
 
 
-
-const Profile = ({ posts, user }: { posts: any[], user: any }) => {
+const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: { posts: any[], user: any, allowFollow?: boolean, followUser?: () => void, isFollowing?: boolean }) => {
     const { user: data } = useAuth();
-    const { fetchLikes } = useLikes();
+    const { fetchLikes } = useLikes()!;
 
     const [focus, setFocus] = useState("Shots");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
     const [count, setCount] = useState(0)
+    const [toggleDropDown, setToggle] = useState(false)
 
-    useEffect(() => {
-        const id = posts.map((p) => p.id)
-        async () => {
-            const data = await fetchLikes(id)
-        }
+    // useEffect(() => {
+    //     const id = posts.map((p) => p.id)
+    //     async () => {
+    //         const data = await fetchLikes(id)
+    //     }
 
-    })
+    // })
 
+
+    const toggleDrop = () => {
+        setToggle(!toggleDropDown)
+    }
 
     const renderItem = ({ item }: { item: any }) => {
         return (
@@ -121,18 +126,58 @@ const Profile = ({ posts, user }: { posts: any[], user: any }) => {
                     <Text className='font-bold'>
                         200 {" "}<Text className='text-placeHolder'>Followers</Text>
                     </Text>
+
                     <Text className='font-bold'>
                         150  {" "}<Text className='text-placeHolder'>Following</Text>
                     </Text>
                 </View>
-                <View className='flex-row gap-4 py-2'>
-                    <TouchableOpacity className='px-6 py-2 bg-gray-200 rounded-xl'>
-                        <Text className='text-base font-semibold'>Follow</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className='px-4 py-2 bg-gray-200 rounded-xl'>
-                        <Text>Message</Text>
-                    </TouchableOpacity>
-                </View>
+                {allowFollow && (
+                    <View className='flex-row gap-4 py-2'>
+                        <TouchableOpacity className='px-6 py-2 bg-gray-200 rounded-xl'>
+
+                            {isFollowing
+                                ? (
+                                    <View style={{ position: 'relative' }}>
+                                        <TouchableOpacity className='flex-row gap-2' >
+                                            <Text className='text-base font-semibold'>Following</Text>
+                                            <Entypo name='chevron-down' size={23} onPress={toggleDrop} />
+                                        </TouchableOpacity>
+
+                                        <Modal visible={toggleDropDown} transparent animationType="fade">
+                                            <TouchableWithoutFeedback onPress={() => setToggle(false)}>
+                                                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.1)' }}>
+                                                    <View style={{
+                                                        position: 'absolute',
+                                                        top: 415,
+                                                        left: 150,
+                                                        backgroundColor: 'white',
+                                                        paddingVertical: 20,
+                                                        paddingHorizontal: 20,
+                                                        borderRadius: 8,
+                                                        gap: 10
+                                                    }}>
+                                                        <Text onPress={followUser}>Unfollow</Text>
+                                                        <Text>Block</Text>
+                                                    </View>
+                                                </View>
+                                            </TouchableWithoutFeedback>
+                                        </Modal>
+
+                                    </View>
+                                ) : (
+                                    <TouchableOpacity onPress={() => {
+                                        followUser!();
+                                        setToggle(false)
+                                    }} >
+                                        <Text className='text-base font-semibold'> Follow</Text>
+                                    </TouchableOpacity>
+                                )}
+                        </TouchableOpacity>
+                        <TouchableOpacity className='px-4 py-2 bg-gray-200 rounded-xl z-0'>
+                            <Text>Message</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Socials */}
                 {data?.id === user.id && (

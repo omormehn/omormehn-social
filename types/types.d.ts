@@ -23,7 +23,7 @@ type CommentContextProp = {
     openDrawer: (postId: string, uploader: string) => void;
     fetchComments: (postId: string) => Promise<void>;
     comments: Comment[];
-    addComment: (userId: string, username: string , comment: string, postId: string, avatar: string) => Promise<any>;
+    addComment: (userId: string, username: string, comment: string, postId: string, avatar: string) => Promise<any>;
     loading: boolean;
     countComments: (postId: string) => Promise<number>;
     commentCount: Record;
@@ -49,8 +49,9 @@ interface AuthContextType {
     loading: boolean;
     user: CustomUser | null;
     updateUser: (user: any) => void;
-    login: (email: string, password: string) => void;
+    login: (email: string, password: string) => Promise<{ success: boolean, error?: any }>;
     logout: () => void;
+    error: string | null
 }
 interface AppContextProps {
     user: { emailVerified?: boolean } | null;
