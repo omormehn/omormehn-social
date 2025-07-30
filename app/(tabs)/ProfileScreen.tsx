@@ -69,7 +69,7 @@ const ProfileScreen = () => {
 
 
   return (
-    <View className='flex-1 bg-white' >
+    <View className='flex-1 w-full bg-white' >
       <Profile posts={posts} user={user} allowFollow={false} />
     </View>
 

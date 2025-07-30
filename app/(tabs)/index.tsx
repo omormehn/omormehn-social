@@ -1,5 +1,5 @@
 import 'react-native-url-polyfill/auto';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { use, useCallback, useEffect, useRef, useState } from 'react'
 import { TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 import SearchBar from '@/components/SearchBar';
@@ -12,6 +12,7 @@ import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PostsCard from '@/components/card/PostsCard';
 import { getCachedMedia, setCachedMedia } from '@/utils/cached';
+import { useFocusEffect } from 'expo-router';
 
 
 
@@ -41,10 +42,19 @@ const HomeScreen = () => {
     dayjs.extend(relativeTime);
 
     // First load
-    useEffect(() => {
-        if (!user) return;
-        loadInitData();
-    }, [user]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("run")
+            if (user) {
+                loadInitData();
+            }
+            return () => {
+                setVisibleVideo(null);
+            }
+        }, [user])
+    )
 
     const loadInitData = async () => {
         if (isFetching.current) return;
@@ -74,6 +84,7 @@ const HomeScreen = () => {
     }
 
     const loadMedia = async (pageNum: number) => {
+        console.log("load")
         try {
             const { data, error } = await supabase
                 .from('media_uploads')
@@ -86,10 +97,9 @@ const HomeScreen = () => {
                 setError(error.message)
                 return;
             }
+            setImageLoading(true);
             const files = await Promise.all(
                 data.map(async (file) => {
-                    setImageLoading(true);
-
                     const { data: signedUrlData } = await supabase
                         .storage
                         .from('files')
@@ -109,6 +119,7 @@ const HomeScreen = () => {
                     };
                 }));
 
+            setImageLoading(false);
 
             return files.filter(Boolean);
 
@@ -201,7 +212,7 @@ const HomeScreen = () => {
             <StatusBar style="dark" />
             <View className='bg-white pb-4'>
                 {/* Top 1 */}
-                <View className='flex-row px-6 pt-8 gap-2'>
+                <View className='flex-row px-6 pt-16 gap-2'>
                     <SearchBar />
                     <TouchableOpacity className='bg-gray-100 py-4 px-4 rounded-full'>
                         <Icon name='send' size={20} />
@@ -230,14 +241,18 @@ const HomeScreen = () => {
                 )}
             </View>
 
-            {media.length === 0 && !isLoading && !error && (
-                <Text className='text-center'>No media Available</Text>
-            )}
 
-            {isLoading ? <Loader /> : (
+
+            {isLoading ? (
+                <Loader />
+            ) : media.length === 0 ? (
+                <View className='flex-1'>
+                    <Text className='text-center'>No media Available</Text>
+                </View>
+            ) : (
                 <FlatList
                     data={media}
-                    keyExtractor={(item) => `${item.name}-${item.created_at}`}
+                    keyExtractor={(item) => item.id.toString()}
                     renderItem={renderItem}
                     contentContainerStyle={{}}
                     style={{ marginBottom: 100, }}

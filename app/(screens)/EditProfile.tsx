@@ -20,6 +20,7 @@ const EditProfile = () => {
     const [name, setName] = useState(user?.username);
     const [loading, setLoading] = useState(false);
     const [uri, setUri] = useState(user?.avatar);
+    console.log(uri)
 
     const handleSubmit = async () => {
         setLoading(true)

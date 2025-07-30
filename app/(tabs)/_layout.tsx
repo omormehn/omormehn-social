@@ -4,27 +4,26 @@ import { Tabs } from 'expo-router'
 import CustomTabBar from '@/components/CustomTabBar'
 import { icon } from '@/constants/icon'
 
-
-
-
 const _layout = () => {
 
-
+  const iconPath = useMemo(() => ({
+    index: { active: icon.homeIcon, inactive: icon.homeIcon1 },
+    DiscoverScreen: { active: icon.categoryIcon, inactive: icon.categoryIcon1 },
+    NotificationScreen: { active: icon.notificationIcon1, inactive: icon.notificationIcon1 },
+    ProfileScreen: { active: icon.profileIcon, inactive: icon.profileIcon1 },
+  }), []);
   return (
     <Tabs
+
       screenOptions={{
         tabBarShowLabel: false,
         tabBarStyle: {
           zIndex: 0
-        }
+        },
+        lazy: true
       }}
       tabBar={(props: any) => <CustomTabBar
-        iconPaths={{
-          index: { active: icon.homeIcon, inactive: icon.homeIcon1 },
-          DiscoverScreen: { active: icon.categoryIcon, inactive: icon.categoryIcon1 },
-          NotificationScreen: { active: icon.notificationIcon1, inactive: icon.notificationIcon1 },
-          ProfileScreen: { active: icon.profileIcon, inactive: icon.profileIcon1 }
-        }}
+        iconPaths={iconPath}
         {...props} />}
     >
       <Tabs.Screen name='index'

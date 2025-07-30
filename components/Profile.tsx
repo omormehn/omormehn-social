@@ -86,7 +86,7 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
     }
 
     const renderProfileHeader = () => (
-        <View className='flex-1 gap-4'>
+        <View className='w-full gap-4'>
 
             {/* Top Image */}
             <View className='w-full'>
@@ -210,7 +210,6 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
 
     return (
         <View className='flex-1 bg-white' >
-
             <Modal
                 visible={isAvatarVisible}
                 transparent
@@ -229,10 +228,6 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
-
-
-
 
             {/* Body */}
             <View className='flex-1 items-center gap-4'>
