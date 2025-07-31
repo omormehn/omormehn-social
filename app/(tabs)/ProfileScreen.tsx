@@ -1,10 +1,10 @@
 import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView, ActivityIndicator, FlatList, Modal, TouchableWithoutFeedback } from 'react-native'
-import React, { use, useEffect, useState } from 'react'
+import React, { memo, use, useCallback, useEffect, useState } from 'react'
 import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
 import Icon from 'react-native-vector-icons/Feather';
 import HomeFilter from '@/components/card/HomeFilter';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '@/services/supabase';
@@ -29,10 +29,12 @@ const ProfileScreen = () => {
   const [posts, setPosts] = useState<any[]>([]);
 
 
-  useEffect(() => {
-    fetchUsersPost();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchUsersPost();
+      return () => setPosts([]);
+    }, [])
+  )
 
 
   const fetchUsersPost = async () => {
@@ -69,9 +71,12 @@ const ProfileScreen = () => {
 
 
   return (
-    <View className='flex-1 w-full bg-white' >
-      <Profile posts={posts} user={user} allowFollow={false} />
-    </View>
+    <SafeAreaView className='flex-1 bg-white' >
+      <StatusBar />
+      <View className='flex-1 bg-white'>
+        <Profile posts={posts} user={user} allowFollow={false} />
+      </View>
+    </SafeAreaView>
 
   )
 }
@@ -124,4 +129,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default ProfileScreen
+export default memo(ProfileScreen)

@@ -26,6 +26,7 @@ const PostScreen = () => {
 
 
     const uploadToSupabase = async () => {
+        console.log('lcick')
         try {
             setLoading(true)
             const base64 = await FileSystem.readAsStringAsync(uri as string, { encoding: 'base64' });

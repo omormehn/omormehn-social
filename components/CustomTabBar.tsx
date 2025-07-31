@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, TouchableOpacity, StyleSheet, Dimensions, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,7 +29,9 @@ const CustomTabBar = ({
       <View style={styles.tabContainer}>
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
-          const onPress = () => navigation.navigate(route.name);
+          const onPress = () => {
+            if (!isFocused) navigation.navigate(route.name);
+          };
 
           return (
             <TouchableOpacity
@@ -114,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomTabBar;
+export default memo(CustomTabBar);

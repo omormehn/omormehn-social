@@ -7,7 +7,7 @@ export const getCachedMedia = async () => {
     try {
         const cachedData = await AsyncStorage.getItem(CACHE_KEY);
         if (!cachedData) return;
-
+        console.log("ch", cachedData)
         const { timestamp, data } = JSON.parse(cachedData);
         if (Date.now() - timestamp < CACHE_EXPIRY) {
             return data;

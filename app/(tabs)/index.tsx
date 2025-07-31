@@ -1,5 +1,5 @@
 import 'react-native-url-polyfill/auto';
-import React, { use, useCallback, useEffect, useRef, useState } from 'react'
+import React, { memo, use, useCallback, useEffect, useRef, useState } from 'react'
 import { TouchableOpacity, View, Text, FlatList, Button, ActivityIndicator, ViewToken } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 import SearchBar from '@/components/SearchBar';
@@ -62,17 +62,17 @@ const HomeScreen = () => {
 
         try {
             setIsLoading(true);
-            const cached = await getCachedMedia();
 
-            if (cached) {
-                setMedia(cached);
-            }
+            const cached = await getCachedMedia();
+            if (cached) setMedia(cached);
 
             const freshData = await loadMedia(1);
 
             if (freshData) {
-                setMedia(freshData);
-                await setCachedMedia(freshData);
+                if (!cached || JSON.stringify(freshData) !== JSON.stringify(cached)) {
+                    setMedia(freshData);
+                    await setCachedMedia(freshData);
+                }
             }
         } catch (error) {
             console.log('error initializing data')
@@ -91,7 +91,7 @@ const HomeScreen = () => {
                 .select('*, profiles(*)')
                 .order('created_at', { ascending: false })
                 .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
-
+            console.log("dt", data)
             if (error) {
                 console.error("Failed to list media:", error);
                 setError(error.message)
@@ -153,6 +153,7 @@ const HomeScreen = () => {
     }
 
     const loadMore = async () => {
+        console.log("running")
         if (!user) return;
         if (!hasMore || isFetching.current) return;
         isFetching.current = true;
@@ -281,4 +282,4 @@ const HomeScreen = () => {
     )
 }
 
-export default HomeScreen
+export default memo(HomeScreen)

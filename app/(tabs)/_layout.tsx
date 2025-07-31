@@ -14,13 +14,11 @@ const _layout = () => {
   }), []);
   return (
     <Tabs
-
       screenOptions={{
         tabBarShowLabel: false,
         tabBarStyle: {
           zIndex: 0
         },
-        lazy: true
       }}
       tabBar={(props: any) => <CustomTabBar
         iconPaths={iconPath}

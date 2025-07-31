@@ -1,5 +1,5 @@
 import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView, ActivityIndicator, FlatList, Modal, TouchableWithoutFeedback } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { bg } from '@/constants/bg'
 import { icon } from '@/constants/icon'
 import Icon from 'react-native-vector-icons/Feather';
@@ -91,7 +91,9 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
             {/* Top Image */}
             <View className='w-full'>
                 {/* Img */}
-                <Image className='w-full' source={bg.categoryImg} />
+                <View style={{ width: 420 }}>
+                    <Image className='w-full h-[150px]' resizeMode='cover' source={bg.categoryImg} />
+                </View>
                 {/* Username */}
                 <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-bold text-xl '>@{user?.username}</Text>
                 {/* Setting Icon */}
@@ -247,6 +249,8 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                             data={posts}
                             renderItem={renderItem}
                             ListHeaderComponent={renderProfileHeader}
+                            keyExtractor={(item) => item.id.toString()}
+
                         />
                     )}
                 </View>
@@ -304,4 +308,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Profile
+export default memo(Profile)

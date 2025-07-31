@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { memo } from 'react'
 
 const NotificationScreen = () => {
   return (
@@ -9,4 +9,4 @@ const NotificationScreen = () => {
   )
 }
 
-export default NotificationScreen
+export default memo(NotificationScreen)
