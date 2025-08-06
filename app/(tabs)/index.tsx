@@ -46,7 +46,7 @@ const HomeScreen = () => {
 
     useFocusEffect(
         useCallback(() => {
-            console.log("run")
+
             if (user) {
                 loadInitData();
             }
@@ -84,14 +84,16 @@ const HomeScreen = () => {
     }
 
     const loadMedia = async (pageNum: number) => {
-        console.log("load")
+        if (!user) return;
+        if (isFetching.current) return;
+
         try {
             const { data, error } = await supabase
                 .from('media_uploads')
                 .select('*, profiles(*)')
                 .order('created_at', { ascending: false })
                 .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
-            console.log("dt", data)
+
             if (error) {
                 console.error("Failed to list media:", error);
                 setError(error.message)
@@ -153,7 +155,6 @@ const HomeScreen = () => {
     }
 
     const loadMore = async () => {
-        console.log("running")
         if (!user) return;
         if (!hasMore || isFetching.current) return;
         isFetching.current = true;
