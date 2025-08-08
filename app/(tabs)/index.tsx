@@ -12,7 +12,7 @@ import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PostsCard from '@/components/card/PostsCard';
 import { getCachedMedia, setCachedMedia } from '@/utils/cached';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 
 
 
@@ -85,8 +85,6 @@ const HomeScreen = () => {
 
     const loadMedia = async (pageNum: number) => {
         if (!user) return;
-        if (isFetching.current) return;
-
         try {
             const { data, error } = await supabase
                 .from('media_uploads')
@@ -216,7 +214,7 @@ const HomeScreen = () => {
                 {/* Top 1 */}
                 <View className='flex-row px-6 pt-16 gap-2'>
                     <SearchBar />
-                    <TouchableOpacity className='bg-gray-100 py-4 px-4 rounded-full'>
+                    <TouchableOpacity onPress={() => router.push("/(screens)/ChatScreen")} className='bg-gray-100 py-4 px-4 rounded-full'>
                         <Icon name='send' size={20} />
                     </TouchableOpacity>
                 </View>

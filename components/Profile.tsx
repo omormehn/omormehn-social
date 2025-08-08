@@ -249,7 +249,7 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                             data={posts}
                             renderItem={renderItem}
                             ListHeaderComponent={renderProfileHeader}
-                            keyExtractor={(item) => item.id.toString()}
+                             keyExtractor={(item, index) => index.toString()}
 
                         />
                     )}

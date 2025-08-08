@@ -3,24 +3,23 @@ import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
 import React, { useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import '../../global.css'
-import { Settings } from 'react-native';
+import { StatusBar } from 'react-native';
+
+
+
 
 
 export default function AppLayout() {
-
-
-
-
   // if (!hasSelectedCategory) return <Redirect href="/(screens)/SelectCategory" />;
 
   return (
-    <Stack>
+
+    <Stack >
       <Stack.Screen name='Settings' options={{ headerShown: false, }} />
-      <Stack.Screen name='EditProfile' options={{ headerShown: false, }} />
+      <Stack.Screen name='EditProfile' />
       <Stack.Screen name='CameraScreen' options={{ headerShown: false, }} />
-      <Stack.Screen name='PostScreen'/>
+      <Stack.Screen name='PostScreen' />
+      <Stack.Screen name='ChatScreen' options={{ headerShown: false }} />
     </Stack>
-
   )
-
 }
