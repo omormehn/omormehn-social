@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 16
     },
     smaller: {
-
         backgroundColor: 'black',
         position: 'absolute',
         bottom: 0,
