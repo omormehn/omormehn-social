@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { router } from 'expo-router';
 import MessageInput from '@/components/container/MessageInput';
 import Feather from 'react-native-vector-icons/Feather';
+import MessageCard from '@/components/card/MessageCard';
 
 
 
@@ -25,7 +26,25 @@ const MessageContainer = () => {
                 </View>
             </View>
             {/* Body */}
-            <ScrollView></ScrollView>
+            <ScrollView contentContainerStyle={{ paddingTop: 20, paddingBottom: 120, gap: 20, }} showsVerticalScrollIndicator={false} style={{ flex: 1, paddingHorizontal: 25 }} >
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
+                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+
+
+            </ScrollView>
 
             {/* Bottom */}
             <View style={styles.inputContainer}>
@@ -47,14 +66,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     header: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 90,
+        height: 100,
         backgroundColor: '#f8f8f8',
         paddingHorizontal: 20,
-        zIndex: 1,
     },
     headerBody: {
         marginTop: 40,
