@@ -23,77 +23,16 @@ const ChatScreen = () => {
                     <MaterialIcons name="add-comment" size={24} color="black" />
                 </View>
             </View>
-            {/* Search */}
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            <View >
-                <Chat />
-            </View>
-            {/* Chat Messages */}
-            {/* <View className='flex-1'>
-                {messages.length > 0 ? (
-                    messages.map((message, index) => (
-                        <View key={index} className='p-4 border-b border-gray-200'>
-                            <Text className='text-base'>{message.text}</Text>
-                        </View>
-                    ))
-                ) : (
-                    <View className='flex-1 justify-center items-center'>
-                        <Text className='text-gray-500'>No messages yet</Text>
-                    </View>
-                )}
-            </View> */}
 
-
+            <View className='mt-28'>
+                <View className='flex-row items-center justify-between px-5'>
+                    <Text className='font-bold text-lg'>Messages</Text>
+                    <Text className='text-primary font-semibold'>Requests</Text>
+                </View>
+                <View className='mt-10'>
+                    <Chat />
+                </View>
+            </View>
         </ScrollView>
 
     )
@@ -114,7 +53,7 @@ const styles = StyleSheet.create({
         height: 80,
         backgroundColor: '#f8f8f8',
         paddingHorizontal: 30,
-        zIndex: 1, // Ensure header is on top
+        zIndex: 1,
 
     },
 })

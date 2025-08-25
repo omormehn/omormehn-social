@@ -20,6 +20,7 @@ export default function AppLayout() {
       <Stack.Screen name='CameraScreen' options={{ headerShown: false, }} />
       <Stack.Screen name='PostScreen' />
       <Stack.Screen name='ChatScreen' options={{ headerShown: false }} />
+      <Stack.Screen name='MessageContainer' options={{ headerShown: false }} />
     </Stack>
   )
 }
