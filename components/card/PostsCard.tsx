@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCommentDrawer } from "@/context/CommentContext";
 import { router } from "expo-router";
 import { useLikes } from "@/context/LikeContext";
+import useSocketEvents from "@/hooks/useSocketEvents";
 
 
 
@@ -79,9 +80,17 @@ const PostsCard = ({ item, visibleVideo, isLoading, postId }: { item: any, visib
         }
     }
 
+    const { socket } = useSocketEvents()
     const routeToProfile = (uploader: { id: string;[key: string]: any }) => {
         if (isRouting) return;
         setIsRouting(true)
+        socket.emit('test', {
+            data: user
+        })
+        socket.on("connect", () => {
+            console.log("socket.connected?", socket.connected);
+        });
+
         if (user?.id === uploader.id) {
             router.push("/ProfileScreen")
         } else {

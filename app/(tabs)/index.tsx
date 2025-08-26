@@ -13,6 +13,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import PostsCard from '@/components/card/PostsCard';
 import { getCachedMedia, setCachedMedia } from '@/utils/cached';
 import { router, useFocusEffect } from 'expo-router';
+import useSocketEvents from '@/hooks/useSocketEvents';
+import { io } from 'socket.io-client';
 
 
 
@@ -23,6 +25,18 @@ const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
     const { user } = useAuth();
+    const { socket } = useSocketEvents()
+
+    useEffect(() => {
+        socket.on('test', (data) => {
+            console.log('listened to', data)
+        })
+        socket.on("disconnect", () => {
+            console.log("socket.connected?", socket.connected); 
+        });
+
+    })
+
 
     // States
     const [media, setMedia] = useState<any[]>([]);
