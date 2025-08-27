@@ -1,0 +1,36 @@
+ function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+  const toggleMode = () => {
+    setMode((prev) => (prev === "picture" ? "video" : "picture"));
+  };
+
+   const recordVideo = async () => {
+    if (recording) {
+      setRecording(false);
+      ref.current?.stopRecording();
+      return;
+    }
+    setRecording(true);
+    const video = await ref.current?.recordAsync();
+    console.log({ video });
+  };
+
+    const renderPhoto = () => {
+    return (
+      <View>
+        {uri &&
+          <Image
+            source={{ uri }}
+            resizeMode="contain"
+            style={{ width: 300, aspectRatio: 1 }}
+          />}
+        <Button onPress={uploadImageToSupabase} title="Take another picture" />
+      </View>
+    );
+  }
+
+    const takePicture = async () => {
+    const photo = await ref.current?.takePictureAsync();
+    setUri(photo?.uri!);
+  }

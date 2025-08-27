@@ -1,0 +1,49 @@
+import { View, Text } from 'react-native'
+import React, { useState } from 'react'
+import AuthContainer from '@/components/container/AuthContainer'
+import AuthVerificationContainer from '@/components/container/AuthVerificationContainer'
+import KeyboardAvoidWrapper from '@/components/container/KeyboardAvoidView'
+import { EmailContainer } from '@/components/container/InputContainer'
+
+import { router } from 'expo-router'
+
+
+const ForgotPassword = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      alert("Email reset link sent");
+      router.push('/Login');
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <KeyboardAvoidWrapper>
+      <AuthContainer>
+        <AuthVerificationContainer
+          title='Type Your Email'
+          description='We will send you instruction on how to reset your password'
+          name='SEND'
+          onpress={handleSubmit}
+          loading={loading}
+        >
+          <View className=''>
+            <EmailContainer email={email} onchangetext={(text) => setEmail(text)} />
+          </View>
+        </AuthVerificationContainer>
+      </AuthContainer>
+    </KeyboardAvoidWrapper>
+  )
+}
+
+export default ForgotPassword

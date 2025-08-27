@@ -1,26 +1,26 @@
-import { Redirect, Slot } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
-import { useEffect, useState } from 'react';
+import { Redirect, Slot, Stack, useRouter } from 'expo-router';
+import AuthContext, { AuthProvider, useAuth } from '@/context/AuthContext';
+import React, { useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import '../../global.css'
+import { StatusBar } from 'react-native';
+
+
+
+
 
 export default function AppLayout() {
-  const { session, user } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
+  // if (!hasSelectedCategory) return <Redirect href="/(screens)/SelectCategory" />;
 
-  console.log('Session in AppLayout:', session);
-  console.log('user in AppLayout:', user);
-  
-  useEffect(() => {
-    setIsLoading(false); 
-  }, [session]);
+  return (
 
-  if (isLoading) {
-    return null; 
-  }
- 
-  if (!session) {
-    console.log('Redirecting to /Login'); 
-    return <Redirect href="/Login" />;
-  }
-
-  return <Slot />;
+    <Stack >
+      <Stack.Screen name='Settings' options={{ headerShown: false, }} />
+      <Stack.Screen name='EditProfile' />
+      <Stack.Screen name='CameraScreen' options={{ headerShown: false, }} />
+      <Stack.Screen name='PostScreen' />
+      <Stack.Screen name='ChatScreen' options={{ headerShown: false }} />
+      <Stack.Screen name='MessageContainer' options={{ headerShown: false }} />
+    </Stack>
+  )
 }

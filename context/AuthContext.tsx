@@ -1,117 +1,132 @@
-import { account } from "@/services/appwriteConfig";
-import { Redirect } from "expo-router";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
-import { ID } from "react-native-appwrite";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React = require("react");
+import { useRouter, useSegments } from "expo-router";
+import { createContext, useContext, useEffect, useState } from "react";
 
-interface AuthContextType {
-    user: any | null;
-    login: (email: string, password: string) => void;
-    register: (email: string, password: string, confirmPassword: string) => void;
-    logout: () => void;
-    session: any | null;
-    error: any | null;
-    loading: boolean;
-}
+import { AuthContextType, CustomUser } from "@/types/types";
+import { Session } from '@supabase/supabase-js'
+import { supabase } from "@/services/supabase";
+
+
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const [user, setUser] = useState<any | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<any | null>(null);
-    const [session, setSession] = useState<any | null>(null);
+    const router = useRouter();
+    const segments = useSegments();
+
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<CustomUser | null>(null);
 
 
     useEffect(() => {
-        init();
+        const getSession = async () => {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+                console.log("Error getting session", error);
+                return;
+            }
+            setSession(data.session);
+            if (data.session?.user) {
+                const metadata = data.session?.user.user_metadata || {};
+                setUser({
+                    ...data.session?.user,
+                    username: metadata.username || '',
+                    avatar: metadata.avatar || ''
+                });
+            }
+            setLoading(false);
+        }
+
+        getSession();
+
+        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            if (session?.user) {
+                const metadata = session.user.user_metadata || {};
+                updateUser({
+                    ...session.user,
+                    username: metadata.username || '',
+                    avatar: metadata.avatar || ''
+                });
+            } else {
+                setUser(null);
+            }
+
+        });
+
+        return () => {
+            listener?.subscription.unsubscribe();
+        }
     }, []);
 
-    const init = () => {
-        checkAuth();
+    const updateUser = (data: any) => {
+        setUser(data);
     }
 
-    const checkAuth = async () => {
-        try {
-            const responseSession = await account.getSession("current");
-            setSession(responseSession);
 
-            const responseUser = await account.get();
-            console.log('user', responseUser)
-            setUser(responseUser);
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        if (!loading) {
+            const inAuthGroup = segments[0] === "(tabs)" || "(screens)";
+
+
+            if (!session && inAuthGroup) {
+                router.replace("/(auth)/Login");
+            }
+
+            if (session) {
+                if (!inAuthGroup) {
+                    router.replace("/(tabs)");
+                }
+            }
         }
-        setLoading(false)
-    }
+    }, [loading, session]);
 
     const login = async (email: string, password: string) => {
         setLoading(true);
+        setError(null)
         try {
-            const responseSession = await account.createEmailPasswordSession(email, password);
-            setSession(responseSession);
-            const responseUser = account.get();
-            console.log('user', responseUser)
-            setUser(responseUser);
-            Redirect({ href: '/(screens)' })
-
-        } catch (error) {
-            setError(error);
-            console.log(error);
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const register = async (email: string, password: string, confirmPassword: string) => {
-
-        setLoading(true);
-        try {
-            await account.createAnonymousSession();
-            if (password !== confirmPassword) {
-                setError('Password do not match')
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                setError(error.message);
+                console.log("error in login", error.message)
+                return { success: false, error }
             }
-            console.log('pass match, unto next...')
-            const response = await account.create(ID.unique(), email, password)
-            setUser(response);
-
-        } catch (error) {
-            console.log("error in reg", error)
+            router.replace('/(tabs)')
+            return { success: true }
+        } catch (error: any) {
+            console.log("error in login", error)
+            return { success: false, error };
         } finally {
             setLoading(false);
-            setError(null);
         }
     }
+
     const logout = async () => {
-        try {
-            await account.deleteSession('current');
-            setUser(null);
-            setSession(null);
-        } catch (error) {
-            console.log('Logout error:', error);
-        }
+        setSession(null);
+        setUser(null);
+        await supabase.auth.signOut();
     }
 
     return (
-        <AuthContext.Provider value={{ user, session, login, logout, error, register, loading }}>
-
+        <AuthContext.Provider value={{ session, loading, user, updateUser, login, logout, error }}>
             {children}
-
         </AuthContext.Provider>
     )
+
 }
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+
+const useAuth = () => {
+    const authContext = useContext(AuthContext);
+    if (!authContext) {
+        throw new Error("useAuth must be used within an AuthProvider");
     }
-    return context;
-};
+    return authContext;
+}
 
-
-
+export { useAuth }
 
 export default AuthContext;
