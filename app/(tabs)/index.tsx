@@ -27,15 +27,7 @@ const HomeScreen = () => {
     const { user } = useAuth();
     const { socket } = useSocketEvents()
 
-    useEffect(() => {
-        socket.on('test', (data) => {
-            console.log('listened to', data)
-        })
-        socket.on("disconnect", () => {
-            console.log("socket.connected?", socket.connected); 
-        });
 
-    })
 
 
     // States

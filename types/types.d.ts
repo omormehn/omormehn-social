@@ -2,6 +2,7 @@ import { SettingOption } from '@/components/SettingOption';
 import { HomeFilter } from '@/components/card/HomeFilter';
 import { User, Session } from '@supabase/supabase-js';
 import { Ref } from 'react';
+import { Socket } from 'socket.io-client';
 
 
 type Prop = {
@@ -114,3 +115,8 @@ interface HomeCardProps {
 
 
 
+
+interface SocketContextProps {
+    socket: Socket | null
+    onlineUsers: []
+}

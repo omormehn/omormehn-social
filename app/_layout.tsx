@@ -11,6 +11,7 @@ import { CommentContextProvider } from "@/context/CommentContext";
 import CommentDrawer from "@/components/CommentDrawer";
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import LikeContextProvider from '@/context/LikeContext';
+import { SocketContextProvider } from '@/context/SocketContext';
 
 
 
@@ -22,32 +23,34 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <CommentContextProvider bottomSheetRef={bottomSheetRef}>
-        <LikeContextProvider>
-          <GestureHandlerRootView >
-            <Stack >
-              <Stack.Screen
-                name="(auth)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(screens)"
-                options={{ headerShown: false }}
-                
-              />
-              <Stack.Screen
-                name="Onboarding"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-            <CommentDrawer bottomSheetRef={bottomSheetRef} />
-          </GestureHandlerRootView>
-        </LikeContextProvider>
-      </CommentContextProvider>
+      <SocketContextProvider>
+        <CommentContextProvider bottomSheetRef={bottomSheetRef}>
+          <LikeContextProvider>
+            <GestureHandlerRootView >
+              <Stack >
+                <Stack.Screen
+                  name="(auth)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(screens)"
+                  options={{ headerShown: false }}
+
+                />
+                <Stack.Screen
+                  name="Onboarding"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+              <CommentDrawer bottomSheetRef={bottomSheetRef} />
+            </GestureHandlerRootView>
+          </LikeContextProvider>
+        </CommentContextProvider>
+      </SocketContextProvider>
     </AuthProvider >
   );
 }
