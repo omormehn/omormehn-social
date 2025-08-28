@@ -7,6 +7,7 @@ interface MessageCardProps {
 }
 
 const MessageCard = ({ type, message }: MessageCardProps) => {
+    // TODO: Change border for sender and receiver
     return (
         <View >
             <View style={styles.container}>
