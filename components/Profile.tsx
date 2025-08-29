@@ -14,7 +14,7 @@ import Entypo from "react-native-vector-icons/Entypo"
 
 
 const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: { posts: any[], user: any, allowFollow?: boolean, followUser?: () => void, isFollowing?: boolean }) => {
-    const { user: data } = useAuth();
+    const { user: defaultUser } = useAuth();
     const { fetchLikes } = useLikes()!;
 
     const [focus, setFocus] = useState("Shots");
@@ -85,6 +85,29 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
         }
     }
 
+    const routeToChat = async () => {
+        try {
+            const { data: chat, error: err } = await supabase.from('chat').select('*').contains('users', [defaultUser?.id])
+            if (chat) {
+                //TODO: route to chat
+            } else {
+                const { data, error } = await supabase.from('chat').insert([{
+                    users: [defaultUser?.id, user?.id]
+                }])
+                console.log(data, 'suc')
+                if (error) {
+                    console.log(error, 'err')
+
+                }
+            }
+
+
+
+        } catch (error) {
+            console.log(error, 'catch')
+        }
+    }
+
     const renderProfileHeader = () => (
         <View className='w-full gap-4'>
 
@@ -97,7 +120,7 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                 {/* Username */}
                 <Text className='absolute left-1/2 -translate-x-1/2 top-12 text-white font-bold text-xl '>@{user?.username}</Text>
                 {/* Setting Icon */}
-                {data?.id === user.id && (
+                {defaultUser?.id === user.id && (
                     <TouchableOpacity onPress={() => router.push('/(screens)/Settings')} className='absolute right-5 top-12'>
                         <Image source={icon.settingsIcon} />
                     </TouchableOpacity>
@@ -175,14 +198,14 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                                     </TouchableOpacity>
                                 )}
                         </TouchableOpacity>
-                        <TouchableOpacity className='px-4 py-2 bg-gray-200 rounded-xl z-0'>
+                        <TouchableOpacity onPress={routeToChat} className='px-4 py-2 bg-gray-200 rounded-xl z-0'>
                             <Text>Message</Text>
                         </TouchableOpacity>
                     </View>
                 )}
 
                 {/* Socials */}
-                {data?.id === user.id && (
+                {defaultUser?.id === user.id && (
                     <View className='flex-row gap-8 py-2 items-center'>
                         <Icon size={20} color={'#8F90A7'} name='facebook' />
                         <View style={styles.seperator} />
@@ -249,7 +272,7 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                             data={posts}
                             renderItem={renderItem}
                             ListHeaderComponent={renderProfileHeader}
-                             keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(item, index) => index.toString()}
 
                         />
                     )}
