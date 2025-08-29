@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -6,13 +6,20 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
 import Chat from '@/components/container/Chat';
+import { useChats } from '@/hooks/useChats';
 
 const ChatScreen = () => {
     const { user } = useAuth();
     const [messages, setMessages] = React.useState([]);
 
+    const { chats } = useChats(user?.id)
+
+    const renderItem = ({ item }: { item: any }) => {
+        return <Chat id={item.chat.id} receiverName={item.receiver.username} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
+    }
+
     return (
-        <ScrollView stickyHeaderIndices={[0]} style={styles.container}>
+        <View style={styles.container}>
             {/* Screen Custom Header */}
             <View style={styles.header}>
                 <View className='mt-10 flex-row justify-between items-center'>
@@ -30,10 +37,14 @@ const ChatScreen = () => {
                     <Text className='text-primary font-semibold'>Requests</Text>
                 </View>
                 <View className='mt-10'>
-                    <Chat />
+                    <FlatList
+                        data={chats.data}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
                 </View>
             </View>
-        </ScrollView>
+        </View>
 
     )
 }

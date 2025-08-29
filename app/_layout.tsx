@@ -12,6 +12,7 @@ import CommentDrawer from "@/components/CommentDrawer";
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import LikeContextProvider from '@/context/LikeContext';
 import { SocketContextProvider } from '@/context/SocketContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 
@@ -20,34 +21,37 @@ import { SocketContextProvider } from '@/context/SocketContext';
 export default function RootLayout() {
 
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const queryClient = new QueryClient();
 
   return (
     <AuthProvider>
       <SocketContextProvider>
         <CommentContextProvider bottomSheetRef={bottomSheetRef}>
           <LikeContextProvider>
-            <GestureHandlerRootView >
-              <Stack >
-                <Stack.Screen
-                  name="(auth)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(tabs)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(screens)"
-                  options={{ headerShown: false }}
+            <QueryClientProvider client={queryClient}>
+              <GestureHandlerRootView >
+                <Stack >
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(screens)"
+                    options={{ headerShown: false }}
 
-                />
-                <Stack.Screen
-                  name="Onboarding"
-                  options={{ headerShown: false }}
-                />
-              </Stack>
-              <CommentDrawer bottomSheetRef={bottomSheetRef} />
-            </GestureHandlerRootView>
+                  />
+                  <Stack.Screen
+                    name="Onboarding"
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
+                <CommentDrawer bottomSheetRef={bottomSheetRef} />
+              </GestureHandlerRootView>
+            </QueryClientProvider>
           </LikeContextProvider>
         </CommentContextProvider>
       </SocketContextProvider>

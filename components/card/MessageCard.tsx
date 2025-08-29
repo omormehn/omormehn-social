@@ -2,15 +2,17 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
 interface MessageCardProps {
-    type?: string
+    type?: boolean
     message: string
+    time?: any
 }
 
-const MessageCard = ({ type, message }: MessageCardProps) => {
+const MessageCard = ({ type, message, time }: MessageCardProps) => {
     return (
-        <View >
-            <View style={styles.container}>
-                <Text>{message}</Text>
+        <View style={type ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}>
+            <View style={[styles.container, type ? { borderBottomLeftRadius: 16 } : { borderBottomRightRadius: 16 }]}>
+                <Text className='text-lg'>{message}</Text>
+                <Text className=''>{time}</Text>
             </View>
             <View style={styles.smaller}></View>
         </View>
@@ -22,9 +24,11 @@ export default MessageCard
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#888BF4',
-        paddingVertical: 20,
+        paddingVertical: 10,
         paddingHorizontal: 20,
-        borderBottomLeftRadius: 16
+        minWidth: 50,
+        maxWidth: '80%'
+
     },
     smaller: {
         backgroundColor: 'black',
@@ -36,5 +40,5 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
 
     }
-    
+
 })
