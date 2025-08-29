@@ -3,16 +3,26 @@ import React from 'react'
 import { router } from 'expo-router'
 
 interface ChatProp {
+    id: string
     receiverName: string
     lastMessage: string
     time: string
     avatar: string
 }
 
-const Chat = ({ receiverName, lastMessage, time, avatar }: ChatProp) => {
-    console.log('w', receiverName)
+const Chat = ({ id, receiverName, lastMessage, time, avatar }: ChatProp) => {
+    const routeToChat = () => {
+        if (!id) {
+            console.log('no id')
+            return;
+        }
+        router.push({
+            pathname: `/(screens)/Chats/${id}`,
+            params: {receiverName, avatar}
+        })
+    }
     return (
-        <TouchableOpacity onPress={() => router.push('/(screens)/MessageContainer')} style={styles.container}>
+        <TouchableOpacity onPress={routeToChat} style={styles.container}>
             <View className='flex-row gap-4'>
                 <Image source={{ uri: avatar }} className='size-14 rounded-full bg-gray-300' />
 

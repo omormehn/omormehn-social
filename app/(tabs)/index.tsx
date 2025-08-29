@@ -212,7 +212,7 @@ const HomeScreen = () => {
     }, [visibleVideo]);
 
 
-    
+
 
     return (
         <View className='flex-1'>
@@ -221,7 +221,7 @@ const HomeScreen = () => {
                 {/* Top 1 */}
                 <View className='flex-row px-6 pt-16 gap-2'>
                     <SearchBar />
-                    <TouchableOpacity onPress={() => router.push("/(screens)/ChatScreen")} className='bg-gray-100 py-4 px-4 rounded-full'>
+                    <TouchableOpacity onPress={() => router.push("/(screens)/Chats/ChatScreen")} className='bg-gray-100 py-4 px-4 rounded-full'>
                         <Icon name='send' size={20} />
                     </TouchableOpacity>
                 </View>

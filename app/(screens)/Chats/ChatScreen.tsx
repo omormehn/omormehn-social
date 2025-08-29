@@ -15,7 +15,7 @@ const ChatScreen = () => {
     const { chats } = useChats(user?.id)
 
     const renderItem = ({ item }: { item: any }) => {
-        return <Chat receiverName={item.receiver.username} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
+        return <Chat id={item.chat.id} receiverName={item.receiver.username} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
     }
 
     return (

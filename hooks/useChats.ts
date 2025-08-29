@@ -7,20 +7,22 @@ export const useChats = (userId: any) => {
         queryKey: ['chats', userId],
         queryFn: async () => {
             if (!userId) {
-                console.log('soigh')
+                console.log('No user id')
+                return;
             }
             const { data: chat, error } = await supabase
                 .from("chat")
                 .select("*")
                 .contains("users", [userId]).single()
             if (error) throw error
-            console.log('dtt', chat)
             const { data: receiver, error: userError } = await supabase
-                .from("profiles") // or "profiles" if you have a custom profile table
+                .from("profiles")
                 .select("id, username, avatar_url")
                 .in("id", chat.users.filter((id: any) => userId !== id)).single()
-            console.log('pr,', receiver)
-            console.log('errr', error)
+
+            if (userError) {
+                console.log('error getting participant', error)
+            }
             return [{ chat, receiver }]
         }
     });

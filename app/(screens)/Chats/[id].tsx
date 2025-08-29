@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import MessageInput from '@/components/container/MessageInput';
 import Feather from 'react-native-vector-icons/Feather';
 import MessageCard from '@/components/card/MessageCard';
@@ -10,6 +10,11 @@ import MessageCard from '@/components/card/MessageCard';
 
 
 const MessageContainer = () => {
+
+    const { receiverName, avatar, id } = useLocalSearchParams();
+
+
+
     return (
         <View style={styles.container}>
 
@@ -19,8 +24,8 @@ const MessageContainer = () => {
                     <View className='flex-row items-center gap-6'>
                         <AntDesign onPress={() => router.back()} name="arrowleft" size={24} color="black" />
                         <TouchableOpacity className='flex-row items-center gap-4'>
-                            <View className='size-10 rounded-full bg-gray-300' />
-                            <Text className='font-bold text-xl'>Peter</Text>
+                            <Image source={{ uri: avatar.toString() }} width={40} height={40} className='size-12 rounded-full bg-gray-300' />
+                            <Text className='font-bold text-xl'>{receiverName}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
