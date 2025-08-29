@@ -52,7 +52,7 @@ const MessageContainer = () => {
     // Todo: be at the bottom when focused
 
     const renderItem = ({ item }: { item: any }) => {
-        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} type={item.senderId === user?.id} /></View>
+        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} time={item.created_at} type={item.senderId === user?.id} /></View>
 
     }
     return (

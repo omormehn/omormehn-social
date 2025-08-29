@@ -17,8 +17,8 @@ const Chat = ({ id, receiverName, lastMessage, time, avatar }: ChatProp) => {
             return;
         }
         router.push({
-            pathname: `/(screens)/Chats/${id}`,
-            params: {receiverName, avatar}
+            pathname: `/(screens)/Chats/[id]`,
+            params: {receiverName, avatar, id}
         })
     }
     return (

@@ -26,7 +26,7 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
     const [toggleDropDown, setToggle] = useState(false)
     const { chats } = useChats(user?.id)
 
-//  TODO: BUG from navigaitng to 
+    //  TODO: BUG from navigaitng to 
 
 
     const toggleDrop = () => {
@@ -98,11 +98,11 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                 if (error) console.log(error)
                 else console.log(data, 'new chat created')
                 return
-            }            
+            }
 
             router.push({
-                pathname: `/(screens)/Chats/${chat.id}`,
-                params: { receiverName: user?.username, avatar: user?.avatar }
+                pathname: `/(screens)/Chats/[id]`,
+                params: { receiverName: user?.username!, avatar: user?.avatar!, id: chat.id }
             })
 
         } catch (error) {

@@ -4,13 +4,15 @@ import React from 'react'
 interface MessageCardProps {
     type?: boolean
     message: string
+    time?: any
 }
 
-const MessageCard = ({ type, message }: MessageCardProps) => {
+const MessageCard = ({ type, message, time }: MessageCardProps) => {
     return (
         <View style={type ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}>
             <View style={[styles.container, type ? { borderBottomLeftRadius: 16 } : { borderBottomRightRadius: 16 }]}>
                 <Text className='text-lg'>{message}</Text>
+                <Text className=''>{time}</Text>
             </View>
             <View style={styles.smaller}></View>
         </View>
@@ -26,7 +28,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         minWidth: 50,
         maxWidth: '80%'
-        // borderBottomLeftRadius: 16,
 
     },
     smaller: {
