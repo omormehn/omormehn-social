@@ -11,6 +11,7 @@ import { supabase } from '@/services/supabase';
 import dayjs from 'dayjs';
 import { useLikes } from '@/context/LikeContext';
 import Entypo from "react-native-vector-icons/Entypo"
+import { useChats } from '@/hooks/useChats';
 
 
 const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: { posts: any[], user: any, allowFollow?: boolean, followUser?: () => void, isFollowing?: boolean }) => {
@@ -23,14 +24,9 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
     const [count, setCount] = useState(0)
     const [toggleDropDown, setToggle] = useState(false)
+    const { chats } = useChats(user?.id)
 
-    // useEffect(() => {
-    //     const id = posts.map((p) => p.id)
-    //     async () => {
-    //         const data = await fetchLikes(id)
-    //     }
-
-    // })
+//  TODO: BUG from navigaitng to 
 
 
     const toggleDrop = () => {
@@ -87,26 +83,33 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
 
     const routeToChat = async () => {
         try {
-            const { data: chat, error: err } = await supabase.from('chat').select('*').contains('users', [defaultUser?.id])
-            if (chat) {
-                //TODO: route to chat
-            } else {
-                const { data, error } = await supabase.from('chat').insert([{
-                    users: [defaultUser?.id, user?.id]
-                }])
-                console.log(data, 'suc')
-                if (error) {
-                    console.log(error, 'err')
+            const { data: chats, error: err } = await supabase
+                .from('chat')
+                .select('*')
+                .contains('users', [defaultUser?.id])
 
-                }
-            }
+            let chat = chats?.[0]
 
 
+            if (!chat) {
+                const { data, error } = await supabase.from('chat').insert([
+                    { users: [defaultUser?.id, user?.id] }
+                ])
+                if (error) console.log(error)
+                else console.log(data, 'new chat created')
+                return
+            }            
+
+            router.push({
+                pathname: `/(screens)/Chats/${chat.id}`,
+                params: { receiverName: user?.username, avatar: user?.avatar }
+            })
 
         } catch (error) {
             console.log(error, 'catch')
         }
     }
+
 
     const renderProfileHeader = () => (
         <View className='w-full gap-4'>

@@ -2,7 +2,8 @@
 import { supabase } from "@/services/supabase"
 import { useQuery } from "@tanstack/react-query"
 
-export const useChats = (userId: any) => {
+export const useChats = (userId: any, chatId?: any) => {
+
     const chats = useQuery({
         queryKey: ['chats', userId],
         queryFn: async () => {
@@ -13,20 +14,41 @@ export const useChats = (userId: any) => {
             const { data: chat, error } = await supabase
                 .from("chat")
                 .select("*")
-                .contains("users", [userId]).single()
+                .contains("users", [userId])
+            console.log(error)
+          
             if (error) throw error
-            const { data: receiver, error: userError } = await supabase
+            const receiverIds = chat
+                .map(ch => ch.users.filter((id: string) => id !== userId))
+                .flat();
+            const { data: receivers, error: userError } = await supabase
                 .from("profiles")
                 .select("id, username, avatar_url")
-                .in("id", chat.users.filter((id: any) => userId !== id)).single()
+                .in("id", receiverIds)
 
             if (userError) {
                 console.log('error getting participant', error)
             }
-            return [{ chat, receiver }]
+            return chat.map(ch => {
+                const receiver = receivers?.find(r => ch.users.includes(r.id) && r.id !== userId);
+                return { chat: ch, receiver };
+            });
         }
     });
 
+    const messages = useQuery({
+        queryKey: ['messages', chatId],
+        queryFn: async () => {
+            if (!chatId) return [];
+            const { data, error } = await supabase.from('message').select('*').eq('chat_id', chatId)
 
-    return { chats }
+            if (error) {
+                console.log('err', error)
+            }
+            return data;
+        }
+    })
+
+
+    return { chats, messages }
 }

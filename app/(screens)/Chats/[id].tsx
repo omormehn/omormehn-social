@@ -1,20 +1,60 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
-import { ScrollView } from 'react-native-gesture-handler'
+import React, { useState } from 'react'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
 import MessageInput from '@/components/container/MessageInput';
 import Feather from 'react-native-vector-icons/Feather';
 import MessageCard from '@/components/card/MessageCard';
+import { supabase } from '@/services/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { useChats } from '@/hooks/useChats';
 
 
 
 const MessageContainer = () => {
-
+    const { user } = useAuth()
     const { receiverName, avatar, id } = useLocalSearchParams();
+    const { messages } = useChats(user?.id, id)
+
+
+    const [message, setMessage] = useState("");
 
 
 
+    const handleSend = async () => {
+        console.log("Message to send:", message);
+        const msg = message.trim()
+        if (msg.length == 0) return;
+        try {
+            const { data, error } = await supabase.from('message').insert([{
+                chat_id: id,
+                text: msg,
+                senderId: user?.id
+            }])
+
+            //TODO: Update last message
+
+            // const {data: update, error: err} = await supabase.from('chat').update()
+            console.log('dt', data)
+            setMessage("");
+
+            if (error) {
+                console.log('err', error)
+
+            }
+        } catch (error) {
+            console.log('error: ', error)
+        }
+
+    };
+
+    // Todo: be at the bottom when focused
+
+    const renderItem = ({ item }: { item: any }) => {
+        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} type={item.senderId === user?.id} /></View>
+
+    }
     return (
         <View style={styles.container}>
 
@@ -31,30 +71,18 @@ const MessageContainer = () => {
                 </View>
             </View>
             {/* Body */}
-            <ScrollView contentContainerStyle={{ paddingTop: 20, paddingBottom: 120, gap: 20, }} showsVerticalScrollIndicator={false} style={{ flex: 1, paddingHorizontal: 25 }} >
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
-                <View style={{ alignItems: 'flex-start' }} ><MessageCard message='wassup gee' /></View>
-                <View style={{ alignItems: 'flex-end' }} ><MessageCard message='wagwan' /></View>
+            <FlatList
+                data={messages.data}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={{ paddingTop: 40, paddingBottom: 120 }}
+            />
 
-
-            </ScrollView>
 
             {/* Bottom */}
             <View style={styles.inputContainer}>
-                <MessageInput />
-                <TouchableOpacity onPress={() => { }} className='bg-gray-100 py-4 px-4 rounded-full'>
+                <MessageInput value={message} onChange={setMessage} />
+                <TouchableOpacity onPress={handleSend} className='bg-gray-100 py-4 px-4 rounded-full'>
                     <Feather name='send' size={23} />
                 </TouchableOpacity>
             </View>
@@ -68,12 +96,13 @@ export default MessageContainer
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
     },
     header: {
         height: 100,
         backgroundColor: '#f8f8f8',
         paddingHorizontal: 20,
+
     },
     headerBody: {
         marginTop: 40,
@@ -89,7 +118,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'white',
+
         padding: 15,
 
     }
