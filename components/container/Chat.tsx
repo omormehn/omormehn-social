@@ -1,16 +1,24 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
+import { formatMessageTime } from '@/utils/formatTime'
+import IonIcons from 'react-native-vector-icons/Ionicons'
+import { useAuth } from '@/context/AuthContext'
+import { supabase } from '@/services/supabase'
 
 interface ChatProp {
     id: string
+    msgId: string
     receiverName: string
     lastMessage: string
     time: string
     avatar: string
+    users: []
 }
 
-const Chat = ({ id, receiverName, lastMessage, time, avatar }: ChatProp) => {
+const Chat = ({ id, receiverName, lastMessage, time, avatar, users, msgId }: ChatProp) => {
+    const { user } = useAuth();
+    const [message, setMessage] = useState<any>([])
     const routeToChat = () => {
         if (!id) {
             console.log('no id')
@@ -18,9 +26,17 @@ const Chat = ({ id, receiverName, lastMessage, time, avatar }: ChatProp) => {
         }
         router.push({
             pathname: `/(screens)/Chats/[id]`,
-            params: {receiverName, avatar, id}
+            params: { receiverName, avatar, id }
         })
     }
+    useEffect(() => {
+        async function test() {
+            const message = await supabase.from('message').select('*').eq('id', msgId)
+            setMessage(message.data?.[0])
+        }
+        test()
+    }, [])
+    console.log('m',message)
     return (
         <TouchableOpacity onPress={routeToChat} style={styles.container}>
             <View className='flex-row gap-4'>
@@ -28,12 +44,17 @@ const Chat = ({ id, receiverName, lastMessage, time, avatar }: ChatProp) => {
 
                 <View className='flex-col gap-'>
                     <Text className='font-bold text-xl'>{receiverName}</Text>
-                    <Text>{lastMessage}</Text>
+                    <View className='flex-row items-center gap-2'>
+                        {message?.senderId === user?.id && (
+                            <IonIcons size={16} name='checkmark-outline' />
+                        )}
+                        <Text>{lastMessage}</Text>
+                    </View>
                 </View>
             </View>
 
             <View className='items-end text-end'>
-                <Text>{time}</Text>
+                <Text>{formatMessageTime(time)}</Text>
             </View>
         </TouchableOpacity>
     )

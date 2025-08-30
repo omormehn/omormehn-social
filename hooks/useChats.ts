@@ -3,7 +3,9 @@ import { supabase } from "@/services/supabase"
 import { useQuery } from "@tanstack/react-query"
 
 export const useChats = (userId: any, chatId?: any) => {
-
+    // if (!userId) {
+    //     return null
+    // }
     const chats = useQuery({
         queryKey: ['chats', userId],
         queryFn: async () => {
@@ -16,7 +18,7 @@ export const useChats = (userId: any, chatId?: any) => {
                 .select("*")
                 .contains("users", [userId])
             console.log(error)
-          
+
             if (error) throw error
             const receiverIds = chat
                 .map(ch => ch.users.filter((id: string) => id !== userId))
@@ -47,7 +49,8 @@ export const useChats = (userId: any, chatId?: any) => {
             }
             return data;
         }
-    })
+    });
+
 
 
     return { chats, messages }

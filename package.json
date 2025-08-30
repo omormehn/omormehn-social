@@ -29,6 +29,7 @@
     "@tanstack/react-query": "^5.85.5",
     "base64-arraybuffer": "^1.0.2",
     "buffer": "^6.0.3",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "expo": "^53.0.9",
     "expo-application": "~6.1.4",

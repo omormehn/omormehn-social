@@ -23,7 +23,6 @@ const MessageContainer = () => {
 
 
     const handleSend = async () => {
-        console.log("Message to send:", message);
         const msg = message.trim()
         if (msg.length == 0) return;
         try {
@@ -31,12 +30,16 @@ const MessageContainer = () => {
                 chat_id: id,
                 text: msg,
                 senderId: user?.id
-            }])
+            }]).select().single()
+            console.log('id', data)
+            // console.log('msg', msg)
 
             //TODO: Update last message
+            const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg, message: data?.id }).eq('id', id)
+            if (err) {
+                console.log('failed to update message', err)
+            }
 
-            // const {data: update, error: err} = await supabase.from('chat').update()
-            console.log('dt', data)
             setMessage("");
 
             if (error) {
