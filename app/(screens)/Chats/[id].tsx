@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -9,43 +9,78 @@ import MessageCard from '@/components/card/MessageCard';
 import { supabase } from '@/services/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useChats } from '@/hooks/useChats';
-
-
+import { useSocket } from '@/context/SocketContext';
 
 const MessageContainer = () => {
     const { user } = useAuth()
     const { receiverName, avatar, id } = useLocalSearchParams();
     const { messages } = useChats(user?.id, id)
+    const { socket } = useSocket()
+
 
 
     const [message, setMessage] = useState("");
+    const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages.data ?? [])
 
+
+    useEffect(() => {
+        setRealTimeMessages(messages.data ?? [])
+    }, [messages.data])
+
+    // Drop received message
+    useEffect(() => {
+        console.log('ss')
+        socket?.on('receiveMessage', (data) => {
+            console.log('dt', data)
+        })
+
+        return () => {
+            socket?.off('receiveMessage')
+        }
+    }, [message, socket])
 
 
     const handleSend = async () => {
         const msg = message.trim()
         if (msg.length == 0) return;
+
+
+        const tempMessage = {
+            id: Date.now(),
+            text: msg,
+            senderId: user?.id,
+            chat_id: id,
+            created_at: Date.now()
+        }
+        console.log('m', msg)
+        setRealTimeMessages((prev) => {
+            return [...prev, tempMessage]
+        })
         try {
             const { data, error } = await supabase.from('message').insert([{
                 chat_id: id,
                 text: msg,
                 senderId: user?.id
             }]).select().single()
-            console.log('id', data)
-            // console.log('msg', msg)
+            if (error) {
+                console.log('err', error)
+            }
 
-            //TODO: Update last message
-            const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg, message: data?.id }).eq('id', id)
+            const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg, message: data?.id }).eq('id', id).select().single()
+
             if (err) {
                 console.log('failed to update message', err)
             }
+            const receiverId = chatData.users.filter((ch: any) => ch !== user?.id)[0]
 
-            setMessage("");
 
-            if (error) {
-                console.log('err', error)
+            socket?.emit('sendMessage', {
+                receiverId,
+                data
+            });
 
-            }
+            setMessage("")
+
         } catch (error) {
             console.log('error: ', error)
         }
@@ -55,7 +90,7 @@ const MessageContainer = () => {
     // Todo: be at the bottom when focused
 
     const renderItem = ({ item }: { item: any }) => {
-        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} time={item.created_at} type={item.senderId === user?.id} /></View>
+        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} time={item.created_at} type={item.senderId  === user?.id} /></View>
 
     }
     return (
@@ -75,7 +110,7 @@ const MessageContainer = () => {
             </View>
             {/* Body */}
             <FlatList
-                data={messages.data}
+                data={realTimeMessages}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 contentContainerStyle={{ paddingTop: 40, paddingBottom: 120 }}

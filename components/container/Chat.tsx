@@ -36,7 +36,7 @@ const Chat = ({ id, receiverName, lastMessage, time, avatar, users, msgId }: Cha
         }
         test()
     }, [])
-    console.log('m',message)
+   
     return (
         <TouchableOpacity onPress={routeToChat} style={styles.container}>
             <View className='flex-row gap-4'>

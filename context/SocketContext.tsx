@@ -9,6 +9,7 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
     const { user } = useAuth()
     const [onlineUsers, setOnlineUsers] = useState<[]>([])
     const [socket, setSocket] = useState<Socket | null>(null);
+
     useEffect(() => {
         try {
             const socket = io(process.env.EXPO_PUBLIC_SOCKET_URL, {
@@ -18,6 +19,9 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
                 },
             });
             socket.connect();
+            socket.on('connect', () => {
+                console.log('connected', socket.id)
+            })
             setSocket(socket)
 
             return () => {
@@ -27,6 +31,7 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
 
         }
     }, [user]);
+    console.log('s', socket?.connected)
 
     useEffect(() => {
         socket?.on('getOnlineUsers', (onlineUsers) => {
