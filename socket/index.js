@@ -1,33 +1,35 @@
-// const { Server } = require("socket.io");
 
-// const io = new Server({ cors: { origin: "*" } });
+const { Server } = require("socket.io");
 
-// const onlineUsers = {}; //map user id to socket
+const io = new Server({ cors: { origin: "*" } });
 
-// const getUser = (userId) => {
-//   return onlineUsers[userId];
-// };
+const onlineUsers = {}; //map user id to socket
 
-// io.on("connection", (socket) => {
-//   console.log("connected", socket.id);
-//   const userId = socket.handshake.query.userId;
+const getUser = (userId) => {
+  return onlineUsers[userId];
+};
+console.log(onlineUsers)
+io.on("connection", (socket) => {
+  console.log("connected", socket.id);
+  const userId = socket.handshake.query.userId;
 
-//   if (userId) {
-//     onlineUsers[userId] = socket.id;
-//   }
+  if (userId) {
+    onlineUsers[userId] = socket.id;
+  }
 
-//   socket.on('sendMessage', (receiverId, data) => {
-//     const user = getUser(receiverId)
-//     if(user) {
-//       io.to(receiverId).emit('receiveMessage', data)
-//     }
-//   })
+
+  socket.on('sendMessage', ({data, receiverId}) => {
+    const user = getUser(receiverId)
+    if(user) {
+      io.to(user).emit('receiveMessage', data)
+    }
+  })
  
 
-//   socket.on("disconnect", () => {
-//     delete onlineUsers[userId];
-//     io.emit("getOnlineUsers", Object.keys(onlineUsers));
-//   });
-// });
+  socket.on("disconnect", () => {
+    delete onlineUsers[userId];
+    io.emit("getOnlineUsers", Object.keys(onlineUsers));
+  });
+});
 
-// io.listen(5005);
+io.listen(5000 );
