@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -21,7 +21,7 @@ const MessageContainer = () => {
 
     const [message, setMessage] = useState("");
     const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages.data ?? [])
-
+    const flatListRef = useRef<FlatList>(null)
 
     useEffect(() => {
         setRealTimeMessages(messages.data ?? [])
@@ -38,7 +38,13 @@ const MessageContainer = () => {
             socket?.off('receiveMessage')
         }
     }, [message, socket])
-
+    useEffect(() => {
+        if (realTimeMessages.length > 0) {
+            setTimeout(() => {
+                flatListRef.current?.scrollToEnd({ animated: false });
+            }, 100);
+        }
+    }, [realTimeMessages]);
 
     const handleSend = async () => {
         const msg = message.trim()
@@ -52,10 +58,12 @@ const MessageContainer = () => {
             chat_id: id,
             created_at: Date.now()
         }
-        console.log('m', msg)
         setRealTimeMessages((prev) => {
             return [...prev, tempMessage]
         })
+        setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
         try {
             const { data, error } = await supabase.from('message').insert([{
                 chat_id: id,
@@ -88,9 +96,11 @@ const MessageContainer = () => {
     };
 
     // Todo: be at the bottom when focused
+    const reversedMessages = [...realTimeMessages].reverse();
+
 
     const renderItem = ({ item }: { item: any }) => {
-        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} time={item.created_at} type={item.senderId  === user?.id} /></View>
+        return <View style={{ marginBottom: 15, paddingHorizontal: 20 }} ><MessageCard message={item.text} time={item.created_at} type={item.senderId === user?.id} /></View>
 
     }
     return (
@@ -110,10 +120,18 @@ const MessageContainer = () => {
             </View>
             {/* Body */}
             <FlatList
-                data={realTimeMessages}
+                data={reversedMessages}
                 renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                contentContainerStyle={{ paddingTop: 40, paddingBottom: 120 }}
+                keyExtractor={(item) => String(item.id)}
+                contentContainerStyle={{ paddingTop: 120, paddingBottom: 40}}
+                inverted
+                showsVerticalScrollIndicator={true}
+                onContentSizeChange={() => {
+                    if (realTimeMessages.length > 0) {
+                        flatListRef.current?.scrollToEnd({ animated: false });
+                    }
+                }}
+
             />
 
 
