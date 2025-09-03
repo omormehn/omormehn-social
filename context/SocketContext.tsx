@@ -19,9 +19,6 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
                 },
             });
             socket.connect();
-            socket.on('connect', () => {
-                console.log('connected', socket.id)
-            })
             setSocket(socket)
 
             return () => {
@@ -31,7 +28,6 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
 
         }
     }, [user]);
-    console.log('s', socket?.connected)
 
     useEffect(() => {
         socket?.on('getOnlineUsers', (onlineUsers) => {

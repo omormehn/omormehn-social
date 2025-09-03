@@ -10,18 +10,18 @@ import { supabase } from '@/services/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useChats } from '@/hooks/useChats';
 import { useSocket } from '@/context/SocketContext';
+import useSocketEvents from '@/hooks/useSocketEvents';
 
 const MessageContainer = () => {
     const { user } = useAuth()
     const { receiverName, avatar, id } = useLocalSearchParams();
     const { messages } = useChats(user?.id, id)
-    const { socket } = useSocket()
-
+    const { socket } = useSocket();
 
 
     const [message, setMessage] = useState("");
     const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages.data ?? [])
-    const flatListRef = useRef<FlatList>(null)
+    const flatListRef = useRef<FlatList>(null);
 
     useEffect(() => {
         setRealTimeMessages(messages.data ?? [])
@@ -29,15 +29,15 @@ const MessageContainer = () => {
 
     // Drop received message
     useEffect(() => {
-        console.log('ss')
         socket?.on('receiveMessage', (data) => {
-            console.log('dt', data)
         })
 
         return () => {
             socket?.off('receiveMessage')
         }
     }, [message, socket])
+
+
     useEffect(() => {
         if (realTimeMessages.length > 0) {
             setTimeout(() => {
@@ -84,6 +84,7 @@ const MessageContainer = () => {
 
             socket?.emit('sendMessage', {
                 receiverId,
+                userId: user?.id,
                 data
             });
 
@@ -123,7 +124,7 @@ const MessageContainer = () => {
                 data={reversedMessages}
                 renderItem={renderItem}
                 keyExtractor={(item) => String(item.id)}
-                contentContainerStyle={{ paddingTop: 120, paddingBottom: 40}}
+                contentContainerStyle={{ paddingTop: 120, paddingBottom: 40 }}
                 inverted
                 showsVerticalScrollIndicator={true}
                 onContentSizeChange={() => {

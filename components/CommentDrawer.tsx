@@ -57,7 +57,7 @@ const CommentDrawer = ({ bottomSheetRef }: Prop) => {
 
         try {
             await addComment(user?.id, user?.username!, comment.trim(), currentPost.id, user?.avatar!);
-            console.log(currentPost)
+           
             setComment("")
             Keyboard.dismiss()
         } catch (error) {

@@ -117,7 +117,7 @@ const CameraScreen = () => {
   const stopRecording = () => {
     if (recording && ref.current) {
       ref.current.stopRecording();
-      console.log('Recording stopped');
+      
     }
   };
 
@@ -151,7 +151,6 @@ const CameraScreen = () => {
             facing={facing}
             mute={false}
             onCameraReady={() => {
-              console.log('camera is ready')
               setCameraReady(true)
             }}
           />

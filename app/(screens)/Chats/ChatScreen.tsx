@@ -7,17 +7,44 @@ import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
 import Chat from '@/components/container/Chat';
 import { useChats } from '@/hooks/useChats';
+import useSocketEvents from '@/hooks/useSocketEvents';
+import { useSocket } from '@/context/SocketContext';
+import { supabase } from '@/services/supabase';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ChatScreen = () => {
+    const queryClient = useQueryClient()
     const { user } = useAuth();
-    const [messages, setMessages] = React.useState([]);
-
+    const { socket } = useSocket()
     const { chats } = useChats(user?.id)
+    // console.log(chats.data)
+
+    useSocketEvents(socket, {
+        updateLastMessage: async (data: any) => {          
+            queryClient.setQueryData(['chats', user?.id], (oldData: any) => {
+                if (!oldData) return oldData
+
+                return oldData.map((ch: any) => {
+                    if (ch.chat.id === data.chat_id) {
+                        return {
+                            ...ch,
+                            chat: {
+                                ...ch.chat,
+                                last_message: data.text,
+                                message: data.id,
+                            },
+                        }
+                    }
+                    return ch
+                })
+            })
+        }
+    })
 
     const renderItem = ({ item }: { item: any }) => {
         return <Chat id={item.chat.id} receiverName={item.receiver.username} users={item.chat.users} msgId={item.chat.message} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
     }
-   
+
 
     return (
         <View style={styles.container}>

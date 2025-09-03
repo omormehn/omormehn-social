@@ -39,9 +39,9 @@ const Register = () => {
 
     const handleSubmit = async () => {
         try {
-            console.log(username)
+            
             const { data, error } = await supabase.auth.signUp({ email, password });
-            console.log('user', data)
+           
             if (!error && data) {
                 const { error } = await supabase.from('profiles').insert([
                     {
@@ -49,8 +49,7 @@ const Register = () => {
                         username: username
                     }
                 ]);
-                console.log('inside if', data)
-                console.log('inside if error is', error)
+           
             }
             if (error) {
                 console.log("Error in reg", error);

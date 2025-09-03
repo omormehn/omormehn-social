@@ -96,7 +96,6 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                     { users: [defaultUser?.id, user?.id] }
                 ])
                 if (error) console.log(error)
-                else console.log(data, 'new chat created')
                 return
             }
 
