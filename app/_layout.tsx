@@ -24,11 +24,12 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
 
   return (
-    <AuthProvider>
-      <SocketContextProvider>
-        <CommentContextProvider bottomSheetRef={bottomSheetRef}>
-          <LikeContextProvider>
-            <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+
+      <AuthProvider>
+        <SocketContextProvider>
+          <CommentContextProvider bottomSheetRef={bottomSheetRef}>
+            <LikeContextProvider>
               <GestureHandlerRootView >
                 <Stack >
                   <Stack.Screen
@@ -51,10 +52,12 @@ export default function RootLayout() {
                 </Stack>
                 <CommentDrawer bottomSheetRef={bottomSheetRef} />
               </GestureHandlerRootView>
-            </QueryClientProvider>
-          </LikeContextProvider>
-        </CommentContextProvider>
-      </SocketContextProvider>
-    </AuthProvider >
+            </LikeContextProvider>
+          </CommentContextProvider>
+        </SocketContextProvider>
+      </AuthProvider >
+    </QueryClientProvider>
+
+
   );
 }

@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 
 export const formatMessageTime = (messageTime: string) => {
+    if (!messageTime) return;
     const now = new Date();
     const msgDate = new Date(messageTime);
 

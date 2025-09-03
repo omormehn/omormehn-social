@@ -16,33 +16,36 @@ const ChatScreen = () => {
     const queryClient = useQueryClient()
     const { user } = useAuth();
     const { socket } = useSocket()
-    const { chats } = useChats(user?.id)
-    // console.log(chats.data)
+    const { chats } = useChats(user?.id!)
 
     useSocketEvents(socket, {
-        updateLastMessage: async (data: any) => {          
+        updateLastMessage: async (data: any) => {
+            console.log('dt', data)
             queryClient.setQueryData(['chats', user?.id], (oldData: any) => {
                 if (!oldData) return oldData
 
                 return oldData.map((ch: any) => {
                     if (ch.chat.id === data.chat_id) {
+                        console.log('ch', ch)
                         return {
                             ...ch,
                             chat: {
                                 ...ch.chat,
-                                last_message: data.text,
-                                message: data.id,
+                                lastMessage: data.text,
+                                lastMessageTime: data.created_at,
+                                lastMessageSender: data.senderId,
                             },
                         }
                     }
                     return ch
                 })
+              
             })
         }
     })
 
     const renderItem = ({ item }: { item: any }) => {
-        return <Chat id={item.chat.id} receiverName={item.receiver.username} users={item.chat.users} msgId={item.chat.message} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
+        return <Chat id={item.chat.id} receiverName={item.chat.receiver.username} users={item.chat.users} msgId={item.chat.message} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.chat.receiver.avatar_url} />
     }
 
 
@@ -66,7 +69,7 @@ const ChatScreen = () => {
                 </View>
                 <View className='mt-10'>
                     <FlatList
-                        data={chats.data}
+                        data={chats?.data}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => index.toString()}
                     />

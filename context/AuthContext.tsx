@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContextType, CustomUser } from "@/types/types";
 import { Session } from '@supabase/supabase-js'
 import { supabase } from "@/services/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
@@ -14,6 +15,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const router = useRouter();
     const segments = useSegments();
+    const queryClient = useQueryClient()
+
 
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
@@ -105,9 +108,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const logout = async () => {
+        await supabase.auth.signOut();
+        queryClient.removeQueries({queryKey: ['chats']})
+        queryClient.removeQueries({queryKey: ['messages']})
         setSession(null);
         setUser(null);
-        await supabase.auth.signOut();
     }
 
     return (

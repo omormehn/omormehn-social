@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -15,27 +15,19 @@ import useSocketEvents from '@/hooks/useSocketEvents';
 const MessageContainer = () => {
     const { user } = useAuth()
     const { receiverName, avatar, id } = useLocalSearchParams();
-    const { messages } = useChats(user?.id, id)
+    const { messages } = useChats(user?.id!, id)
     const { socket } = useSocket();
 
 
     const [message, setMessage] = useState("");
-    const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages.data ?? [])
+    const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages?.data ?? [])
     const flatListRef = useRef<FlatList>(null);
 
     useEffect(() => {
-        setRealTimeMessages(messages.data ?? [])
-    }, [messages.data])
+        setRealTimeMessages(messages?.data ?? [])
+    }, [messages?.data])
 
-    // Drop received message
-    useEffect(() => {
-        socket?.on('receiveMessage', (data) => {
-        })
 
-        return () => {
-            socket?.off('receiveMessage')
-        }
-    }, [message, socket])
 
 
     useEffect(() => {
@@ -58,6 +50,7 @@ const MessageContainer = () => {
             chat_id: id,
             created_at: Date.now()
         }
+        setMessage("")
         setRealTimeMessages((prev) => {
             return [...prev, tempMessage]
         })
@@ -74,7 +67,7 @@ const MessageContainer = () => {
                 console.log('err', error)
             }
 
-            const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg, message: data?.id }).eq('id', id).select().single()
+            const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg }).eq('id', id).select().single()
 
             if (err) {
                 console.log('failed to update message', err)
@@ -98,6 +91,7 @@ const MessageContainer = () => {
 
     // Todo: be at the bottom when focused
     const reversedMessages = [...realTimeMessages].reverse();
+    
 
 
     const renderItem = ({ item }: { item: any }) => {
