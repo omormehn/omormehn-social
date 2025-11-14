@@ -23,7 +23,7 @@ export const useChats = (userId?: string, chatId?: any) => {
                 ).order('created_at', { referencedTable: "message", ascending: false })
                 .limit(1, { referencedTable: 'message' })
                 .contains("users", [userId!])
-            console.log('err', error)
+            error && console.log('err', error)
 
             if (error) throw error
 

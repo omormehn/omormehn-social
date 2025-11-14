@@ -20,6 +20,8 @@ const MessageContainer = () => {
 
 
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false)
+    const [messageError, setMessageError] = useState(false)
     const [realTimeMessages, setRealTimeMessages] = useState<any[]>(messages?.data ?? [])
     const flatListRef = useRef<FlatList>(null);
 
@@ -39,9 +41,9 @@ const MessageContainer = () => {
     }, [realTimeMessages]);
 
     const handleSend = async () => {
+        setLoading(true)
         const msg = message.trim()
         if (msg.length == 0) return;
-
 
         const tempMessage = {
             id: Date.now(),
@@ -50,7 +52,8 @@ const MessageContainer = () => {
             chat_id: id,
             created_at: Date.now()
         }
-        setMessage("")
+        
+        setMessage("");
         setRealTimeMessages((prev) => {
             return [...prev, tempMessage]
         })
@@ -70,6 +73,7 @@ const MessageContainer = () => {
             const { data: chatData, error: err } = await supabase.from('chat').update({ last_message: msg }).eq('id', id).select().single()
 
             if (err) {
+                setMessageError(true)
                 console.log('failed to update message', err)
             }
             const receiverId = chatData.users.filter((ch: any) => ch !== user?.id)[0]
@@ -85,13 +89,19 @@ const MessageContainer = () => {
 
         } catch (error) {
             console.log('error: ', error)
+            setMessage("");
+            setRealTimeMessages((prev) => {
+                return [prev]
+            })
+        } finally {
+            setLoading(false)
         }
 
     };
 
     // Todo: be at the bottom when focused
     const reversedMessages = [...realTimeMessages].reverse();
-    
+
 
 
     const renderItem = ({ item }: { item: any }) => {

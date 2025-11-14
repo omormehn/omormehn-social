@@ -25,7 +25,7 @@ const HomeScreen = () => {
 
     const [focus, setFocus] = useState('Popular');
     const { user } = useAuth();
-    
+
 
 
 

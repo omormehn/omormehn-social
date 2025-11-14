@@ -8,29 +8,21 @@ import { supabase } from '@/services/supabase'
 import useSocketEvents from '@/hooks/useSocketEvents'
 import { useSocket } from '@/context/SocketContext'
 import { useChats } from '@/hooks/useChats'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface ChatProp {
     id: string
-    msgId: string
     receiverName: string
-    lastMessage: string
-    time: string
     avatar: string
-    users: []
 }
 
-const Chat = ({ id, receiverName, lastMessage, time, avatar, users, msgId }: ChatProp) => {
+const Chat = ({ id, receiverName, avatar }: ChatProp) => {
     const { user } = useAuth();
-    const [message, setMessage] = useState<any>([])
-    const [chat, setChat] = useState<any>()
+    const queryClient = useQueryClient()    
     const { socket } = useSocket()
     const { chats } = useChats(user?.id!)
 
-
-    useEffect(() => {
-        const chat = chats.data?.filter((ch) => ch.chat.id === id).flat()
-        setChat(chat?.[0].chat)
-    }, [])
+    const chat = chats.data?.find((ch) => ch.chat.id === id)?.chat
 
 
     const routeToChat = () => {
@@ -44,19 +36,31 @@ const Chat = ({ id, receiverName, lastMessage, time, avatar, users, msgId }: Cha
         })
     }
     useSocketEvents(socket, {
-        updateLastMessage: async (data) => {
-            const message = await supabase.from('message').select('*').eq('id', msgId)
-            setMessage(message.data?.[0])
-        },
+        updateLastMessage: async (data: any) => {
+            console.log('update last message', data)
+            queryClient.setQueryData(['chats', user?.id], (oldData: any) => {
+                if (!oldData) return oldData
+
+                return oldData.map((ch: any) => {
+                    if (ch.chat.id === data.chat_id) {
+                        return {
+                            ...ch,
+                            chat: {
+                                ...ch.chat,
+                                lastMessage: data.text,
+                                lastMessageTime: data.created_at,
+                                lastMessageSender: data.senderId,
+                            },
+                        }
+                    }
+                    console.log('chat', ch)
+                    return ch
+                })
+
+            })
+        }
     })
 
-    useEffect(() => {
-        async function test() {
-            const message = await supabase.from('message').select('*').eq('id', msgId)
-            setMessage(message.data?.[0])
-        }
-        test()
-    }, [])
 
     return (
         <TouchableOpacity onPress={routeToChat} style={styles.container}>
