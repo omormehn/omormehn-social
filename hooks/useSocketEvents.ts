@@ -7,21 +7,25 @@ import { Socket } from 'socket.io-client';
 
 interface SocketEvents {
     updateLastMessage?: (data: any) => void
+    receiveMessage?: (data: any) => void
 }
 
-const useSocketEvents = (socket: Socket | null, { updateLastMessage }: SocketEvents) => {
+const useSocketEvents = (socket: Socket | null, { updateLastMessage, receiveMessage }: SocketEvents) => {
 
     useEffect(() => {
         updateLastMessage && socket?.on('updateLastMessage', updateLastMessage)
-
+        receiveMessage && socket?.on('receiveMessage', receiveMessage)
 
         return () => {
             socket?.off('updateLastMessage', updateLastMessage)
+            socket?.off('receiveMessage', receiveMessage)
         };
-    }, [socket, updateLastMessage]);
 
 
-    return { updateLastMessage };
+    }, [socket, updateLastMessage, receiveMessage]);
+
+
+    return { updateLastMessage, receiveMessage };
 
 }
 
