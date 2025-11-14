@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { formatMessageTime } from '@/utils/formatTime'
 
 interface MessageCardProps {
     type?: boolean
@@ -12,11 +13,11 @@ const MessageCard = ({ type, message, time }: MessageCardProps) => {
         <View style={type ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}>
             <View style={[styles.container, type ? { borderBottomLeftRadius: 16 } : { borderBottomRightRadius: 16 }]}>
                 <Text className='text-lg'>{message}</Text>
-                <Text className=''>{time}</Text>
+                <Text className='text-end text-sm absolute bottom-1 right-2'>{formatMessageTime(time)}</Text>
             </View>
             <View style={styles.smaller}></View>
         </View>
-    )
+    );
 }
 
 export default MessageCard
@@ -24,7 +25,7 @@ export default MessageCard
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#888BF4',
-        paddingVertical: 10,
+        paddingVertical: 20,
         paddingHorizontal: 20,
         minWidth: 50,
         maxWidth: '80%'

@@ -8,15 +8,17 @@ import { router } from 'expo-router';
 import Chat from '@/components/container/Chat';
 import { useChats } from '@/hooks/useChats';
 
+
 const ChatScreen = () => {
     const { user } = useAuth();
-    const [messages, setMessages] = React.useState([]);
+    const { chats } = useChats(user?.id!)
 
-    const { chats } = useChats(user?.id)
+
 
     const renderItem = ({ item }: { item: any }) => {
-        return <Chat id={item.chat.id} receiverName={item.receiver.username} lastMessage={item.chat.last_message} time={item.chat.created_at} avatar={item.receiver.avatar_url} />
+        return <Chat id={item.chat.id} receiverName={item.chat.receiver.username}  avatar={item.chat.receiver.avatar_url} />
     }
+
 
     return (
         <View style={styles.container}>
@@ -38,7 +40,7 @@ const ChatScreen = () => {
                 </View>
                 <View className='mt-10'>
                     <FlatList
-                        data={chats.data}
+                        data={chats?.data}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => index.toString()}
                     />

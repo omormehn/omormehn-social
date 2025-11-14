@@ -18,7 +18,6 @@ export const CommentContextProvider = ({ children, bottomSheetRef }: { children:
         setCurrentPost({ id: postId, uploader });
         bottomSheetRef.current?.expand();
         await fetchComments(postId);
-        console.log("open", postId)
     }, []);
 
     const fetchComments = async (postId: string) => {
@@ -83,7 +82,6 @@ export const CommentContextProvider = ({ children, bottomSheetRef }: { children:
                     avatar: avatar
                 }])
                 .select();
-            console.log(comment, postId, username, userId)
             if (error) {
                 console.error('Error inserting comment:', error);
             }

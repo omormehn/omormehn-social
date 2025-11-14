@@ -3,22 +3,29 @@ import React, { useEffect } from 'react'
 
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { Socket } from 'socket.io-client';
 
-const useSocketEvents = () => {
-    const { socket } = useSocket()
+interface SocketEvents {
+    updateLastMessage?: (data: any) => void
+    receiveMessage?: (data: any) => void
+}
+
+const useSocketEvents = (socket: Socket | null, { updateLastMessage, receiveMessage }: SocketEvents) => {
 
     useEffect(() => {
-
+        updateLastMessage && socket?.on('updateLastMessage', updateLastMessage)
+        receiveMessage && socket?.on('receiveMessage', receiveMessage)
 
         return () => {
-            socket?.off("connect");
-            socket?.off("disconnect");
-            socket?.disconnect();
+            socket?.off('updateLastMessage', updateLastMessage)
+            socket?.off('receiveMessage', receiveMessage)
         };
-    }, []);
 
 
-    return { socket };
+    }, [socket, updateLastMessage, receiveMessage]);
+
+
+    return { updateLastMessage, receiveMessage };
 
 }
 

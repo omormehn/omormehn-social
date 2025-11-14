@@ -103,7 +103,7 @@ const ProfileView = () => {
                     }
                 })
             );
-            // console.log('postd', posts)
+          
             setPosts(posts);
         } catch (error) {
             console.log('error in fetch', error)

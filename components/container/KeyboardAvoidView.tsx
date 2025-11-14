@@ -15,6 +15,5 @@ const KeyboardAvoidWrapper = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-const styles = StyleSheet.create({})
 
 export default KeyboardAvoidWrapper;

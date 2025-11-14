@@ -5,6 +5,7 @@ import { bg } from '@/constants/bg';
 import Icon from 'react-native-vector-icons/Feather'
 import SettingOption from '@/components/SettingOption';
 import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 const SettingScreen = () => {
 

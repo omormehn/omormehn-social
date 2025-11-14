@@ -14,13 +14,13 @@ import { supabase } from '@/services/supabase'
 const EditProfile = () => {
 
     const { user, updateUser } = useAuth();
-    // console.log(user?.id)
+
 
     const [email, setEmail] = useState(user?.email);
     const [name, setName] = useState(user?.username);
     const [loading, setLoading] = useState(false);
     const [uri, setUri] = useState(user?.avatar);
-    console.log(uri)
+ 
 
     const handleSubmit = async () => {
         setLoading(true)
@@ -44,7 +44,7 @@ const EditProfile = () => {
                 if (profileDataError) {
                     console.log("error in profile insert")
                 }
-                console.log(ll)
+              
 
             } catch (error) {
                 console.log("error in error", error)
@@ -71,7 +71,7 @@ const EditProfile = () => {
         });
         if (!imagePicker.canceled) {
             setUri(imagePicker.assets[0].uri)
-            console.log(imagePicker?.assets[0].uri)
+           
         }
     }
 
