@@ -16,6 +16,12 @@ const ChatScreen = () => {
 
 
     const renderItem = ({ item }: { item: any }) => {
+        const receiver = item.chat.receiver;
+        if (!receiver) {
+            //TODO: SHOW skeleton loader 
+            return null;
+        }
+
         return <Chat id={item.chat.id} receiverName={item.chat.receiver.username}  avatar={item.chat.receiver.avatar_url} />
     }
 
@@ -42,7 +48,7 @@ const ChatScreen = () => {
                     <FlatList
                         data={chats?.data}
                         renderItem={renderItem}
-                        keyExtractor={(item, index) => index.toString()}
+                        keyExtractor={(item) => item.chat.id}
                     />
                 </View>
             </View>

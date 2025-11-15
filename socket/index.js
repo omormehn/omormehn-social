@@ -17,13 +17,15 @@ io.on("connection", (socket) => {
   }
 
   socket.on("sendMessage", ({ data, receiverId, userId }) => {
-    const user = getUser(receiverId);
-    const primary = getUser(userId);
-    if (user) {
-      io.to(user).emit("receiveMessage", data);
+    const receiver = getUser(receiverId);
+    const sender = getUser(userId);
+    if (receiver) {
+      io.to(receiver).emit("receiveMessage", data);
     }
-    if (primary || user) {
-      io.to(primary, user).emit("updateLastMessage", data);
+
+    const targets = [sender, receiver].filter(Boolean);
+    if (targets.length) {
+      io.to(targets).emit("updateLastMessage", data);
     }
   });
 

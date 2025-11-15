@@ -4,5 +4,6 @@
         "onchangetext",
         "Pressable",
         "Useni"
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
 }
