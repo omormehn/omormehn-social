@@ -39,7 +39,11 @@ const MessageContainer = () => {
 
   useSocketEvents(socket, {
     receiveMessage: (data: any) => {
+      if (data.chat_id !== id) return;
       setRealTimeMessages((prev) => {
+        if (prev.find((msg) => msg.id === data.id)) {
+          return prev;
+        }
         return [...prev, data];
       });
     },
@@ -99,6 +103,7 @@ const MessageContainer = () => {
       if (err) {
         setMessageError(true);
         console.log("failed to update message", err);
+        return;
       }
       const receiverId = chatData.users.filter((ch: any) => ch !== user?.id)[0];
 
@@ -112,9 +117,9 @@ const MessageContainer = () => {
     } catch (error) {
       console.log("error: ", error);
       setMessage("");
-      setRealTimeMessages((prev) => {
-        return [prev];
-      });
+      setRealTimeMessages((prev) =>
+        prev.filter((m) => m.id !== tempMessage.id)
+      );
     } finally {
       setLoading(false);
     }
@@ -164,6 +169,7 @@ const MessageContainer = () => {
         renderItem={renderItem}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ paddingTop: 120, paddingBottom: 40 }}
+        ref={flatListRef}
         inverted
         showsVerticalScrollIndicator={true}
         onContentSizeChange={() => {
