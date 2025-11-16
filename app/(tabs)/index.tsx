@@ -2,7 +2,6 @@
 import "react-native-url-polyfill/auto";
 import React, {
   memo,
-  use,
   useCallback,
   useEffect,
   useRef,
@@ -28,6 +27,22 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import PostsCard from "@/components/card/PostsCard";
 import { getCachedMedia, isMediaChanged, setCachedMedia } from "@/utils/cached";
 import { router, useFocusEffect } from "expo-router";
+import { getSignedUrl } from "@/utils/signedUrl";
+
+interface MediaItem {
+  id: number;
+  name: string;
+  comment?: string;
+  uploader: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
+  url: string | null;
+  type: string;
+  created_at: string;
+}
+
 
 const HomeScreen = () => {
   const PAGE_SIZE = 10;
@@ -36,7 +51,7 @@ const HomeScreen = () => {
   const { user } = useAuth();
 
   // States
-  const [media, setMedia] = useState<any[]>([]);
+  const [media, setMedia] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,9 +130,7 @@ const HomeScreen = () => {
       setImageLoading(true);
       const files = await Promise.all(
         data.map(async (file) => {
-          const { data: signedUrlData } = await supabase.storage
-            .from("files")
-            .createSignedUrl(file.file_name, 60 * 60);
+        const signedUrl = await getSignedUrl(file.file_name);
           return {
             id: file.id,
             name: file.file_name,
@@ -127,7 +140,7 @@ const HomeScreen = () => {
               username: file.profiles.username,
               avatar: file.profiles.avatar_url,
             },
-            url: signedUrlData?.signedUrl,
+            url: signedUrl,
             type: /\.(mp4|mov|avi|webm)$/i.test(file.file_name)
               ? "video"
               : "image",
@@ -153,10 +166,10 @@ const HomeScreen = () => {
     try {
       setIsRefreshing(true);
       const files = await loadMedia(1);
-      if (files?.length! > 0) {
+      if (files && files.length > 0) {
         setMedia(files!);
         await setCachedMedia(files);
-        setPage(page);
+        setPage(1);
       }
     } catch (error) {
       console.log("error in handle refresh", error);
@@ -173,17 +186,17 @@ const HomeScreen = () => {
     setIsLoadingMore(true);
 
     try {
-      const files = await loadMedia(page);
+      const files = await loadMedia(page + 1);
 
       if (files?.length! > 0) {
         setMedia((prev) => {
           const newItems = files?.filter(
-            (newItem) => !prev.some((item) => item.name === newItem.name)
+            (newItem) => !prev.some((item) => item.id === newItem.id)
           );
           return [...prev, ...newItems!];
         });
 
-        setPage((page) => page + 1);
+        setPage((prevPage) => prevPage + 1);
         setHasMore(files?.length === PAGE_SIZE);
       } else {
         setHasMore(false);
