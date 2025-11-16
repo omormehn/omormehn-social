@@ -2,7 +2,7 @@ import { View, Text, TextInput, DimensionValue } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/Feather';
 
-const SearchBar = ({ width = 310 }: { width?: DimensionValue }) => {
+const SearchBar = () => {
     return (
         <View style={{
             flexDirection: 'row',
@@ -10,9 +10,8 @@ const SearchBar = ({ width = 310 }: { width?: DimensionValue }) => {
             gap: 4,
             backgroundColor: '#F3F5F7',
             paddingVertical: 3,
-            paddingHorizontal: 15,
+            paddingHorizontal: 10,
             borderRadius: 20,
-            width: width
         }}  >
             <Icon name='search' size={20} color='#5151C6' className='' />
             <View style={{ width: 290 }}>

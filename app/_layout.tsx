@@ -25,7 +25,7 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar backgroundColor={"white"} barStyle="dark-content" />
+      <StatusBar backgroundColor={"translucent"} barStyle="dark-content" />
 
       <AuthProvider>
         <SocketContextProvider>

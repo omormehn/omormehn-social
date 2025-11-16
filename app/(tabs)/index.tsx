@@ -21,7 +21,6 @@ import Icon from "react-native-vector-icons/Feather";
 import SearchBar from "@/components/SearchBar";
 import HomeFilter from "@/components/card/HomeFilter";
 import { useAuth } from "@/context/AuthContext";
-import { StatusBar } from "expo-status-bar";
 import { supabase } from "@/services/supabase";
 import Loader from "@/components/loaders/Loader";
 import dayjs = require("dayjs");
@@ -80,7 +79,6 @@ const HomeScreen = () => {
 
         const freshData = await loadMedia(1);
 
-
         if (freshData && isMediaChanged(cached, freshData)) {
           setMedia(freshData);
           await setCachedMedia(freshData);
@@ -130,12 +128,13 @@ const HomeScreen = () => {
               avatar: file.profiles.avatar_url,
             },
             url: signedUrlData?.signedUrl,
-            type: file.file_name.endsWith(".mp4") ? "video" : "image",
+            type: /\.(mp4|mov|avi|webm)$/i.test(file.file_name)
+              ? "video"
+              : "image",
             created_at: file.created_at,
           };
         })
       );
-
       setImageLoading(false);
 
       return files.filter(Boolean);
@@ -236,7 +235,7 @@ const HomeScreen = () => {
     <View className="flex-1">
       <View className="bg-white pb-4">
         {/* Top 1 */}
-        <View className="flex-row px-6 pt-16 gap-2">
+        <View className="flex-row justify-center pt-12 gap-2">
           <SearchBar />
           <TouchableOpacity
             onPress={() => router.push("/(screens)/Chats/ChatScreen")}
@@ -277,32 +276,36 @@ const HomeScreen = () => {
         </View>
       ) : (
         // <View></View>
-          <FlatList
-                    data={media}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderItem}
-                    contentContainerStyle={{}}
-                    style={{ marginBottom: 100, }}
-                    refreshing={isRefreshing}
-                    onRefresh={handleRefresh}
-                    onEndReached={loadMore}
-                    onEndReachedThreshold={0.2}
-                    onViewableItemsChanged={onViewRef}
-                    viewabilityConfig={viewConfigRef.current}
-                    windowSize={5}
-                    initialNumToRender={5}
-                    maxToRenderPerBatch={5}
-                    updateCellsBatchingPeriod={100}
-                    ListEmptyComponent={
-                        isLoading ? <Loader /> : null
-                    }
-                    ListFooterComponent={
-                        isLoadingMore ? <ActivityIndicator size="small" className='py-8' color="#888BF4" /> : null
-                    }
-                    maintainVisibleContentPosition={{
-                        minIndexForVisible: 0,
-                    }}
-                />
+        <FlatList
+          data={media}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{}}
+          style={{ marginBottom: 100 }}
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.2}
+          onViewableItemsChanged={onViewRef}
+          viewabilityConfig={viewConfigRef.current}
+          windowSize={5}
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          updateCellsBatchingPeriod={100}
+          ListEmptyComponent={isLoading ? <Loader /> : null}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator
+                size="small"
+                className="py-8"
+                color="#888BF4"
+              />
+            ) : null
+          }
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+          }}
+        />
       )}
     </View>
   );
