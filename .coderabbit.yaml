@@ -1,9 +1,10 @@
 reviews:
   profile: chill
   high_level_summary: true
-  auto_review:
+  auto_review:    
+    base_branches:
+      - .*
     enabled: true
-    drafts: false
   # update to the tools you use, see full list: https://docs.coderabbit.ai/tools/list
   tools:
     eslint:
