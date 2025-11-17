@@ -274,8 +274,8 @@ const Profile = ({ posts, user, allowFollow = true, followUser, isFollowing }: {
                             data={posts}
                             renderItem={renderItem}
                             ListHeaderComponent={renderProfileHeader}
-                            keyExtractor={(item, index) => index.toString()}
-
+                            keyExtractor={(item,index) => index.toString()}
+                            contentContainerStyle={{ paddingBottom: 100,  }}
                         />
                     )}
                 </View>
@@ -303,11 +303,7 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     cardShadow: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 4,
+        paddingHorizontal: 30,
     },
     card: {
         flexDirection: 'row',
